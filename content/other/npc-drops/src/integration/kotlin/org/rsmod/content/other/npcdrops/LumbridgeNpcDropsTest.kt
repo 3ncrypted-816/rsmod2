@@ -41,16 +41,22 @@ class LumbridgeNpcDropsTest {
             LumbridgeDropTables.frog to "Frog",
             LumbridgeDropTables.big_frog to "Big frog",
             LumbridgeDropTables.giant_frog to "Giant frog",
-            LumbridgeDropTables.duck to "Duck",
         )
+
+    /** Npcs that share the empty drop table. */
+    private val emptyTableNames = setOf("Duck", "Duckling")
 
     @Test
     fun GameTestState.`npcs match their wiki page names`() = runGameTest {
         for (npc in allNpcs()) {
             val table = tables[npc]
             assertNotNull(table) { "No table for $npc" }
-            val expected = expectedNames.getValue(table!!)
-            assertEquals(expected, npcTypes[npc].name) { "Unexpected table for $npc" }
+            val name = npcTypes[npc].name
+            if (table === NpcDropTable.Empty) {
+                assertTrue(name in emptyTableNames) { "Unexpected empty table for $npc" }
+                continue
+            }
+            assertEquals(expectedNames.getValue(table!!), name) { "Unexpected table for $npc" }
         }
     }
 
@@ -121,6 +127,9 @@ class LumbridgeNpcDropsTest {
             drop_npcs.unicorn,
             drop_npcs.ramunsheered,
             drop_npcs.farmer4,
+            drop_npcs.farmer2_f,
+            drop_npcs.farmer3_f,
+            drop_npcs.duckling,
             drop_npcs.little_frog_nodrops,
             drop_npcs.medium_frog_nodrops,
             drop_npcs.giant_frog_nodrops,

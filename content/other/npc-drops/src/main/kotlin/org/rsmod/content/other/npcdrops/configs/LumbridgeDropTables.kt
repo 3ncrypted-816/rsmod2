@@ -304,4 +304,7 @@ object LumbridgeDropTables {
 
     /** [Duck](https://oldschool.runescape.wiki/w/Duck): ducks do not drop anything. */
     val duck = NpcDropTable.Empty
+
+    /** [Duckling](https://oldschool.runescape.wiki/w/Duckling): ducklings do not drop anything. */
+    val duckling = NpcDropTable.Empty
 }

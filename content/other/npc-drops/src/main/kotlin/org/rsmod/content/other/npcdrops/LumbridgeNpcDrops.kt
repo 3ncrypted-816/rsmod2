@@ -53,12 +53,15 @@ class LumbridgeNpcDrops : NpcDropTableProvider() {
         register(
             LumbridgeDropTables.farmer,
             drop_npcs.farmer1,
+            drop_npcs.farmer2_f,
             drop_npcs.farmer3,
+            drop_npcs.farmer3_f,
             drop_npcs.farmer4,
         )
         register(LumbridgeDropTables.frog, drop_npcs.little_frog_nodrops)
         register(LumbridgeDropTables.big_frog, drop_npcs.medium_frog_nodrops)
         register(LumbridgeDropTables.giant_frog, drop_npcs.giant_frog_nodrops)
         register(LumbridgeDropTables.duck, drop_npcs.duck, drop_npcs.duck_female)
+        register(LumbridgeDropTables.duckling, drop_npcs.duckling)
     }
 }
