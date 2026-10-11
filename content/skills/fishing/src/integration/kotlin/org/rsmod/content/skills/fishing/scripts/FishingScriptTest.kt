@@ -2,6 +2,8 @@ package org.rsmod.content.skills.fishing.scripts
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.parallel.Execution
+import org.junit.jupiter.api.parallel.ExecutionMode
 import org.rsmod.api.config.refs.npcs
 import org.rsmod.api.config.refs.stats
 import org.rsmod.api.testing.GameTestState
@@ -13,6 +15,7 @@ import org.rsmod.game.type.npc.NpcType
 import org.rsmod.game.type.obj.ObjType
 import org.rsmod.map.CoordGrid
 
+@Execution(ExecutionMode.SAME_THREAD)
 class FishingScriptTest {
     @Test
     fun GameTestState.`spot ops match fishing methods`() =
