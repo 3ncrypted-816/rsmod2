@@ -178,4 +178,10 @@ object BaseVarBits : VarBitReferences() {
     val giant_pouch_storage_count = find("giant_pouch_storage_count")
     val colossal_pouch_storage_type = find("colossal_pouch_storage_type")
     val colossal_pouch_storage_count = find("colossal_pouch_storage_count")
+
+    val ironman = find("ironman")
+    val ironman_hardcore_dead = find("ironman_hardcore_dead")
+    val ironman_downgradedate = find("ironman_downgradedate")
+    val ironman_downgradetype = find("ironman_downgradetype")
+    val ironman_downgradepermitted = find("ironman_downgradepermitted")
 }

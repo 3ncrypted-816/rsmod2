@@ -1,6 +1,7 @@
 package org.rsmod.api.net.rsprot.handlers
 
 import net.rsprot.protocol.game.incoming.messaging.MessagePublic
+import org.rsmod.api.player.ironman.chatIcon
 import org.rsmod.game.entity.Player
 import org.rsmod.game.entity.player.PublicMessage
 
@@ -12,7 +13,7 @@ class MessagePublicHandler : MessageHandler<MessagePublic> {
                 colour = message.colour,
                 effect = message.effect,
                 clanType = if (message.clanType == -1) null else message.clanType,
-                modIcon = player.modLevel.clientCode,
+                modIcon = player.chatIcon,
                 autoTyper = false,
                 pattern = message.pattern?.asByteArray(),
             )
