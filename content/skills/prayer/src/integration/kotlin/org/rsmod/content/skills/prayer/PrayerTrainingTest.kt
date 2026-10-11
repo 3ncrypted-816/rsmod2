@@ -48,11 +48,25 @@ class PrayerTrainingTest {
         }
 
     @Test
-    fun GameTestState.`chaos altar grants 350 percent experience`() =
+    fun GameTestState.`chaos altars outside the wilderness temple refuse bones`() =
         runGameTest(PrayerTraining::class, LocUOpScript::class) {
             allocZoneCollision(altarCoords)
             val altar = placeMapLoc(altarCoords, locTypes.getValue(prayer_locs.chaos_altar.id))
             player.teleport(altarCoords.translateX(-1))
+            player.inv[0] = InvObj(objs.bones)
+            player.opLocU(altar, invSlot = 0)
+            advance(ticks = 1)
+            assertMessageSent("You fear the wrath of the gods!")
+            assertEquals(0, player.statMap.getXP(stats.prayer))
+        }
+
+    @Test
+    fun GameTestState.`chaos altar grants 350 percent experience`() =
+        runGameTest(PrayerTraining::class, LocUOpScript::class) {
+            val templeAltar = CoordGrid(2950, 3820, 0)
+            allocZoneCollision(templeAltar)
+            val altar = placeMapLoc(templeAltar, locTypes.getValue(prayer_locs.chaos_altar.id))
+            player.teleport(templeAltar.translateX(-1))
             player.inv[0] = InvObj(objTypes.values.single { it.internalName == "big_bones" })
             random.next = 2 // The bone is consumed.
             player.opLocU(altar, invSlot = 0)

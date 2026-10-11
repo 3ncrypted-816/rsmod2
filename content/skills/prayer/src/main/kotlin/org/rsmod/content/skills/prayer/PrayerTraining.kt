@@ -27,8 +27,9 @@ import org.rsmod.plugin.scripts.ScriptContext
  * - Bones are buried and demonic ashes scattered for the experience listed in [BONES_XP] and
  *   [ASHES_XP].
  * - "Pray-at" on an altar recharges Prayer points to the base level.
- * - The Chaos Temple altar in the Wilderness grants 350% experience per bone offered, with a 50%
- *   chance for the bone not to be consumed.
+ * - The Chaos Temple altar in level 38 Wilderness grants 350% experience per bone offered, with a
+ *   50% chance for the bone not to be consumed ([Chaos
+ *   Temple](https://oldschool.runescape.wiki/w/Chaos_Temple_(church))).
  */
 class PrayerTraining
 @Inject
@@ -97,7 +98,9 @@ constructor(private val objTypes: ObjTypeList, private val locTypes: LocTypeList
 
     private suspend fun ProtectedAccess.offerBones(loc: BoundLocInfo, obj: Int, slot: Int) {
         val xp = bones[obj]
-        if (xp == null) {
+        // The chaos altar loc is used in several places, but only the one in the Wilderness Chaos
+        // Temple accepts bone offerings.
+        if (xp == null || !loc.coords.inWildernessChaosTemple()) {
             mes("You fear the wrath of the gods!")
             return
         }
@@ -115,6 +118,9 @@ constructor(private val objTypes: ObjTypeList, private val locTypes: LocTypeList
             mes("The gods are pleased with your offering.")
         }
     }
+
+    private fun org.rsmod.map.CoordGrid.inWildernessChaosTemple(): Boolean =
+        level == 0 && x in 2944..2958 && z in 3816..3826
 
     private companion object {
         const val BURY_DELAY = 2
