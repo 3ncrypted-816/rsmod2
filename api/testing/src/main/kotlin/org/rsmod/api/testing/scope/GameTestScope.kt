@@ -151,6 +151,7 @@ import org.rsmod.game.type.dbtable.DbTableTypeList
 import org.rsmod.game.type.enums.EnumTypeList
 import org.rsmod.game.type.font.FontMetricsTypeList
 import org.rsmod.game.type.hunt.HuntModeTypeList
+import org.rsmod.game.type.idk.IdentKitTypeList
 import org.rsmod.game.type.interf.IfButtonOp
 import org.rsmod.game.type.interf.IfEvent
 import org.rsmod.game.type.interf.IfSubType
@@ -969,6 +970,7 @@ constructor(
             bind(DbTableTypeList::class.java).toInstance(cacheTypes.dbTables)
             bind(EnumTypeList::class.java).toInstance(cacheTypes.enums)
             bind(HuntModeTypeList::class.java).toInstance(cacheTypes.hunt)
+            bind(IdentKitTypeList::class.java).toInstance(cacheTypes.identKits)
             bind(FontMetricsTypeList::class.java).toInstance(cacheTypes.fonts)
             bind(InterfaceTypeList::class.java).toInstance(cacheTypes.interfaces)
             bind(InvTypeList::class.java).toInstance(cacheTypes.invs)

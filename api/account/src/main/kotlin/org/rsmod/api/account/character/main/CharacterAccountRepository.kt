@@ -133,7 +133,8 @@ constructor(
                         c.muted_until,
                         c.banned_until,
                         c.run_energy,
-                        c.xp_rate_in_hundreds
+                        c.xp_rate_in_hundreds,
+                        c.appearance
                     FROM accounts a
                     JOIN characters c ON c.account_id = a.id
                     WHERE c.realm_id = ?
@@ -171,7 +172,12 @@ constructor(
                     val bannedUntil = resultSet.getLocalDateTime("banned_until")
                     val runEnergy = resultSet.getInt("run_energy")
                     val xpRateInHundreds = resultSet.getInt("xp_rate_in_hundreds")
+                    val appearanceText = resultSet.getString("appearance")
                     val varps = objectMapper.readReifiedValue<Map<Int, Int>>(varpsText)
+                    val appearance =
+                        appearanceText?.let {
+                            objectMapper.readReifiedValue<CharacterAppearanceData>(it)
+                        }
                     val characterData =
                         CharacterAccountData(
                             realm = realmId,
@@ -199,6 +205,7 @@ constructor(
                             bannedUntil = bannedUntil,
                             runEnergy = runEnergy,
                             xpRate = xpRateInHundreds / 100.0,
+                            appearance = appearance,
                         )
                     val metadataList = CharacterMetadataList(characterData, mutableListOf())
                     metadataList.add(applier, characterData)
@@ -221,7 +228,7 @@ constructor(
                 """
                     UPDATE characters
                     SET x = ?, z = ?, level = ?, varps = ?, last_login = ?, run_energy = ?,
-                        xp_rate_in_hundreds = ?, last_logout = CURRENT_TIMESTAMP
+                        xp_rate_in_hundreds = ?, appearance = ?, last_logout = CURRENT_TIMESTAMP
                     WHERE id = ?
                 """
                     .trimIndent()
@@ -238,7 +245,8 @@ constructor(
             it.setSqliteTimestamp(5, player.lastLogin)
             it.setInt(6, player.runEnergy)
             it.setInt(7, (player.xpRate * 100).roundToInt())
-            it.setInt(8, characterId)
+            it.setString(8, objectMapper.writeValueAsString(player.appearanceData()))
+            it.setInt(9, characterId)
             it.executeUpdate()
         }
 
@@ -260,4 +268,12 @@ constructor(
             it.executeUpdate()
         }
     }
+
+    private fun Player.appearanceData(): CharacterAppearanceData =
+        CharacterAppearanceData(
+            bodyType = appearance.bodyType,
+            pronoun = appearance.pronoun,
+            identKit = appearance.identKitSnapshot().map(Short::toInt),
+            colours = appearance.coloursSnapshot().map { it.toInt() and 0xFF },
+        )
 }

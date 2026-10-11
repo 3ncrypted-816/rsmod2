@@ -36,6 +36,18 @@ constructor(private val modLevelTypes: ModLevelTypeList) :
         player.lastLogin = LocalDateTime.now()
         player.vars.backing.putAll(data.varps)
         player.assignModLevel(data.modLevel)
+        data.appearance?.let { player.assignAppearance(it) }
+    }
+
+    private fun Player.assignAppearance(data: CharacterAppearanceData) {
+        appearance.bodyType = data.bodyType
+        appearance.pronoun = data.pronoun
+        for ((index, kit) in data.identKit.withIndex()) {
+            appearance.setIdentKit(index, kit)
+        }
+        for ((index, colour) in data.colours.withIndex()) {
+            appearance.setColour(index, colour)
+        }
     }
 
     private fun Player.assignModLevel(modLevelName: String?) {
