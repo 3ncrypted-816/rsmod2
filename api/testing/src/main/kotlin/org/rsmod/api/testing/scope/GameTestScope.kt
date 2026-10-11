@@ -11,6 +11,7 @@ import kotlin.contracts.contract
 import kotlin.reflect.KClass
 import net.rsprot.protocol.game.incoming.buttons.If3Button
 import net.rsprot.protocol.game.incoming.buttons.IfButtonD
+import net.rsprot.protocol.game.incoming.buttons.IfButtonT
 import net.rsprot.protocol.game.incoming.locs.OpLoc
 import net.rsprot.protocol.game.incoming.locs.OpLocT
 import net.rsprot.protocol.game.incoming.misc.user.MoveGameClick
@@ -35,6 +36,7 @@ import org.rsmod.api.market.DefaultMarketPrices
 import org.rsmod.api.market.MarketPrices
 import org.rsmod.api.net.rsprot.handlers.If3ButtonHandler
 import org.rsmod.api.net.rsprot.handlers.IfButtonDHandler
+import org.rsmod.api.net.rsprot.handlers.IfButtonTHandler
 import org.rsmod.api.net.rsprot.handlers.MoveGameClickHandler
 import org.rsmod.api.net.rsprot.handlers.OpLocHandler
 import org.rsmod.api.net.rsprot.handlers.OpLocTHandler
@@ -213,6 +215,7 @@ constructor(
     private val protectedAccess: ProtectedAccessLauncher,
     private val ifButtonHandler: If3ButtonHandler,
     private val ifButtonDHandler: IfButtonDHandler,
+    private val ifButtonTHandler: IfButtonTHandler,
     private val gameClickHandler: MoveGameClickHandler,
     private val resumePCountDialog: ResumePCountDialogHandler,
     private val opLocHandler: OpLocHandler,
@@ -453,6 +456,21 @@ constructor(
                 else -> throw IllegalArgumentException("Invalid held op: $op")
             }
         ifButton(components.inv_items, comsub = invSlot, op = buttonOp, obj = obj.id)
+    }
+
+    /** Uses the inventory obj in [selectedSlot] on the inventory obj in [targetSlot]. */
+    public fun Player.opHeldU(selectedSlot: Int, targetSlot: Int) {
+        val selected = checkNotNull(inv[selectedSlot]) { "No inv obj in slot `$selectedSlot`." }
+        val target = checkNotNull(inv[targetSlot]) { "No inv obj in slot `$targetSlot`." }
+        if (!ui.containsOverlay(interfaces.inventory)) {
+            ifOpenOverlay(interfaces.inventory, components.toplevel_target_side3)
+        }
+        ifSetEvents(components.inv_items, inv.indices, IfEvent.TgtCom, IfEvent.Target)
+        val combinedId =
+            CombinedId(components.inv_items.interfaceId, components.inv_items.component)
+        val message =
+            IfButtonT(combinedId, selectedSlot, selected.id, combinedId, targetSlot, target.id)
+        captureClient.queue(ifButtonTHandler, message)
     }
 
     public fun Player.resumePauseButton(component: ComponentType, sub: Int = -1) {
