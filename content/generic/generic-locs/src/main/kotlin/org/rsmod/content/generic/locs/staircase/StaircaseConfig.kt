@@ -25,6 +25,8 @@ object StaircaseLocs : LocReferences() {
  * highest/lowest floor of the staircase stack. (Lumbridge Castle's staircases have these options in
  * the base game; they are added to the other spiral staircases on this server.)
  */
+// An edit that sets any op replaces the loc's whole op list, so the original climb ops are set
+// again alongside the new ones.
 internal object StaircaseLocEdits : LocEditor() {
     init {
         bottom(staircase_locs.spiral_bottom)
@@ -44,18 +46,23 @@ internal object StaircaseLocEdits : LocEditor() {
     private fun bottom(type: org.rsmod.game.type.loc.LocType) =
         edit(type) {
             contentGroup = content.spiralstaircase_up
+            op1 = "Climb-up"
             op2 = TOP_FLOOR
         }
 
     private fun top(type: org.rsmod.game.type.loc.LocType) =
         edit(type) {
             contentGroup = content.spiralstaircase_down
+            op1 = "Climb-down"
             op2 = BOTTOM_FLOOR
         }
 
     private fun middle(type: org.rsmod.game.type.loc.LocType) =
         edit(type) {
             contentGroup = content.spiralstaircase_option
+            op1 = "Climb"
+            op2 = "Climb-up"
+            op3 = "Climb-down"
             op4 = TOP_FLOOR
             op5 = BOTTOM_FLOOR
         }

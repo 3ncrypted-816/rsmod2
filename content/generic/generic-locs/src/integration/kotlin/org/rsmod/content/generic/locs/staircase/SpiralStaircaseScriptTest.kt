@@ -11,6 +11,20 @@ class SpiralStaircaseScriptTest {
     private val base = CoordGrid(0, 50, 50, 20, 20)
 
     @Test
+    fun GameTestState.`staircases keep their regular climb options`() = runGameTest {
+        fun ops(type: org.rsmod.game.type.loc.LocType) = locTypes[type].op.toList()
+        val climbUp = listOf("Climb-up", "Top-floor", null, null, null)
+        val climbDown = listOf("Climb-down", "Bottom-floor", null, null, null)
+        val middle = listOf("Climb", "Climb-up", "Climb-down", "Top-floor", "Bottom-floor")
+        assertEquals(climbUp, ops(staircase_locs.lumbridge_spiral_bottom))
+        assertEquals(climbUp, ops(staircase_locs.spiral_bottom))
+        assertEquals(middle, ops(staircase_locs.spiral_middle))
+        assertEquals(middle, ops(staircase_locs.wooden_spiral_middle))
+        assertEquals(climbDown, ops(staircase_locs.lumbridge_spiral_top))
+        assertEquals(climbDown, ops(staircase_locs.spiral_top))
+    }
+
+    @Test
     fun GameTestState.`top-floor and bottom-floor skip the middle floor`() =
         runGameTest(SpiralStaircaseScript::class) {
             val (bottom, middle, top) = placeStack(floors = 3)
