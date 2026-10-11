@@ -5,14 +5,18 @@ import org.rsmod.api.config.constants
 import org.rsmod.api.config.refs.headbars
 import org.rsmod.api.config.refs.params
 import org.rsmod.api.config.refs.queues
+import org.rsmod.api.config.refs.spotanims
 import org.rsmod.api.config.refs.stats
 import org.rsmod.api.config.refs.synths
+import org.rsmod.api.config.refs.varbits
 import org.rsmod.api.player.headbar.InternalPlayerHeadbars
 import org.rsmod.api.player.lefthand
 import org.rsmod.api.player.output.soundSynth
 import org.rsmod.api.player.protect.ProtectedAccess
 import org.rsmod.api.player.stat.baseHitpointsLvl
 import org.rsmod.api.player.stat.hitpoints
+import org.rsmod.api.player.stat.stat
+import org.rsmod.api.player.stat.statBase
 import org.rsmod.api.player.torso
 import org.rsmod.api.random.GameRandom
 import org.rsmod.game.headbar.Headbar
@@ -40,6 +44,7 @@ public object StandardPlayerHitProcessor : QueuedPlayerHitProcessor {
             statSub(stats.hitpoints, constant = damage, percent = 0)
         }
 
+        activateRedemption()
         playDefendSound(hit, random)
 
         val queueDeath = player.hitpoints == 0 && queues.death !in player.queueList
@@ -51,6 +56,25 @@ public object StandardPlayerHitProcessor : QueuedPlayerHitProcessor {
 
         val headbar = hit.createHeadbar(player.hitpoints, player.baseHitpointsLvl)
         player.showHeadbar(headbar)
+    }
+
+    /**
+     * [Redemption](https://oldschool.runescape.wiki/w/Redemption): when hit to (or while below) 10%
+     * of base Hitpoints, all Prayer points are drained and the player heals a quarter of their base
+     * Prayer level.
+     */
+    private fun ProtectedAccess.activateRedemption() {
+        if (player.vars[varbits.redemption] == 0) {
+            return
+        }
+        val hitpoints = player.hitpoints
+        if (hitpoints <= 0 || hitpoints * 10 >= player.baseHitpointsLvl) {
+            return
+        }
+        val prayerBase = player.statBase(stats.prayer)
+        statSub(stats.prayer, constant = player.stat(stats.prayer), percent = 0)
+        statHeal(stats.hitpoints, constant = prayerBase / 4, percent = 0)
+        spotanim(spotanims.redemption)
     }
 
     private fun Hit.isValid(access: ProtectedAccess): Boolean {
