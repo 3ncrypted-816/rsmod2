@@ -2,6 +2,8 @@ package org.rsmod.content.generic.locs.banks
 
 import org.rsmod.api.config.refs.content
 import org.rsmod.api.config.refs.interfaces
+import org.rsmod.api.player.ironman.ULTIMATE_IRONMAN_BANK_MESSAGE
+import org.rsmod.api.player.ironman.isUltimateIronman
 import org.rsmod.api.player.protect.ProtectedAccess
 import org.rsmod.api.script.onOpLoc2
 import org.rsmod.plugin.scripts.PluginScript
@@ -13,6 +15,10 @@ class BankBooth : PluginScript() {
     }
 
     private fun ProtectedAccess.openBank() {
+        if (player.isUltimateIronman) {
+            mes(ULTIMATE_IRONMAN_BANK_MESSAGE)
+            return
+        }
         ifOpenMainSidePair(main = interfaces.bank_main, side = interfaces.bank_side)
     }
 }

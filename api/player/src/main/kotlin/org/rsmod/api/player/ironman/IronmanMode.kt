@@ -59,3 +59,30 @@ public val Player.chatIcon: Int
         } else {
             ironmanMode.chatIcon
         }
+
+private var Player.hardcoreDead by intVarBit(varbits.ironman_hardcore_dead)
+private var Player.downgradeType by intVarBit(varbits.ironman_downgradetype)
+private var Player.downgradeDate by intVarBit(varbits.ironman_downgradedate)
+
+/** Chat message shown when a Hardcore Ironman dies an unsafe death. (Wiki: Ironman Mode) */
+public const val HARDCORE_DEATH_MESSAGE: String =
+    "You have fallen as a Hardcore Ironman, your Hardcore status has been revoked."
+
+/** Message for an Ironman trying to take an obj that another player originally owned. */
+public const val IRONMAN_TAKE_MESSAGE: String =
+    "You're an Ironman, so you can't take items that non-Ironmen have dropped."
+
+/**
+ * Downgrades a Hardcore Ironman to a standard Ironman after an unsafe death. Any pending downgrade
+ * is cancelled, as the wiki notes for deaths during the waiting period.
+ */
+public fun Player.revokeHardcoreStatus() {
+    ironmanMode = IronmanMode.Standard
+    hardcoreDead = 1
+    downgradeType = 0
+    downgradeDate = 0
+}
+
+/** Message for an Ultimate Ironman trying to open their bank. */
+public const val ULTIMATE_IRONMAN_BANK_MESSAGE: String =
+    "As an Ultimate Ironman, you cannot use the bank."

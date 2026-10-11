@@ -10,6 +10,7 @@ import org.rsmod.api.config.refs.varps
 import org.rsmod.api.drop.table.NpcDropTables
 import org.rsmod.api.npc.access.StandardNpcAccess
 import org.rsmod.api.npc.vars.typePlayerUidVarn
+import org.rsmod.api.player.ironman.isIronman
 import org.rsmod.api.player.output.soundSynth
 import org.rsmod.api.player.vars.intVarp
 import org.rsmod.api.player.vars.typeNpcUidVarp
@@ -50,6 +51,10 @@ constructor(
 
     private fun Npc.spawnDeathDrops(dropCoords: CoordGrid) {
         val hero = findHero(players) ?: return
+        if (hero.isIronman && heroPoints.toMutableList().any { it.uuid != hero.uuid }) {
+            // Ironmen get no loot whatsoever if another player has attacked the npc.
+            return
+        }
         val duration = hero.lootDropDuration ?: constants.lootdrop_duration
 
         val table = dropTables[type]

@@ -10,6 +10,9 @@ import org.rsmod.api.config.refs.seqs
 import org.rsmod.api.config.refs.varps
 import org.rsmod.api.player.deathResetTimers
 import org.rsmod.api.player.disablePrayers
+import org.rsmod.api.player.ironman.HARDCORE_DEATH_MESSAGE
+import org.rsmod.api.player.ironman.isHardcoreIronman
+import org.rsmod.api.player.ironman.revokeHardcoreStatus
 import org.rsmod.api.player.protect.ProtectedAccess
 import org.rsmod.api.player.vars.intVarp
 import org.rsmod.game.entity.Player
@@ -36,6 +39,11 @@ public class PlayerDeath @Inject constructor(private val statTypes: StatTypeList
         midiSong(midis.stop_music)
         midiJingle(jingles.death_jingle_2)
         mes("Oh dear, you are dead!")
+        // All deaths are currently unsafe; safe minigame deaths do not exist yet.
+        if (player.isHardcoreIronman) {
+            player.revokeHardcoreStatus()
+            mes(HARDCORE_DEATH_MESSAGE)
+        }
         telejump(randomRespawn ?: respawn)
         resetAnim()
         // TODO: Drop death invs, etc.
