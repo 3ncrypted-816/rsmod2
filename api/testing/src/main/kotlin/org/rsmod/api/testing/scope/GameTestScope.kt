@@ -424,6 +424,37 @@ constructor(
         captureClient.queue(opLocTHandler, message)
     }
 
+    /**
+     * Clicks held op [op] (`1`-`5`, e.g. `1` for "Eat") on the inventory obj in [invSlot], opening
+     * the inventory overlay (with its op events enabled) if it is not already open.
+     */
+    public fun Player.opHeld(invSlot: Int, op: Int = 1) {
+        val obj = checkNotNull(inv[invSlot]) { "No inv obj in slot `$invSlot`." }
+        if (!ui.containsOverlay(interfaces.inventory)) {
+            ifOpenOverlay(interfaces.inventory, components.toplevel_target_side3)
+        }
+        ifSetEvents(
+            components.inv_items,
+            inv.indices,
+            IfEvent.Op2,
+            IfEvent.Op3,
+            IfEvent.Op4,
+            IfEvent.Op6,
+            IfEvent.Op7,
+        )
+        // The inventory's interface ops are offset from the obj's held ops.
+        val buttonOp =
+            when (op) {
+                1 -> IfButtonOp.Op2
+                2 -> IfButtonOp.Op3
+                3 -> IfButtonOp.Op4
+                4 -> IfButtonOp.Op6
+                5 -> IfButtonOp.Op7
+                else -> throw IllegalArgumentException("Invalid held op: $op")
+            }
+        ifButton(components.inv_items, comsub = invSlot, op = buttonOp, obj = obj.id)
+    }
+
     public fun Player.resumePauseButton(component: ComponentType, sub: Int = -1) {
         val combinedId = CombinedId(component.interfaceId, component.component)
         val message = ResumePauseButton(combinedId, sub)

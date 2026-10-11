@@ -2278,6 +2278,9 @@
 4846	dom_previous_deepest_level
 4848	collection_count_unsynced
 
+65501	consumable_combo_delay
+65502	consumable_potion_delay
+65503	consumable_food_delay
 65504	music_playlist
 65505	music_temp_state_3
 65506	music_temp_state_2
