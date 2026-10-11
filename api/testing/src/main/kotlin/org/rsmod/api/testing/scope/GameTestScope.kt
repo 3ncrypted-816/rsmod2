@@ -27,6 +27,8 @@ import org.rsmod.api.config.refs.interfaces
 import org.rsmod.api.config.refs.objs
 import org.rsmod.api.db.Database
 import org.rsmod.api.db.DatabaseConnection
+import org.rsmod.api.drop.table.NpcDropTableProvider
+import org.rsmod.api.drop.table.NpcDropTables
 import org.rsmod.api.game.process.GameCycle
 import org.rsmod.api.inv.map.InvMapInit
 import org.rsmod.api.market.DefaultMarketPrices
@@ -984,6 +986,9 @@ constructor(
 
             bind(CheatCommandMap::class.java).`in`(Scopes.SINGLETON)
             bind(EngineQueueCache::class.java).`in`(Scopes.SINGLETON)
+
+            Multibinder.newSetBinder(binder(), NpcDropTableProvider::class.java)
+            bind(NpcDropTables::class.java).`in`(Scopes.SINGLETON)
 
             Multibinder.newSetBinder(binder(), InvisibleLevelMod::class.java)
             bind(InvisibleLevels::class.java).`in`(Scopes.SINGLETON)

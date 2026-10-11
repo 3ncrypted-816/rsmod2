@@ -9,6 +9,8 @@ kotlin {
 dependencies {
     implementation(libs.guice)
     implementation(projects.api.config)
+    implementation(projects.api.dropTable)
+    implementation(projects.api.random)
     implementation(projects.api.npc)
     implementation(projects.api.player)
     implementation(projects.api.playerOutput)

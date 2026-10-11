@@ -7,17 +7,20 @@ import org.rsmod.api.config.refs.objs
 import org.rsmod.api.config.refs.params
 import org.rsmod.api.config.refs.varns
 import org.rsmod.api.config.refs.varps
+import org.rsmod.api.drop.table.NpcDropTables
 import org.rsmod.api.npc.access.StandardNpcAccess
 import org.rsmod.api.npc.vars.typePlayerUidVarn
 import org.rsmod.api.player.output.soundSynth
 import org.rsmod.api.player.vars.intVarp
 import org.rsmod.api.player.vars.typeNpcUidVarp
+import org.rsmod.api.random.GameRandom
 import org.rsmod.api.repo.npc.NpcRepository
 import org.rsmod.api.repo.obj.ObjRepository
 import org.rsmod.game.entity.Npc
 import org.rsmod.game.entity.Player
 import org.rsmod.game.entity.PlayerList
 import org.rsmod.game.entity.npc.NpcUid
+import org.rsmod.game.type.obj.ObjTypeList
 import org.rsmod.game.type.seq.SeqTypeList
 import org.rsmod.map.CoordGrid
 
@@ -29,6 +32,9 @@ constructor(
     private val seqTypes: SeqTypeList,
     private val players: PlayerList,
     private val objRepo: ObjRepository,
+    private val objTypes: ObjTypeList,
+    private val dropTables: NpcDropTables,
+    private val random: GameRandom,
 ) {
     public suspend fun deathNoDrops(access: StandardNpcAccess) {
         access.death(npcRepo, seqTypes, players)
@@ -43,11 +49,22 @@ constructor(
     }
 
     private fun Npc.spawnDeathDrops(dropCoords: CoordGrid) {
-        // TODO: Drop tables.
-        val hero = findHero(players)
-        if (hero != null) {
-            val duration = hero.lootDropDuration ?: constants.lootdrop_duration
+        val hero = findHero(players) ?: return
+        val duration = hero.lootDropDuration ?: constants.lootdrop_duration
+
+        val table = dropTables[type]
+        if (table == null) {
+            // TODO: Remove fallback once every npc has its drop table defined.
             objRepo.add(objs.bones, dropCoords, duration, hero)
+            return
+        }
+
+        for ((obj, count) in dropTables.roll(table, random)) {
+            if (objTypes[obj].stackable) {
+                objRepo.add(obj, dropCoords, duration, hero, count)
+                continue
+            }
+            repeat(count) { objRepo.add(obj, dropCoords, duration, hero) }
         }
     }
 
