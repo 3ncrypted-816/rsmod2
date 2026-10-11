@@ -67,6 +67,43 @@ class AgilityShortcutsTest {
             assertEquals(CoordGrid(2948, 3313, 0), player.coords)
         }
 
+    @Test
+    fun GameTestState.`one-way yanille rocks climb out of yanille`() =
+        runGameTest(AgilityShortcuts::class) {
+            val rocks =
+                place(
+                    "watchshortcut",
+                    CoordGrid(2561, 3108, 0),
+                    LocShape.CentrepieceStraight,
+                    LocAngle.North,
+                )
+            player.stats[stats.agility] = 5
+            val startXp = player.statMap.getXP(stats.agility)
+            player.teleport(CoordGrid(2561, 3107, 0))
+            player.opLoc1(rocks)
+            advance(ticks = 5)
+            assertEquals(CoordGrid(2561, 3109, 0), player.coords)
+            assertEquals(25, player.statMap.getXP(stats.agility) - startXp)
+        }
+
+    @Test
+    fun GameTestState.`wintertodt gap also needs firemaking`() =
+        runGameTest(AgilityShortcuts::class) {
+            val gap =
+                place(
+                    "wint_pillar_jump",
+                    CoordGrid(1628, 4023, 0),
+                    LocShape.CentrepieceStraight,
+                    LocAngle.South,
+                )
+            player.stats[stats.agility] = 60
+            player.stats[stats.firemaking] = 49
+            player.teleport(CoordGrid(1627, 4023, 0))
+            player.opLoc1(gap)
+            advance(ticks = 1)
+            assertMessageSent("You need a Firemaking level of 50 to negotiate this obstacle.")
+        }
+
     private fun GameTestScope.place(
         internal: String,
         coords: CoordGrid,

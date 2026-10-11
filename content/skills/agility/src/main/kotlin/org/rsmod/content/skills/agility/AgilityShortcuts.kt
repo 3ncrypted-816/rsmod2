@@ -8,12 +8,16 @@ import org.rsmod.api.script.onOpLoc1
 import org.rsmod.api.type.refs.seq.SeqReferences
 import org.rsmod.game.loc.BoundLocInfo
 import org.rsmod.game.type.loc.LocTypeList
+import org.rsmod.game.type.stat.StatTypeList
 import org.rsmod.map.CoordGrid
 import org.rsmod.plugin.scripts.PluginScript
 import org.rsmod.plugin.scripts.ScriptContext
 
 /** Agility shortcuts listed in [SHORTCUTS]. */
-class AgilityShortcuts @Inject constructor(private val locTypes: LocTypeList) : PluginScript() {
+class AgilityShortcuts
+@Inject
+constructor(private val locTypes: LocTypeList, private val statTypes: StatTypeList) :
+    PluginScript() {
     override fun ScriptContext.startup() {
         val byLoc =
             SHORTCUTS.flatMap { s -> s.locs.map { it to s } }.groupBy({ it.first }, { it.second })
@@ -30,13 +34,22 @@ class AgilityShortcuts @Inject constructor(private val locTypes: LocTypeList) : 
             mes("You need an Agility level of ${shortcut.level} to negotiate this obstacle.")
             return
         }
-        val from = player.coords
-        val dest =
-            if (from.distance(shortcut.sideA) <= from.distance(shortcut.sideB)) {
-                shortcut.sideB
-            } else {
-                shortcut.sideA
+        val requirement = shortcut.otherRequirement
+        if (requirement != null) {
+            val (statName, level) = requirement
+            val stat = statTypes.values.single { it.internalName == statName }
+            if (player.statBase(stat) < level) {
+                mes("You need a ${stat.displayName} level of $level to negotiate this obstacle.")
+                return
             }
+        }
+        val from = player.coords
+        val nearA = from.distance(shortcut.sideA) <= from.distance(shortcut.sideB)
+        if (shortcut.oneWay && !nearA) {
+            mes("You can't use this shortcut from this side.")
+            return
+        }
+        val dest = if (nearA) shortcut.sideB else shortcut.sideA
         cross(shortcut, dest)
         if (shortcut.xp > 0) {
             statAdvance(stats.agility, shortcut.xp)
@@ -46,6 +59,8 @@ class AgilityShortcuts @Inject constructor(private val locTypes: LocTypeList) : 
     private suspend fun ProtectedAccess.cross(shortcut: Shortcut, dest: CoordGrid) {
         val start = player.coords
         val face = faceTowards(start, dest)
+        // Longer crossings take one tick per tile travelled.
+        val ticks = start.distance(dest).coerceIn(1, MAX_CROSSING_TICKS)
         when (shortcut.style) {
             ShortcutStyle.ClimbOver -> {
                 anim(shortcut_seqs.climb_over)
@@ -59,13 +74,18 @@ class AgilityShortcuts @Inject constructor(private val locTypes: LocTypeList) : 
             }
             ShortcutStyle.SteppingStones -> {
                 anim(shortcut_seqs.jump)
-                exactMove(start, dest, delay1 = 0, delay2 = 90, dir = face)
-                delay(3)
+                exactMove(start, dest, delay1 = 0, delay2 = ticks * 30, dir = face)
+                delay(ticks)
             }
             ShortcutStyle.Scramble -> {
                 anim(shortcut_seqs.scramble)
-                exactMove(start, dest, delay1 = 0, delay2 = 90, dir = face)
-                delay(3)
+                exactMove(start, dest, delay1 = 0, delay2 = ticks * 30, dir = face)
+                delay(ticks)
+            }
+            ShortcutStyle.LogBalance -> {
+                anim(shortcut_seqs.log_balance)
+                exactMove(start, dest, delay1 = 0, delay2 = ticks * 30, dir = face)
+                delay(ticks)
             }
             ShortcutStyle.Tunnel -> {
                 anim(shortcut_seqs.tunnel_enter)
@@ -75,8 +95,8 @@ class AgilityShortcuts @Inject constructor(private val locTypes: LocTypeList) : 
             }
             ShortcutStyle.Pipe -> {
                 anim(shortcut_seqs.pipe)
-                exactMove(start, dest, delay1 = 0, delay2 = 150, dir = face)
-                delay(5)
+                exactMove(start, dest, delay1 = 0, delay2 = ticks * 30, dir = face)
+                delay(ticks)
             }
             ShortcutStyle.Squeeze -> {
                 anim(shortcut_seqs.squeeze)
@@ -107,6 +127,7 @@ class AgilityShortcuts @Inject constructor(private val locTypes: LocTypeList) : 
         else maxOf(kotlin.math.abs(x - other.x), kotlin.math.abs(z - other.z))
 
     private companion object {
+        const val MAX_CROSSING_TICKS = 12
         const val FACE_SOUTH = 0
         const val FACE_WEST = 512
         const val FACE_NORTH = 1024
@@ -124,4 +145,5 @@ internal object shortcut_seqs : SeqReferences() {
     val pipe = find("human_doublepipesqueeze")
     val squeeze = find("human_pipesqueeze")
     val unsqueeze = find("human_pipeunsqueeze")
+    val log_balance = find("human_walk_logbalance")
 }
