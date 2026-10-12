@@ -1,6 +1,7 @@
 package org.runerealm.api.combat.player
 
 import kotlin.math.min
+import org.runerealm.api.area.checker.WildernessArea
 import org.runerealm.api.combat.MAGIC_ATTACK_RANGE
 import org.runerealm.api.combat.MAX_ATTACK_RANGE
 import org.runerealm.api.combat.commons.CombatAttack
@@ -13,7 +14,9 @@ import org.runerealm.api.combat.commons.types.AttackType
 import org.runerealm.api.combat.commons.types.MeleeAttackType
 import org.runerealm.api.combat.commons.types.RangedAttackType
 import org.runerealm.api.combat.manager.MagicRuneManager
+import org.runerealm.api.config.constants
 import org.runerealm.api.config.refs.params
+import org.runerealm.api.config.refs.timers
 import org.runerealm.api.player.protect.ProtectedAccess
 import org.runerealm.api.player.righthand
 import org.runerealm.api.specials.SpecialAttack
@@ -229,7 +232,7 @@ internal suspend fun ProtectedAccess.activateShieldSpecial(
 ): Boolean = TODO()
 
 internal fun ProtectedAccess.setPkVars(target: Player) {
-    // TODO(combat): Set pk skull when applicable.
+    skullIfAggressor(target)
     pkPrey2 = pkPrey1
     pkPrey1 = target.uid
 
@@ -241,3 +244,26 @@ internal fun ProtectedAccess.setPkVars(target: Player) {
     target.lastCombatPvp = mapClock
     target.aggressiveNpc = null
 }
+
+/**
+ * Skulls the player for [PK_SKULL_CYCLES] (20 minutes) when they attack a player in the Wilderness
+ * who has not attacked them first, per the wiki.
+ */
+private fun ProtectedAccess.skullIfAggressor(target: Player) {
+    if (!WildernessArea.contains(player.coords)) {
+        return
+    }
+    val retaliating =
+        player.pkPredator1 == target.uid ||
+            player.pkPredator2 == target.uid ||
+            player.pkPredator3 == target.uid
+    if (retaliating) {
+        return
+    }
+    if (player.skullIcon == null) {
+        player.skullIcon = constants.skullicon_default
+    }
+    player.softTimer(timers.pk_skull, PK_SKULL_CYCLES)
+}
+
+internal const val PK_SKULL_CYCLES: Int = 2000

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.runerealm.api.area.checker.WildernessArea
 import org.runerealm.api.config.refs.interfaces
 import org.runerealm.api.testing.GameTestState
 import org.runerealm.map.CoordGrid

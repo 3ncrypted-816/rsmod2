@@ -1,11 +1,11 @@
-package org.runerealm.content.areas.wilderness
+package org.runerealm.api.area.checker
 
 import org.runerealm.map.CoordGrid
 
 /** Wilderness boundaries and levels, ported from the client's `wilderness_level` proc. */
-object WildernessArea {
+public object WildernessArea {
     /** Returns the Wilderness level shown by the client at [coord], or `0` outside it. */
-    fun level(coord: CoordGrid): Int {
+    public fun level(coord: CoordGrid): Int {
         val x = coord.x
         val z = coord.z
         val mx = x shr 6
@@ -32,7 +32,7 @@ object WildernessArea {
      * Whether [coord] is inside the Wilderness. Ferox Enclave lies within the Wilderness level
      * boundaries but is a safe zone, so it does not count.
      */
-    fun contains(coord: CoordGrid): Boolean = level(coord) > 0 && !inFeroxEnclave(coord)
+    public fun contains(coord: CoordGrid): Boolean = level(coord) > 0 && !inFeroxEnclave(coord)
 
     private fun inFeroxEnclave(coord: CoordGrid): Boolean =
         coord.level == 0 && coord.x in FEROX_X && coord.z in FEROX_Z

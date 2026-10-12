@@ -1,6 +1,9 @@
 package org.runerealm.api.combat.scripts
 
 import jakarta.inject.Inject
+import kotlin.math.abs
+import kotlin.math.min
+import org.runerealm.api.area.checker.WildernessArea
 import org.runerealm.api.combat.PvPCombat
 import org.runerealm.api.combat.commons.magic.MagicSpell
 import org.runerealm.api.combat.commons.styles.AttackStyle
@@ -12,14 +15,17 @@ import org.runerealm.api.combat.player.resolveAutocastSpell
 import org.runerealm.api.combat.player.resolveCombatAttack
 import org.runerealm.api.combat.weapon.styles.AttackStyles
 import org.runerealm.api.combat.weapon.types.AttackTypes
+import org.runerealm.api.config.constants
 import org.runerealm.api.config.refs.categories
 import org.runerealm.api.config.refs.queues
+import org.runerealm.api.config.refs.timers
 import org.runerealm.api.player.isInPvpCombat
 import org.runerealm.api.player.protect.ProtectedAccess
 import org.runerealm.api.player.righthand
 import org.runerealm.api.script.advanced.onApPlayer2
 import org.runerealm.api.script.advanced.onOpPlayer2
 import org.runerealm.api.script.onApPlayerT
+import org.runerealm.api.script.onPlayerSoftTimer
 import org.runerealm.api.spells.MagicSpellRegistry
 import org.runerealm.api.spells.autocast.AutocastWeapons
 import org.runerealm.game.entity.Player
@@ -40,6 +46,7 @@ constructor(
 ) : PluginScript() {
     override fun ScriptContext.startup() {
         onApPlayer2 { attemptCombatAp(it.target) }
+        onPlayerSoftTimer(timers.pk_skull) { player.clearPkSkull() }
         onOpPlayer2 { attemptCombatOp(it.target) }
         for (spell in spells.combatSpells()) {
             onApPlayerT(spell.component) { attemptCombatSpell(it.target, spell) }
@@ -122,6 +129,11 @@ constructor(
             return false
         }
 
+        if (!canAttackInWilderness(target)) {
+            clearPendingAction()
+            return false
+        }
+
         // TODO(combat): Updated multiway logic.
         // TODO(combat): Add singles plus support.
         val singleCombat = !mapMultiway()
@@ -147,5 +159,35 @@ constructor(
             }
         }
         return true
+    }
+
+    /**
+     * Both players must be in the Wilderness, and their combat level difference must not exceed the
+     * Wilderness level either of them is standing in.
+     */
+    private fun ProtectedAccess.canAttackInWilderness(target: Player): Boolean {
+        if (!WildernessArea.contains(player.coords)) {
+            mes("You can't attack players outside of the Wilderness.")
+            return false
+        }
+        if (!WildernessArea.contains(target.coords)) {
+            mes("That player is not in the Wilderness.")
+            return false
+        }
+        val difference = abs(player.combatLevel - target.combatLevel)
+        val levels = min(WildernessArea.level(player.coords), WildernessArea.level(target.coords))
+        if (difference > levels) {
+            mes("Your level difference is too great!")
+            mes("You need to move deeper into the Wilderness.")
+            return false
+        }
+        return true
+    }
+
+    private fun Player.clearPkSkull() {
+        clearSoftTimer(timers.pk_skull)
+        if (skullIcon == constants.skullicon_default) {
+            skullIcon = null
+        }
     }
 }

@@ -8,6 +8,7 @@ kotlin {
 }
 
 dependencies {
+    implementation(projects.api.areaChecker)
     implementation(libs.bundles.logging)
     implementation(libs.fastutil)
     implementation(libs.guice)

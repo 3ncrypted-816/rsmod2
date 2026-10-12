@@ -1,9 +1,9 @@
 package org.runerealm.content.skills.magic.teleports
 
+import org.runerealm.api.area.checker.WildernessArea
 import org.runerealm.api.player.protect.ProtectedAccess
 import org.runerealm.api.type.refs.seq.SeqReferences
 import org.runerealm.api.type.refs.spot.SpotanimReferences
-import org.runerealm.content.areas.wilderness.WildernessArea
 import org.runerealm.map.CoordGrid
 
 /** Animations and timing shared by item teleports (wiki: Teleportation). */

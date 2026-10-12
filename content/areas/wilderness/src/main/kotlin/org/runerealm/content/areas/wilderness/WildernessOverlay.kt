@@ -1,8 +1,10 @@
 package org.runerealm.content.areas.wilderness
 
 import jakarta.inject.Inject
+import org.runerealm.api.area.checker.WildernessArea
 import org.runerealm.api.config.refs.components
 import org.runerealm.api.config.refs.interfaces
+import org.runerealm.api.player.output.MiscOutput
 import org.runerealm.api.player.output.runClientScript
 import org.runerealm.api.player.ui.ifCloseOverlay
 import org.runerealm.api.player.ui.ifOpenOverlay
@@ -19,7 +21,8 @@ import org.runerealm.plugin.scripts.ScriptContext
 
 /**
  * Shows the Wilderness level overlay (`pvp_icons`) only while the player is in the Wilderness, and
- * tells the client whether it is inside (`combat_wilderness_transmit`).
+ * tells the client whether it is inside (`combat_wilderness_transmit`). Players in the Wilderness
+ * also get the "Attack" option on other players.
  */
 class WildernessOverlay @Inject constructor(private val eventBus: EventBus) : PluginScript() {
     override fun ScriptContext.startup() {
@@ -39,6 +42,7 @@ class WildernessOverlay @Inject constructor(private val eventBus: EventBus) : Pl
             ifCloseOverlay(interfaces.pvp_icons, eventBus)
         }
         runClientScript(COMBAT_WILDERNESS_TRANSMIT, if (inside) 1 else 0)
+        MiscOutput.setPlayerOp(this, slot = 2, op = if (inside) "Attack" else null, priority = true)
     }
 
     private companion object {

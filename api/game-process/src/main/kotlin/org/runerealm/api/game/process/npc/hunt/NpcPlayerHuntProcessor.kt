@@ -1,6 +1,7 @@
 package org.runerealm.api.game.process.npc.hunt
 
 import jakarta.inject.Inject
+import org.runerealm.api.area.checker.WildernessArea
 import org.runerealm.api.config.constants
 import org.runerealm.api.config.refs.varbits
 import org.runerealm.api.hunt.Hunt
@@ -177,10 +178,7 @@ constructor(
         return false
     }
 
-    // TODO(combat): Wilderness indicator.
-    private fun Player.isInWilderness(): Boolean {
-        return false
-    }
+    private fun Player.isInWilderness(): Boolean = WildernessArea.contains(coords)
 
     // Hunt can be quite expensive if not careful. We are assuming that using a possibly delayed
     // multiway indicator will not have any inaccuracies in emulation. If it does, we can change

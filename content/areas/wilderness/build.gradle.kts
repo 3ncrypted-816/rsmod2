@@ -5,5 +5,6 @@ plugins {
 
 dependencies {
     implementation(projects.api.pluginCommons)
+    integrationImplementation(projects.api.areaChecker)
     integrationImplementation(projects.api.player)
 }
