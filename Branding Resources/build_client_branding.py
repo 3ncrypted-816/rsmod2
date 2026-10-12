@@ -23,11 +23,22 @@ WIDTH, HEIGHT = 765, 503
 HALF = 383
 LOGO_Y = 18
 
+# The client draws its login-screen fire over the original title's braziers, whose stems sit at
+# x=44 and x=720 with bowl rims at y=263. In the source image fitted to 765 wide, the braziers sit
+# at x=64 and x=700 with rims at y=248, so scale it up and shift it left to line them up.
+FIRE_SCALE = (720 - 44) / (700 - 64)
+FIRE_OFFSET_X = round(64 * FIRE_SCALE) - 44
+FIRE_OFFSET_Y = round(248 * FIRE_SCALE) - 263
+
 
 def main() -> None:
     image = Image.open(SOURCE).convert("RGB")
-    scaled_height = round(image.height * WIDTH / image.width)
-    image = image.resize((WIDTH, scaled_height), Image.LANCZOS).crop((0, 0, WIDTH, HEIGHT))
+    scaled_width = round(WIDTH * FIRE_SCALE)
+    scaled_height = round(image.height * scaled_width / image.width)
+    image = image.resize((scaled_width, scaled_height), Image.LANCZOS)
+    image = image.crop(
+        (FIRE_OFFSET_X, FIRE_OFFSET_Y, FIRE_OFFSET_X + WIDTH, FIRE_OFFSET_Y + HEIGHT)
+    )
 
     left = image.crop((0, 0, HALF, HEIGHT))
     jpg = io.BytesIO()
