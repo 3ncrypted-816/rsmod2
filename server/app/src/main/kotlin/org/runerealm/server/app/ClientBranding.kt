@@ -35,6 +35,10 @@ internal object ClientBranding {
             if (updated) {
                 logger.info { "Packed RuneRealm login screen into the client cache." }
             }
+            val renamed = TEXT_ARCHIVES.sumOf { renameText(cache, it) }
+            if (renamed > 0) {
+                logger.info { "Renamed RuneScape to RuneRealm in $renamed client cache files." }
+            }
         }
     }
 
@@ -53,6 +57,73 @@ internal object ClientBranding {
         cache.write(archive, group, 0, Unpooled.wrappedBuffer(bytes))
         return true
     }
+
+    /**
+     * Replaces the display name "RuneScape" (and "RUNESCAPE") in [archive]'s files with
+     * "RuneRealm". Both names are 9 characters, so strings keep their length and the surrounding
+     * binary data (string terminators, offsets) stays valid. URLs (`oldschool.runescape.wiki`) and
+     * identifiers (`mtol_whistle_runescape`) are left alone so wiki lookups and links still work.
+     */
+    private fun renameText(cache: Cache, archive: Int): Int {
+        if (!cache.exists(archive)) {
+            return 0
+        }
+        var renamed = 0
+        for (group in cache.list(archive).asSequence().toList()) {
+            for (file in cache.list(archive, group.id).asSequence().toList()) {
+                val bytes =
+                    cache.read(archive, group.id, file.id).use { buf ->
+                        ByteArray(buf.readableBytes()).also(buf::readBytes)
+                    }
+                if (renameRuneScape(bytes)) {
+                    cache.write(archive, group.id, file.id, Unpooled.wrappedBuffer(bytes))
+                    renamed++
+                }
+            }
+        }
+        return renamed
+    }
+
+    /** Rewrites [bytes] in place, returning `true` if anything changed. */
+    internal fun renameRuneScape(bytes: ByteArray): Boolean {
+        var changed = false
+        for ((old, new) in RENAMES) {
+            var i = 0
+            while (i <= bytes.size - old.size) {
+                if (bytes.matchesWord(old, i)) {
+                    new.copyInto(bytes, i)
+                    changed = true
+                    i += old.size
+                } else {
+                    i++
+                }
+            }
+        }
+        return changed
+    }
+
+    private fun ByteArray.matchesWord(word: ByteArray, offset: Int): Boolean {
+        for (j in word.indices) {
+            if (this[offset + j] != word[j]) {
+                return false
+            }
+        }
+        val before = getOrNull(offset - 1)?.toInt()?.toChar()
+        val after = getOrNull(offset + word.size)?.toInt()?.toChar()
+        return !before.isNamePart() && !after.isNamePart()
+    }
+
+    private fun Char?.isNamePart(): Boolean =
+        this != null && (isLetterOrDigit() || this == '_' || this == '.' || this == '/')
+
+    private val RENAMES =
+        listOf(
+            "RuneScape".toByteArray() to "RuneRealm".toByteArray(),
+            "RUNESCAPE".toByteArray() to "RUNEREALM".toByteArray(),
+        )
+
+    /** Config (names, enums, db rows), interface and client script archives. */
+    private val TEXT_ARCHIVES = intArrayOf(2, 3, 12)
 
     private fun resource(name: String): ByteArray {
         val stream =

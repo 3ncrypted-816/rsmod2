@@ -11,7 +11,7 @@ _Check out the [Installing Java](#installing-java) section for setup instruction
 ## Installation
 - ### IntelliJ
     - On the top-left toolbar: _File → New → Project from Version Control_ ([reference](docs/images/setup1.png))
-    - In the **Clone Repository** window: _URL → `https://github.com/rsmod/rsmod.git`_ ([reference](docs/images/setup2.png))
+    - In the **Clone Repository** window: _URL → `https://github.com/3ncrypted-816/rsmod2.git`_ ([reference](docs/images/setup2.png))
     - In the **Open Project** pop-up that appears: _This Window_ or _New Window_ (personal choice) ([reference](docs/images/setup3.png))
     - Once the project loads, you'll see a **Load Gradle Project** option: ([reference](docs/images/setup4.png))
     - Click on **Load Gradle Project** and wait for the process to finish
@@ -23,8 +23,8 @@ _Check out the [Installing Java](#installing-java) section for setup instruction
     - _Note: a default "logback" configuration file may have been picked up. To fix the default logging in console, simply restart the server._
 - ### CLI
   ```sh
-  git clone https://github.com/rsmod/rsmod.git
-  cd rsmod
+  git clone https://github.com/3ncrypted-816/rsmod2.git
+  cd rsmod2
   gradlew install --console=plain && gradlew run --console=plain
   ```
 
@@ -80,10 +80,10 @@ RuneRealm is available under the terms of the ISC license, which is similar to t
 [discord-badge]: https://img.shields.io/discord/550024461626114053?color=%237289da&logo=discord
 [patch]: https://oldschool.runescape.wiki/w/Update:Doom_Combat_Achievements
 [rev-badge]: https://img.shields.io/badge/revision-233-important
-[core-ci]: https://github.com/rsmod/rsmod/actions/workflows/core-ci.yml
-[core-ci-badge]: https://github.com/rsmod/rsmod/actions/workflows/core-ci.yml/badge.svg?branch=main
-[nightly-ci]: https://github.com/rsmod/rsmod/actions/workflows/nightly-ci.yml
-[nightly-ci-badge]: https://github.com/rsmod/rsmod/actions/workflows/nightly-ci.yml/badge.svg?branch=main
+[core-ci]: https://github.com/3ncrypted-816/rsmod2/actions/workflows/core-ci.yml
+[core-ci-badge]: https://github.com/3ncrypted-816/rsmod2/actions/workflows/core-ci.yml/badge.svg?branch=main
+[nightly-ci]: https://github.com/3ncrypted-816/rsmod2/actions/workflows/nightly-ci.yml
+[nightly-ci-badge]: https://github.com/3ncrypted-816/rsmod2/actions/workflows/nightly-ci.yml/badge.svg?branch=main
 [java]: https://openjdk.java.net/projects/jdk/21/
 [adoptium-download]: https://adoptium.net/temurin/releases/?version=21
 [openjdk-download]: https://jdk.java.net/archive/
