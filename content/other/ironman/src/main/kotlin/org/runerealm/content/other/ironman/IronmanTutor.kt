@@ -235,12 +235,7 @@ class IronmanTutor @Inject constructor(private val downgrades: IronmanDowngrades
         ifOpenMainModal(ironman_interfaces.ironman_setup)
     }
 
-    private fun Player.refreshSetupVars() {
-        setupUnavailable = 0
-        freeChoice = if (downgrades.isFreshAccount(this)) 1 else 0
-        longProtectionAvailable = 1
-        daysRemaining = downgrades.daysRemaining(this)
-    }
+    private fun Player.refreshSetupVars() = refreshSetupVars(downgrades)
 
     private fun ProtectedAccess.selectMode(mode: IronmanMode) {
         val current = player.ironmanMode
@@ -278,6 +273,14 @@ class IronmanTutor @Inject constructor(private val downgrades: IronmanDowngrades
         downgrades.cancelDowngrade(player)
         player.refreshSetupVars()
     }
+}
+
+/** Updates the vars the `ironman_setup` interface reads (free choice, protection, countdown). */
+internal fun Player.refreshSetupVars(downgrades: IronmanDowngrades) {
+    setupUnavailable = 0
+    freeChoice = if (downgrades.isFreshAccount(this)) 1 else 0
+    longProtectionAvailable = 1
+    daysRemaining = downgrades.daysRemaining(this)
 }
 
 private var Player.daysRemaining by intVarp(ironman_varps.days_remaining)
