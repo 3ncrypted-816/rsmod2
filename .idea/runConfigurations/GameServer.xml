@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="GameServer" type="JetRunConfigurationType">
-    <option name="MAIN_CLASS_NAME" value="org.rsmod.server.app.GameServerKt" />
+    <option name="MAIN_CLASS_NAME" value="org.runerealm.server.app.GameServerKt" />
     <module name="runerealm.server.app.main" />
     <shortenClasspath name="NONE" />
     <option name="VM_PARAMETERS" value="-XX:AutoBoxCacheMax=65535" />
