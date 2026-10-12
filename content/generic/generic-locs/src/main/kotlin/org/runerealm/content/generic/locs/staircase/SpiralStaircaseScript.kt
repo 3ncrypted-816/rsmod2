@@ -103,7 +103,8 @@ constructor(private val locRepo: LocRepository, private val locTypes: LocTypeLis
 
     /**
      * Counts how many floors the staircase stack continues in [step]'s direction from [this] loc.
-     * Staircases of a stack occupy the same tile on every floor.
+     * Staircases of a stack overlap on every floor, but their origin tile can shift by a tile
+     * between floors (e.g. Lumbridge Castle), so nearby tiles are searched too.
      */
     private fun BoundLocInfo.floorsInDirection(step: Int): Int {
         var floors = 1
@@ -121,7 +122,19 @@ constructor(private val locRepo: LocRepository, private val locTypes: LocTypeLis
     }
 
     private fun locAt(coords: CoordGrid): LocInfo? =
-        locRepo.findAll(coords).firstOrNull { locTypes[it.id]?.contentGroup in staircaseGroups }
+        STACK_OFFSETS.firstNotNullOfOrNull { (dx, dz) ->
+            locRepo.findAll(coords.translate(dx, dz)).firstOrNull {
+                locTypes[it.id]?.contentGroup in staircaseGroups
+            }
+        }
+
+    private companion object {
+        /** Tile offsets searched for the next floor's staircase, nearest first. */
+        val STACK_OFFSETS: List<Pair<Int, Int>> =
+            (-1..1)
+                .flatMap { dx -> (-1..1).map { dz -> dx to dz } }
+                .sortedBy { (dx, dz) -> dx * dx + dz * dz }
+    }
 
     private val staircaseGroups =
         setOf(

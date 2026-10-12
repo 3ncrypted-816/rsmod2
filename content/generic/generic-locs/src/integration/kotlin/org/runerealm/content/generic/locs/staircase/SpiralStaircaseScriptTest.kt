@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import org.runerealm.api.testing.GameTestState
 import org.runerealm.api.testing.scope.GameTestScope
 import org.runerealm.game.loc.BoundLocInfo
+import org.runerealm.game.loc.LocAngle
 import org.runerealm.map.CoordGrid
 
 class SpiralStaircaseScriptTest {
@@ -58,6 +59,35 @@ class SpiralStaircaseScriptTest {
             player.opLoc2(bottom)
             advance(ticks = 3)
             assertEquals(1, player.level)
+        }
+
+    @Test
+    fun GameTestState.`bottom-floor from lumbridge castle top floor reaches the ground floor`() =
+        runGameTest(SpiralStaircaseScript::class) {
+            // Lumbridge Castle's top staircase origin is one tile north-east of the others.
+            for (level in 0..2) {
+                allocZoneCollision(base.copy(level = level))
+            }
+            placeMapLoc(
+                base,
+                locTypes.getValue(staircase_locs.lumbridge_spiral_bottom.id),
+                angle = LocAngle.South,
+            )
+            placeMapLoc(
+                base.copy(level = 1),
+                locTypes.getValue(staircase_locs.spiral_middle.id),
+                angle = LocAngle.South,
+            )
+            val top =
+                placeMapLoc(
+                    base.copy(level = 2).translate(1, 1),
+                    locTypes.getValue(staircase_locs.lumbridge_spiral_top.id),
+                    angle = LocAngle.South,
+                )
+            player.teleport(base.copy(level = 2).translate(3, 1))
+            player.opLoc2(top)
+            advanceUntil({ player.level != 2 }, timeoutTicks = 20)
+            assertEquals(0, player.level)
         }
 
     private fun GameTestScope.placeStack(floors: Int): List<BoundLocInfo> {
