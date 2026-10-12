@@ -19,6 +19,7 @@ import kotlinx.coroutines.runBlocking
 import org.openrs2.cache.Cache
 import org.openrs2.cache.Store
 import org.runerealm.annotations.GameCache
+import org.runerealm.annotations.Js5Cache
 import org.runerealm.api.cache.map.GameMapDecoder
 import org.runerealm.api.server.config.ServerConfig
 import org.runerealm.api.type.resolver.TypeCleanup
@@ -120,6 +121,12 @@ class GameServer(private val skipTypeVerificationOverride: Boolean? = null) :
     private fun loadCache(injector: Injector) {
         loadCacheStore(injector)
         loadCacheTypes(injector)
+        applyClientBranding(injector)
+    }
+
+    private fun applyClientBranding(injector: Injector) {
+        val js5Cache = injector.getInstance(Key.get(Cache::class.java, Js5Cache::class.java))
+        ClientBranding.apply(js5Cache)
     }
 
     private fun loadCacheStore(injector: Injector) {
