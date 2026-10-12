@@ -158,6 +158,12 @@ public class Player(
 
     public var username: String = ""
     public var displayName: String by avatar::name
+
+    /** Display names on the player's friend list, in the order they were added. */
+    public val friendList: MutableList<String> = mutableListOf()
+
+    /** Display names on the player's ignore list, in the order they were added. */
+    public val ignoreList: MutableList<String> = mutableListOf()
     public var members: Boolean = false
     public var lastKnownDevice: Int? = null
 

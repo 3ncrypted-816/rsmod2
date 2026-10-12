@@ -37,6 +37,10 @@ constructor(private val modLevelTypes: ModLevelTypeList) :
         player.vars.backing.putAll(data.varps)
         player.assignModLevel(data.modLevel)
         data.appearance?.let { player.assignAppearance(it) }
+        player.friendList.clear()
+        player.friendList.addAll(data.friends)
+        player.ignoreList.clear()
+        player.ignoreList.addAll(data.ignores)
     }
 
     private fun Player.assignAppearance(data: CharacterAppearanceData) {

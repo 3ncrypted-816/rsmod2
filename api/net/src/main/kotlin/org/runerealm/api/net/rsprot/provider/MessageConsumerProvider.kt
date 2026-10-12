@@ -28,13 +28,21 @@ import net.rsprot.protocol.game.incoming.resumed.ResumePNameDialog
 import net.rsprot.protocol.game.incoming.resumed.ResumePObjDialog
 import net.rsprot.protocol.game.incoming.resumed.ResumePStringDialog
 import net.rsprot.protocol.game.incoming.resumed.ResumePauseButton
+import net.rsprot.protocol.game.incoming.social.FriendListAdd
+import net.rsprot.protocol.game.incoming.social.FriendListDel
+import net.rsprot.protocol.game.incoming.social.IgnoreListAdd
+import net.rsprot.protocol.game.incoming.social.IgnoreListDel
 import net.rsprot.protocol.message.codec.incoming.GameMessageConsumerRepositoryBuilder
 import net.rsprot.protocol.message.codec.incoming.provider.DefaultGameMessageConsumerRepositoryProvider
 import org.runerealm.api.net.rsprot.handlers.ClientCheatHandler
 import org.runerealm.api.net.rsprot.handlers.CloseModalHandler
+import org.runerealm.api.net.rsprot.handlers.FriendListAddHandler
+import org.runerealm.api.net.rsprot.handlers.FriendListDelHandler
 import org.runerealm.api.net.rsprot.handlers.If3ButtonHandler
 import org.runerealm.api.net.rsprot.handlers.IfButtonDHandler
 import org.runerealm.api.net.rsprot.handlers.IfButtonTHandler
+import org.runerealm.api.net.rsprot.handlers.IgnoreListAddHandler
+import org.runerealm.api.net.rsprot.handlers.IgnoreListDelHandler
 import org.runerealm.api.net.rsprot.handlers.MapBuildCompleteHandler
 import org.runerealm.api.net.rsprot.handlers.MessagePublicHandler
 import org.runerealm.api.net.rsprot.handlers.MoveGameClickHandler
@@ -86,10 +94,18 @@ constructor(
     private val ifButtonD: IfButtonDHandler,
     private val ifButtonT: IfButtonTHandler,
     private val mapBuildComplete: MapBuildCompleteHandler,
+    private val ignoreListDel: IgnoreListDelHandler,
+    private val ignoreListAdd: IgnoreListAddHandler,
+    private val friendListDel: FriendListDelHandler,
+    private val friendListAdd: FriendListAddHandler,
 ) {
     fun get(): DefaultGameMessageConsumerRepositoryProvider<Player> {
         val builder = GameMessageConsumerRepositoryBuilder<Player>()
         builder.addListener(WindowStatus::class.java, windowStatus)
+        builder.addListener(IgnoreListDel::class.java, ignoreListDel)
+        builder.addListener(IgnoreListAdd::class.java, ignoreListAdd)
+        builder.addListener(FriendListDel::class.java, friendListDel)
+        builder.addListener(FriendListAdd::class.java, friendListAdd)
         builder.addListener(MoveGameClick::class.java, moveGameClick)
         builder.addListener(MoveMinimapClick::class.java, moveMinimapClick)
         builder.addListener(OpLoc::class.java, opLoc)

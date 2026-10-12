@@ -134,7 +134,9 @@ constructor(
                         c.banned_until,
                         c.run_energy,
                         c.xp_rate_in_hundreds,
-                        c.appearance
+                        c.appearance,
+                        c.friends,
+                        c.ignores
                     FROM accounts a
                     JOIN characters c ON c.account_id = a.id
                     WHERE c.realm_id = ?
@@ -174,6 +176,14 @@ constructor(
                     val xpRateInHundreds = resultSet.getInt("xp_rate_in_hundreds")
                     val appearanceText = resultSet.getString("appearance")
                     val varps = objectMapper.readReifiedValue<Map<Int, Int>>(varpsText)
+                    val friends =
+                        resultSet.getString("friends")?.let {
+                            objectMapper.readReifiedValue<List<String>>(it)
+                        } ?: emptyList()
+                    val ignores =
+                        resultSet.getString("ignores")?.let {
+                            objectMapper.readReifiedValue<List<String>>(it)
+                        } ?: emptyList()
                     val appearance =
                         appearanceText?.let {
                             objectMapper.readReifiedValue<CharacterAppearanceData>(it)
@@ -206,6 +216,8 @@ constructor(
                             runEnergy = runEnergy,
                             xpRate = xpRateInHundreds / 100.0,
                             appearance = appearance,
+                            friends = friends,
+                            ignores = ignores,
                         )
                     val metadataList = CharacterMetadataList(characterData, mutableListOf())
                     metadataList.add(applier, characterData)
@@ -228,7 +240,8 @@ constructor(
                 """
                     UPDATE characters
                     SET x = ?, z = ?, level = ?, varps = ?, last_login = ?, run_energy = ?,
-                        xp_rate_in_hundreds = ?, appearance = ?, last_logout = CURRENT_TIMESTAMP
+                        xp_rate_in_hundreds = ?, appearance = ?, friends = ?, ignores = ?,
+                        last_logout = CURRENT_TIMESTAMP
                     WHERE id = ?
                 """
                     .trimIndent()
@@ -246,7 +259,9 @@ constructor(
             it.setInt(6, player.runEnergy)
             it.setInt(7, (player.xpRate * 100).roundToInt())
             it.setString(8, objectMapper.writeValueAsString(player.appearanceData()))
-            it.setInt(9, characterId)
+            it.setString(9, objectMapper.writeValueAsString(player.friendList.toList()))
+            it.setString(10, objectMapper.writeValueAsString(player.ignoreList.toList()))
+            it.setInt(11, characterId)
             it.executeUpdate()
         }
 
