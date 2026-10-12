@@ -15,14 +15,14 @@ dependencies {
 
 tasks.register("run") {
     group = "application"
-    description = "Runs the RS Mod game server"
+    description = "Runs the RuneRealm game server"
 
     dependsOn(":server:app:run")
 }
 
 tasks.register<JavaExec>("install") {
     group = "installation"
-    description = "Runs the complete RS Mod server installation task."
+    description = "Runs the complete RuneRealm server installation task."
 
     mainClass.set("org.rsmod.server.install.GameServerInstallKt")
     classpath = sourceSets["main"].runtimeClasspath
@@ -32,9 +32,9 @@ tasks.register<JavaExec>("install") {
 
 tasks.register<JavaExec>("cleanInstall") {
     group = "installation"
-    description = "Cleans up any partial or corrupted artifacts from previous RS Mod installations."
+    description = "Cleans up any partial or corrupted artifacts from previous RuneRealm installations."
 
-    args = getArgsFromProperty("rsmodInstallClean")
+    args = getArgsFromProperty("runerealmInstallClean")
     mainClass.set("org.rsmod.server.install.GameServerCleanInstallKt")
     classpath = sourceSets["main"].runtimeClasspath
 

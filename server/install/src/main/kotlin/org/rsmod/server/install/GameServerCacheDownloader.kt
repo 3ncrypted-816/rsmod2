@@ -140,7 +140,7 @@ private fun createTempArchiveFile(url: String, outputDir: Path): Path {
 }
 
 private fun OkHttpClient.download(url: String, output: Path) {
-    val request = Request.Builder().url(url).header("User-Agent", "rsmod").build()
+    val request = Request.Builder().url(url).header("User-Agent", "runerealm").build()
 
     newCall(request).execute().use { response ->
         if (!response.isSuccessful) {

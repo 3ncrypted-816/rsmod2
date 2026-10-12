@@ -39,6 +39,6 @@ dependencies {
 }
 
 tasks.named<JavaExec>("run") {
-    description = "Runs the RS Mod game server"
+    description = "Runs the RuneRealm game server"
     workingDir = rootProject.projectDir
 }

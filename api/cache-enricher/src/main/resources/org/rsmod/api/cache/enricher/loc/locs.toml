@@ -68484,7 +68484,7 @@ examine = 'For paying dwarves to do the hard work for you.'
 
 [[config]]
 loc = 'golden_gnome'
-examine = 'Awarded to the people of Old School RuneScape by SpecialEffect.'
+examine = 'Awarded to the people of RuneRealm by SpecialEffect.'
 
 [[config]]
 loc = 'hauntedmine_crystalshortcut_entrance'
@@ -80984,7 +80984,7 @@ examine = 'Hot pink!'
 
 [[config]]
 loc = 'osb6_display_mobile'
-examine = "Adventure anywhere! Old School RuneScape Mobile was released globally during Wint- No, that's wrong...Umm, October 30th, 2018."
+examine = "Adventure anywhere! RuneRealm Mobile was released globally during Wint- No, that's wrong...Umm, October 30th, 2018."
 
 [[config]]
 loc = 'osb6_display_hydra'
@@ -85148,7 +85148,7 @@ examine = 'A bookcase with various books.'
 
 [[config]]
 loc = 'osb_bday_banner_small'
-examine = 'Created to celebrate the 9th Birthday of Old School RuneScape.'
+examine = 'Created to celebrate the 9th Birthday of RuneRealm.'
 
 [[config]]
 loc = 'tut2_bookcase5'
@@ -91552,11 +91552,11 @@ examine = 'A mahogany outfit stand displaying a set of Trailblazer Relic Hunter 
 
 [[config]]
 loc = 'poh_leaguehall_statue_simple'
-examine = 'A statue celebrating Oldschool Runescape Leagues.'
+examine = 'A statue celebrating RuneRealm Leagues.'
 
 [[config]]
 loc = 'poh_leaguehall_statue_decorative'
-examine = 'An ornate statue celebrating Oldschool Runescape Leagues.'
+examine = 'An ornate statue celebrating RuneRealm Leagues.'
 
 [[config]]
 loc = 'poh_leaguehall_statue_trailblazer'

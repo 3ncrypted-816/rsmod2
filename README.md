@@ -1,7 +1,7 @@
-# RS Mod
+# RuneRealm
 [![revision][rev-badge]][patch] [![license][license-badge]][isc] [![chat][discord-badge]][discord] [![Github Actions][core-ci-badge]][core-ci] [![Github Actions][nightly-ci-badge]][nightly-ci]
 
-RS Mod is a RuneScape game-server emulator that aims to be as mechanically accurate to the original as possible.
+RuneRealm is a game server that aims to be as mechanically accurate to Old School as possible. It is built on the open-source RS Mod project.
 
 ## Requirements
 This project requires **[Java 21][java] or later**.
@@ -28,7 +28,7 @@ _Check out the [Installing Java](#installing-java) section for setup instruction
   gradlew install --console=plain && gradlew run --console=plain
   ```
 
-_RS Mod is compatible with [RSProx][rsprox]. It is the most readily-available client to use for the game-server._
+_RuneRealm is compatible with [RSProx][rsprox]. It is the most readily-available client to use for the game-server._
 
 _Check out the [Compatible Clients](#compatible-clients) section for more information._
 
@@ -68,7 +68,7 @@ At this time, the project is still in its early stages and not yet ready for ext
 Stay tuned for updates as the project matures!
 
 ## License
-RS Mod is available under the terms of the ISC license, which is similar to the 2-clause BSD license. The full copyright notice and terms are available in the [LICENSE][license] file.
+RuneRealm is available under the terms of the ISC license, which is similar to the 2-clause BSD license. The full copyright notice and terms are available in the [LICENSE][license] file.
 
 ## Links
 * [Discord][discord]

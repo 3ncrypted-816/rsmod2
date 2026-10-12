@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="rsmod [metaTests]" type="GradleRunConfiguration" factoryName="Gradle">
+  <configuration default="false" name="runerealm [formatCode]" type="GradleRunConfiguration" factoryName="Gradle">
     <ExternalSystemSettings>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -10,8 +10,7 @@
       </option>
       <option name="taskNames">
         <list>
-          <option value="konsistTest" />
-          <option value="docTest" />
+          <option value="spotlessKotlinApply" />
         </list>
       </option>
       <option name="vmOptions" />
@@ -19,7 +18,7 @@
     <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
     <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
     <DebugAllEnabled>false</DebugAllEnabled>
-    <RunAsTest>true</RunAsTest>
+    <RunAsTest>false</RunAsTest>
     <method v="2" />
   </configuration>
 </component>

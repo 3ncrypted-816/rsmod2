@@ -601,7 +601,7 @@ class LumbridgeGuide @Inject constructor(private val objTypes: ObjTypeList) : Pl
         chatPlayer(quiz, "I'd like to know more about security.")
         chatNpc(
             neutral,
-            "First I must warn you to take every precaution to keep your RuneScape password " +
+            "First I must warn you to take every precaution to keep your RuneRealm password " +
                 "and PIN secure. The most important thing to remember is to never give your " +
                 "password to, or share your account with, anyone.",
         )
@@ -650,7 +650,7 @@ class LumbridgeGuide @Inject constructor(private val objTypes: ObjTypeList) : Pl
         chatNpc(
             neutral,
             "Yes, also be careful where you enter your password. Be aware that fake Old School " +
-                "RuneScape websites exist. These are sites that claim to give things such as " +
+                "RuneRealm websites exist. These are sites that claim to give things such as " +
                 "item/stat upgrades, free items, beta testing and",
         )
         chatNpc(neutral, "moderator applications. Jagex do not offer any of these services.")
@@ -658,7 +658,7 @@ class LumbridgeGuide @Inject constructor(private val objTypes: ObjTypeList) : Pl
             neutral,
             "Also be aware of trojans and keyloggers. These nasty programs can send everything " +
                 "you type into your device back to the computers of malicious people, so you " +
-                "can lose more than just your Old School RuneScape",
+                "can lose more than just your RuneRealm",
         )
         chatNpc(
             neutral,
@@ -712,7 +712,7 @@ class LumbridgeGuide @Inject constructor(private val objTypes: ObjTypeList) : Pl
         chatPlayer(quiz, "I'd like to know more about avoiding item scamming.")
         chatNpc(
             neutral,
-            "There are many nice and helpful players in Old School RuneScape; unfortunately, as " +
+            "There are many nice and helpful players in RuneRealm; unfortunately, as " +
                 "in real life, there are some who aren't so honest. Some people may try to " +
                 "trick you out of your items. Try not to fall for this as",
         )
@@ -769,9 +769,9 @@ class LumbridgeGuide @Inject constructor(private val objTypes: ObjTypeList) : Pl
             neutral,
             "programmer. You may also see player moderators - these can be identified by a " +
                 "silver crown next to their name. Player moderators are trusted players of Old " +
-                "School RuneScape that help keep in-game behaviour in",
+                "School RuneRealm that help keep in-game behaviour in",
         )
-        chatNpc(neutral, "line with the Old School RuneScape rules.")
+        chatNpc(neutral, "line with the RuneRealm rules.")
         chatPlayer(quiz, "How do I become a player moderator?")
         chatNpc(
             neutral,
@@ -781,7 +781,7 @@ class LumbridgeGuide @Inject constructor(private val objTypes: ObjTypeList) : Pl
         )
         chatNpc(
             neutral,
-            "your Old School RuneScape inbox. Note that Jagex will never contact you in game " +
+            "your RuneRealm inbox. Note that Jagex will never contact you in game " +
                 "or by email to become a player moderator.",
         )
         chatNpc(quiz, "Is there anything else you need help with?")

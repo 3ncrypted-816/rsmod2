@@ -9,7 +9,7 @@ plugins {
 publishing {
     repositories {
         maven {
-            name = "rsmod"
+            name = "runerealm"
             if (version.toString().endsWith("-SNAPSHOT")) {
                 setUrl("https://oss.sonatype.org/content/repositories/snapshots")
             } else {
@@ -23,7 +23,7 @@ publishing {
     }
 
     publications.withType<MavenPublication> {
-        artifactId = "rsmod-${project.name}"
+        artifactId = "runerealm-${project.name}"
         pom {
             name.set(project.name)
             description.set(project.description)
@@ -31,7 +31,7 @@ publishing {
             inceptionYear.set("2022")
 
             organization {
-                name.set("RS Mod")
+                name.set("RuneRealm")
                 url.set("https://github.com/rsmod")
             }
 

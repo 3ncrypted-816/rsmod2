@@ -102,7 +102,7 @@ class CountCheck @Inject constructor(private val worldRepo: WorldRepository) : P
                 "sure you've enabled this.",
         )
         chatNpc(confused, "THREE... Um... Use a Jagex Account.")
-        chatNpc(neutral, "Visit the RuneScape website and log in to update your Account settings.")
+        chatNpc(neutral, "Visit the RuneRealm website and log in to update your Account settings.")
         val question = choice2("Carry on.", false, "What's that got to do with THREE?", true)
         if (question) {
             chatPlayer(confused, "What's that got to do with THREE?")
