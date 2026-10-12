@@ -95,6 +95,6 @@ private suspend fun Dialogue.findMoney() {
     )
 }
 
-private object DukeObjs : ObjReferences() {
+internal object DukeObjs : ObjReferences() {
     val anti_dragon_shield = find("antidragonbreathshield")
 }

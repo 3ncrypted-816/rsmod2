@@ -3,14 +3,14 @@ package org.rsmod.content.areas.city.lumbridge.npcs
 import org.rsmod.api.player.dialogue.Dialogue
 import org.rsmod.api.player.protect.ProtectedAccess
 import org.rsmod.api.script.onOpNpc1
-import org.rsmod.api.type.refs.npc.NpcReferences
+import org.rsmod.content.areas.city.lumbridge.configs.lumbridge_npcs
 import org.rsmod.game.entity.Npc
 import org.rsmod.plugin.scripts.PluginScript
 import org.rsmod.plugin.scripts.ScriptContext
 
 class FredTheFarmer : PluginScript() {
     override fun ScriptContext.startup() {
-        onOpNpc1(FredTheFarmerNpcs.fred_the_farmer) { fredDialogue(it.npc) }
+        onOpNpc1(lumbridge_npcs.fred_the_farmer) { fredDialogue(it.npc) }
     }
 
     private suspend fun ProtectedAccess.fredDialogue(npc: Npc) =
@@ -88,8 +88,4 @@ class FredTheFarmer : PluginScript() {
             chatNpc(neutral, "Suit yourself.")
         }
     }
-}
-
-internal object FredTheFarmerNpcs : NpcReferences() {
-    val fred_the_farmer = find("fred_the_farmer")
 }

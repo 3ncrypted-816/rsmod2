@@ -7,6 +7,7 @@ import org.rsmod.api.script.onOpNpc1
 import org.rsmod.api.script.onOpNpc3
 import org.rsmod.api.script.onOpNpc5
 import org.rsmod.api.shops.Shops
+import org.rsmod.content.areas.city.lumbridge.configs.lumbridge_npcs
 import org.rsmod.content.areas.city.lumbridge.npcs.FarmingGardener.gardenerDialogue
 import org.rsmod.content.areas.city.lumbridge.npcs.FarmingGardener.openFarmingSupplies
 import org.rsmod.game.entity.Npc
@@ -16,9 +17,9 @@ import org.rsmod.plugin.scripts.ScriptContext
 /** Vasquen looks after the hops patch north of Lumbridge. */
 class Vasquen @Inject constructor(private val shops: Shops) : PluginScript() {
     override fun ScriptContext.startup() {
-        onOpNpc1(FarmingGardenerNpcs.vasquen) { talkTo(it.npc) }
-        onOpNpc3(FarmingGardenerNpcs.vasquen) { pay(it.npc) }
-        onOpNpc5(FarmingGardenerNpcs.vasquen) { player.openFarmingSupplies(shops, it.npc) }
+        onOpNpc1(lumbridge_npcs.vasquen) { talkTo(it.npc) }
+        onOpNpc3(lumbridge_npcs.vasquen) { pay(it.npc) }
+        onOpNpc5(lumbridge_npcs.vasquen) { player.openFarmingSupplies(shops, it.npc) }
     }
 
     private suspend fun ProtectedAccess.talkTo(npc: Npc) =

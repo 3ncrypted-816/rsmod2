@@ -9,9 +9,9 @@ import org.rsmod.api.player.stat.baseMagicLvl
 import org.rsmod.api.player.stat.baseRunecraftingLvl
 import org.rsmod.api.script.onOpNpc1
 import org.rsmod.api.script.onOpNpc2
-import org.rsmod.api.type.refs.npc.NpcReferences
 import org.rsmod.api.type.refs.varbit.VarBitReferences
 import org.rsmod.api.type.refs.varp.VarpReferences
+import org.rsmod.content.areas.city.lumbridge.configs.lumbridge_npcs
 import org.rsmod.game.entity.Npc
 import org.rsmod.plugin.scripts.PluginScript
 import org.rsmod.plugin.scripts.ScriptContext
@@ -23,8 +23,8 @@ import org.rsmod.plugin.scripts.ScriptContext
  */
 class MagicCombatTutor : PluginScript() {
     override fun ScriptContext.startup() {
-        onOpNpc1(MagicTutorNpcs.magic_tutor) { startDialogue(it.npc) }
-        onOpNpc2(MagicTutorNpcs.magic_tutor) { claim(it.npc) }
+        onOpNpc1(lumbridge_npcs.magic_tutor) { startDialogue(it.npc) }
+        onOpNpc2(lumbridge_npcs.magic_tutor) { claim(it.npc) }
     }
 
     private suspend fun ProtectedAccess.startDialogue(npc: Npc) {
@@ -305,14 +305,15 @@ class MagicCombatTutor : PluginScript() {
         chatPlayer(neutral, "Goodbye.")
     }
 
-    // TODO(content): The wiki states the Magic and Ranged combat tutors share a 30-minute claim
-    //  cooldown ("I work with the Ranged Combat tutor to give out consumable items..."). No cache
-    //  varp or varbit for this cooldown could be identified, so it is not enforced yet.
     private suspend fun ProtectedAccess.claim(npc: Npc) {
         startDialogue(npc) { claimRunes() }
     }
 
     private suspend fun Dialogue.claimRunes() {
+        if (TutorClaims.onCooldown(player)) {
+            with(TutorClaims) { cooldownReply("Ranged Combat tutor", "runes", "make your own") }
+            return
+        }
         val mindInBank = objs.mind_rune in access.bank
         val airInBank = objs.air_rune in access.bank
 
@@ -339,6 +340,9 @@ class MagicCombatTutor : PluginScript() {
             }
         }
 
+        if (mindGiven || airGiven) {
+            TutorClaims.markClaimed(player)
+        }
         if (mindGiven) {
             mesbox("Mikasi gives you 30 mind runes.")
         }
@@ -374,10 +378,6 @@ class MagicCombatTutor : PluginScript() {
         const val MAGE_ARENA_COMPLETE = 8
         const val DESERT_TREASURE_COMPLETE = 15
     }
-}
-
-internal object MagicTutorNpcs : NpcReferences() {
-    val magic_tutor = find("aide_tutor_magic")
 }
 
 internal object MagicTutorVarps : VarpReferences() {

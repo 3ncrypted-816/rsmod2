@@ -49,7 +49,7 @@ private val ALL_STATS =
         stats.construction,
     )
 
-private object TutorObjs : ObjReferences() {
+internal object TutorObjs : ObjReferences() {
     val cape = find("skillcape_woodcutting")
     val cape_trimmed = find("skillcape_woodcutting_trimmed")
     val hood = find("skillcape_woodcutting_hood")

@@ -49,6 +49,18 @@ object LumbridgeNpcs : NpcReferences() {
     val monk = find("monkadventurerpg")
     val wizard = find("wizardadventuterpg")
     val archer = find("archeradventurerpg")
+    val cooking_tutor = find("aide_tutor_cooking")
+    val crafting_tutor = find("aide_tutor_crafting")
+    val fayeth = find("farming_gardener_tree_4")
+    val vasquen = find("farming_gardener_hops_3")
+    val fred_the_farmer = find("fred_the_farmer")
+    val gillie = find("gillie_the_milkmaid")
+    val magic_tutor = find("aide_tutor_magic")
+    val melee_tutor = find("aide_tutor_melee")
+    val mining_tutor = find("aide_tutor_mining")
+    val ranged_tutor = find("aide_tutor_ranging")
+    val seth_groats = find("favour_seth_groats")
+    val tool_leprechaun = find("farming_tools_leprechaun")
 }
 
 internal object LumbridgeNpcEditor : NpcEditor() {

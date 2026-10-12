@@ -5,8 +5,8 @@ import org.rsmod.api.config.refs.varps
 import org.rsmod.api.player.dialogue.Dialogue
 import org.rsmod.api.player.protect.ProtectedAccess
 import org.rsmod.api.script.onOpNpc1
-import org.rsmod.api.type.refs.npc.NpcReferences
 import org.rsmod.api.type.refs.obj.ObjReferences
+import org.rsmod.content.areas.city.lumbridge.configs.lumbridge_npcs
 import org.rsmod.game.entity.Npc
 import org.rsmod.plugin.scripts.PluginScript
 import org.rsmod.plugin.scripts.ScriptContext
@@ -18,7 +18,7 @@ import org.rsmod.plugin.scripts.ScriptContext
  */
 class CookingTutor : PluginScript() {
     override fun ScriptContext.startup() {
-        onOpNpc1(CookingTutorNpcs.cooking_tutor) { startDialogue(it.npc) }
+        onOpNpc1(lumbridge_npcs.cooking_tutor) { startDialogue(it.npc) }
     }
 
     private suspend fun ProtectedAccess.startDialogue(npc: Npc) {
@@ -316,10 +316,6 @@ class CookingTutor : PluginScript() {
     private companion object {
         const val COOKS_ASSISTANT_COMPLETE = 2
     }
-}
-
-internal object CookingTutorNpcs : NpcReferences() {
-    val cooking_tutor = find("aide_tutor_cooking")
 }
 
 internal object CookingTutorObjs : ObjReferences() {

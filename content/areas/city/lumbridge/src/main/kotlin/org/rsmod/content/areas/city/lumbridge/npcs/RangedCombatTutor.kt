@@ -7,9 +7,9 @@ import org.rsmod.api.player.stat.baseRangedLvl
 import org.rsmod.api.script.onOpNpc1
 import org.rsmod.api.script.onOpNpc2
 import org.rsmod.api.script.onOpNpcU
-import org.rsmod.api.type.refs.npc.NpcReferences
 import org.rsmod.api.type.refs.obj.ObjReferences
 import org.rsmod.api.type.refs.varbit.VarBitReferences
+import org.rsmod.content.areas.city.lumbridge.configs.lumbridge_npcs
 import org.rsmod.game.entity.Npc
 import org.rsmod.game.type.obj.ObjType
 import org.rsmod.plugin.scripts.PluginScript
@@ -22,12 +22,12 @@ import org.rsmod.plugin.scripts.ScriptContext
  */
 class RangedCombatTutor : PluginScript() {
     override fun ScriptContext.startup() {
-        onOpNpc1(RangedTutorNpcs.ranged_tutor) { startDialogue(it.npc) }
-        onOpNpc2(RangedTutorNpcs.ranged_tutor) { claim(it.npc) }
-        onOpNpcU(RangedTutorNpcs.ranged_tutor, RangedTutorObjs.training_bow) {
+        onOpNpc1(lumbridge_npcs.ranged_tutor) { startDialogue(it.npc) }
+        onOpNpc2(lumbridge_npcs.ranged_tutor) { claim(it.npc) }
+        onOpNpcU(lumbridge_npcs.ranged_tutor, RangedTutorObjs.training_bow) {
             returnItem(it.npc, it.invSlot, RangedTutorObjs.training_bow, "Training bow", "bow")
         }
-        onOpNpcU(RangedTutorNpcs.ranged_tutor, RangedTutorObjs.training_arrows) {
+        onOpNpcU(lumbridge_npcs.ranged_tutor, RangedTutorObjs.training_arrows) {
             returnItem(
                 it.npc,
                 it.invSlot,
@@ -36,7 +36,7 @@ class RangedCombatTutor : PluginScript() {
                 "arrows",
             )
         }
-        onOpNpcU(RangedTutorNpcs.ranged_tutor) { noUse(it.npc) }
+        onOpNpcU(lumbridge_npcs.ranged_tutor) { noUse(it.npc) }
     }
 
     private suspend fun ProtectedAccess.startDialogue(npc: Npc) {
@@ -326,14 +326,15 @@ class RangedCombatTutor : PluginScript() {
         chatPlayer(neutral, "Goodbye.")
     }
 
-    // TODO(content): The wiki states the Ranged and Magic combat tutors share a 30-minute claim
-    //  cooldown ("I work with the Magic tutor to give out consumable items..."). No cache varp or
-    //  varbit for this cooldown could be identified, so it is not enforced yet.
     private suspend fun ProtectedAccess.claim(npc: Npc) {
         startDialogue(npc) { claimTrainingEquipment() }
     }
 
     private suspend fun Dialogue.claimTrainingEquipment() {
+        if (TutorClaims.onCooldown(player)) {
+            with(TutorClaims) { cooldownReply("Magic tutor", "arrows", "buy some") }
+            return
+        }
         val bow = RangedTutorObjs.training_bow
         val arrows = RangedTutorObjs.training_arrows
         val hasBow = owns(bow)
@@ -355,6 +356,7 @@ class RangedCombatTutor : PluginScript() {
                 }
                 chatNpc(neutral, "You already have some training arrows.")
                 access.invAdd(player.inv, bow)
+                TutorClaims.markClaimed(player)
                 objbox(
                     bow,
                     "Nemarti gives you a Training shortbow. It can only be " +
@@ -372,6 +374,7 @@ class RangedCombatTutor : PluginScript() {
                 }
                 chatNpc(neutral, "You already have a training bow.")
                 access.invAdd(player.inv, arrows, count = ARROW_COUNT)
+                TutorClaims.markClaimed(player)
                 objbox(
                     arrows,
                     "Nemarti gives you 25 training arrows. They can only be " +
@@ -392,6 +395,7 @@ class RangedCombatTutor : PluginScript() {
                 }
                 access.invAdd(player.inv, bow)
                 access.invAdd(player.inv, arrows, count = ARROW_COUNT)
+                TutorClaims.markClaimed(player)
                 doubleobjbox(
                     bow,
                     arrows,
@@ -435,10 +439,6 @@ class RangedCombatTutor : PluginScript() {
         const val SIDE_COMBAT = 0
         const val SIDE_SKILLS = 1
     }
-}
-
-internal object RangedTutorNpcs : NpcReferences() {
-    val ranged_tutor = find("aide_tutor_ranging")
 }
 
 internal object RangedTutorObjs : ObjReferences() {

@@ -7,6 +7,7 @@ import org.rsmod.api.script.onOpNpc1
 import org.rsmod.api.script.onOpNpc3
 import org.rsmod.api.script.onOpNpc5
 import org.rsmod.api.shops.Shops
+import org.rsmod.content.areas.city.lumbridge.configs.lumbridge_npcs
 import org.rsmod.content.areas.city.lumbridge.npcs.FarmingGardener.gardenerDialogue
 import org.rsmod.content.areas.city.lumbridge.npcs.FarmingGardener.openFarmingSupplies
 import org.rsmod.game.entity.Npc
@@ -16,9 +17,9 @@ import org.rsmod.plugin.scripts.ScriptContext
 /** Fayeth looks after the tree patch west of Lumbridge Castle. */
 class Fayeth @Inject constructor(private val shops: Shops) : PluginScript() {
     override fun ScriptContext.startup() {
-        onOpNpc1(FarmingGardenerNpcs.fayeth) { talkTo(it.npc) }
-        onOpNpc3(FarmingGardenerNpcs.fayeth) { pay(it.npc) }
-        onOpNpc5(FarmingGardenerNpcs.fayeth) { player.openFarmingSupplies(shops, it.npc) }
+        onOpNpc1(lumbridge_npcs.fayeth) { talkTo(it.npc) }
+        onOpNpc3(lumbridge_npcs.fayeth) { pay(it.npc) }
+        onOpNpc5(lumbridge_npcs.fayeth) { player.openFarmingSupplies(shops, it.npc) }
     }
 
     private suspend fun ProtectedAccess.talkTo(npc: Npc) =

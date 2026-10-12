@@ -9,8 +9,8 @@ import org.rsmod.api.player.stat.baseDefenceLvl
 import org.rsmod.api.player.stat.statBase
 import org.rsmod.api.script.onOpNpc1
 import org.rsmod.api.script.onOpNpcU
-import org.rsmod.api.type.refs.npc.NpcReferences
 import org.rsmod.api.type.refs.obj.ObjReferences
+import org.rsmod.content.areas.city.lumbridge.configs.lumbridge_npcs
 import org.rsmod.game.entity.Npc
 import org.rsmod.game.entity.Player
 import org.rsmod.game.type.obj.ObjType
@@ -24,8 +24,8 @@ import org.rsmod.plugin.scripts.ScriptContext
  */
 class MeleeCombatTutor : PluginScript() {
     override fun ScriptContext.startup() {
-        onOpNpc1(MeleeTutorNpcs.melee_tutor) { startDialogue(it.npc) }
-        onOpNpcU(MeleeTutorNpcs.melee_tutor, MeleeTutorObjs.training_sword) {
+        onOpNpc1(lumbridge_npcs.melee_tutor) { startDialogue(it.npc) }
+        onOpNpcU(lumbridge_npcs.melee_tutor, MeleeTutorObjs.training_sword) {
             returnItem(
                 it.npc,
                 it.invSlot,
@@ -34,7 +34,7 @@ class MeleeCombatTutor : PluginScript() {
                 "training sword",
             )
         }
-        onOpNpcU(MeleeTutorNpcs.melee_tutor, MeleeTutorObjs.training_shield) {
+        onOpNpcU(lumbridge_npcs.melee_tutor, MeleeTutorObjs.training_shield) {
             returnItem(
                 it.npc,
                 it.invSlot,
@@ -43,7 +43,7 @@ class MeleeCombatTutor : PluginScript() {
                 "training shield",
             )
         }
-        onOpNpcU(MeleeTutorNpcs.melee_tutor) { noUse(it.npc) }
+        onOpNpcU(lumbridge_npcs.melee_tutor) { noUse(it.npc) }
     }
 
     private suspend fun ProtectedAccess.startDialogue(npc: Npc) {
@@ -489,10 +489,6 @@ class MeleeCombatTutor : PluginScript() {
             )
         }
     }
-}
-
-internal object MeleeTutorNpcs : NpcReferences() {
-    val melee_tutor = find("aide_tutor_melee")
 }
 
 internal object MeleeTutorObjs : ObjReferences() {

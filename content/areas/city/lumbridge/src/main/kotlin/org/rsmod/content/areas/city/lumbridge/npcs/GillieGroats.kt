@@ -3,14 +3,14 @@ package org.rsmod.content.areas.city.lumbridge.npcs
 import org.rsmod.api.player.dialogue.Dialogue
 import org.rsmod.api.player.protect.ProtectedAccess
 import org.rsmod.api.script.onOpNpc1
-import org.rsmod.api.type.refs.npc.NpcReferences
+import org.rsmod.content.areas.city.lumbridge.configs.lumbridge_npcs
 import org.rsmod.game.entity.Npc
 import org.rsmod.plugin.scripts.PluginScript
 import org.rsmod.plugin.scripts.ScriptContext
 
 class GillieGroats : PluginScript() {
     override fun ScriptContext.startup() {
-        onOpNpc1(GillieGroatsNpcs.gillie) { gillieDialogue(it.npc) }
+        onOpNpc1(lumbridge_npcs.gillie) { gillieDialogue(it.npc) }
     }
 
     private suspend fun ProtectedAccess.gillieDialogue(npc: Npc) =
@@ -66,8 +66,4 @@ class GillieGroats : PluginScript() {
             "Then just milk the cow and your bucket will fill with tasty, nutritious milk.",
         )
     }
-}
-
-internal object GillieGroatsNpcs : NpcReferences() {
-    val gillie = find("gillie_the_milkmaid")
 }

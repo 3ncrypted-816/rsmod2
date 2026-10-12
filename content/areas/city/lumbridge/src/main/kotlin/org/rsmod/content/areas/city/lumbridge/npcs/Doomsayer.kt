@@ -153,11 +153,11 @@ private val warningToggles: Map<ComponentType, VarBitType> by lazy {
     }
 }
 
-private object doomsayer_interfaces : InterfaceReferences() {
+internal object doomsayer_interfaces : InterfaceReferences() {
     val warnings = find("cws_doomsayer")
 }
 
-private object doomsayer_components : ComponentReferences() {
+internal object doomsayer_components : ComponentReferences() {
     val close_button = find("cws_doomsayer:close_button")
     val dagannoth_kings_ladder = find("cws_doomsayer:dagganoth kings ladder")
     val goblin_cave_rope = find("cws_doomsayer:goblin cave rope")
@@ -185,7 +185,7 @@ private object doomsayer_components : ComponentReferences() {
     val wilderness_ditch_high_risk = find("cws_doomsayer:wilderness ditch highrisk")
 }
 
-private object doomsayer_varbits : VarBitReferences() {
+internal object doomsayer_varbits : VarBitReferences() {
     val warning_1 = find("cws_warning_1")
     val warning_2 = find("cws_warning_2")
     val warning_3 = find("cws_warning_3")

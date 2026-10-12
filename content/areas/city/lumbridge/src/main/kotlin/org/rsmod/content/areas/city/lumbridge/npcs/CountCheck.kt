@@ -199,10 +199,10 @@ class CountCheck @Inject constructor(private val worldRepo: WorldRepository) : P
     }
 }
 
-private object count_varbits : VarBitReferences() {
+internal object count_varbits : VarBitReferences() {
     val teleported_by_count = find("sos_teleported_by_count")
 }
 
-private object count_spotanims : SpotanimReferences() {
+internal object count_spotanims : SpotanimReferences() {
     val lightning = find("saradomin_lightning")
 }

@@ -6,8 +6,8 @@ import org.rsmod.api.shops.config.ShopParams
 import org.rsmod.api.type.editors.inv.InvEditor
 import org.rsmod.api.type.editors.npc.NpcEditor
 import org.rsmod.api.type.refs.inv.InvReferences
-import org.rsmod.api.type.refs.npc.NpcReferences
 import org.rsmod.api.type.refs.obj.ObjReferences
+import org.rsmod.content.areas.city.lumbridge.configs.lumbridge_npcs
 import org.rsmod.game.entity.Npc
 import org.rsmod.game.entity.Player
 import org.rsmod.game.type.inv.InvScope
@@ -117,11 +117,6 @@ internal object FarmingGardener {
         )
 }
 
-internal object FarmingGardenerNpcs : NpcReferences() {
-    val fayeth = find("farming_gardener_tree_4")
-    val vasquen = find("farming_gardener_hops_3")
-}
-
 internal object FarmingGardenerInvs : InvReferences() {
     val farmer_supplies = find("farmer_supplies")
 }
@@ -157,8 +152,8 @@ internal object FarmingGardenerInvEditor : InvEditor() {
 
 internal object FarmingGardenerNpcEditor : NpcEditor() {
     init {
-        gardener(FarmingGardenerNpcs.fayeth)
-        gardener(FarmingGardenerNpcs.vasquen)
+        gardener(lumbridge_npcs.fayeth)
+        gardener(lumbridge_npcs.vasquen)
     }
 
     private fun gardener(type: NpcType) {

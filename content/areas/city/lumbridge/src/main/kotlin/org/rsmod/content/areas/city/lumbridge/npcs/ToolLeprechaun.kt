@@ -5,15 +5,15 @@ import org.rsmod.api.player.protect.ProtectedAccess
 import org.rsmod.api.script.onOpNpc1
 import org.rsmod.api.script.onOpNpc3
 import org.rsmod.api.type.refs.interf.InterfaceReferences
-import org.rsmod.api.type.refs.npc.NpcReferences
+import org.rsmod.content.areas.city.lumbridge.configs.lumbridge_npcs
 import org.rsmod.game.entity.Npc
 import org.rsmod.plugin.scripts.PluginScript
 import org.rsmod.plugin.scripts.ScriptContext
 
 class ToolLeprechaun : PluginScript() {
     override fun ScriptContext.startup() {
-        onOpNpc1(ToolLeprechaunNpcs.tool_leprechaun) { leprechaunDialogue(it.npc) }
-        onOpNpc3(ToolLeprechaunNpcs.tool_leprechaun) { openToolStore() }
+        onOpNpc1(lumbridge_npcs.tool_leprechaun) { leprechaunDialogue(it.npc) }
+        onOpNpc3(lumbridge_npcs.tool_leprechaun) { openToolStore() }
     }
 
     // TODO(content): Tool storage (deposit/withdraw) and noting produce are not implemented;
@@ -101,10 +101,6 @@ class ToolLeprechaun : PluginScript() {
         )
         chatNpc(quiz, "So... do ye want to be using the store?")
     }
-}
-
-internal object ToolLeprechaunNpcs : NpcReferences() {
-    val tool_leprechaun = find("farming_tools_leprechaun")
 }
 
 internal object ToolLeprechaunInterfaces : InterfaceReferences() {

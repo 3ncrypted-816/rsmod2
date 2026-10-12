@@ -844,7 +844,7 @@ class LumbridgeGuide @Inject constructor(private val objTypes: ObjTypeList) : Pl
     }
 }
 
-private object GuideObjs : ObjReferences() {
+internal object GuideObjs : ObjReferences() {
     val quest_start_icon = find("quest_start_icon_dummy")
     val combat_tutor_icon = find("combat_tutor_icon_dummy")
     val mining_site_icon = find("mining_site_icon_dummy")
