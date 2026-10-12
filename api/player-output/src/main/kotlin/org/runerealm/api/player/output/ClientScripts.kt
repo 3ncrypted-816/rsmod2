@@ -221,8 +221,8 @@ public object ClientScripts {
     }
 
     /**
-     * @param timer the overlay timer type, see [org.runerealm.api.config.Constants] for known values.
-     *   (prefixed with `overlay_timer_`)
+     * @param timer the overlay timer type, see [org.runerealm.api.config.Constants] for known
+     *   values. (prefixed with `overlay_timer_`)
      * @param isDespawnTimer `true` if the overlay represents a despawn timer as opposed to respawn
      *   timer. (i.e., hunter trap despawn vs tree respawn)
      */

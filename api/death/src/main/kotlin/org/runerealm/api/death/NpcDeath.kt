@@ -92,8 +92,8 @@ private var Npc.aggressivePlayer by typePlayerUidVarn(varns.aggressive_player)
  * **Notes:**
  * - This is **not** the way to "kill" a npc. This "death sequence" occurs after the npc has already
  *   been deemed dead and its death queue is being processed.
- * - To queue a npc's death, use [StandardNpcAccess.queueDeath] or [org.runerealm.api.npc.queueDeath]
- *   instead.
+ * - To queue a npc's death, use [StandardNpcAccess.queueDeath] or
+ *   [org.runerealm.api.npc.queueDeath] instead.
  * - This function **does not** spawn any drop table objs for the npc.
  * - Drop table spawns are handled via [NpcDeath.deathWithDrops], which is **automatically called**
  *   for queued deaths by default. However, if you override death queues for specific npc types

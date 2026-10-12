@@ -77,9 +77,9 @@ public value class CoordGrid(public val packed: Int) {
     }
 
     /**
-     * Chebyshev distance between two [org.runerealm.map.CoordGrid]s is used for specific scenarios. For
-     * general distance calculation consider using [org.runerealm.map.util.Bounds] instead, which takes
-     * width and length dimensions into account.
+     * Chebyshev distance between two [org.runerealm.map.CoordGrid]s is used for specific scenarios.
+     * For general distance calculation consider using [org.runerealm.map.util.Bounds] instead,
+     * which takes width and length dimensions into account.
      */
     public fun chebyshevDistance(other: CoordGrid): Int = max(abs(x - other.x), abs(z - other.z))
 
