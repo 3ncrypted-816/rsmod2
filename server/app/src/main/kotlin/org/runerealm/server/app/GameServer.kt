@@ -125,8 +125,8 @@ class GameServer(private val skipTypeVerificationOverride: Boolean? = null) :
     }
 
     private fun applyClientBranding(injector: Injector) {
-        val js5Cache = injector.getInstance(Key.get(Cache::class.java, Js5Cache::class.java))
-        ClientBranding.apply(js5Cache)
+        val js5CachePath = injector.getInstance(Key.get(Path::class.java, Js5Cache::class.java))
+        ClientBranding.apply(js5CachePath)
     }
 
     private fun loadCacheStore(injector: Injector) {

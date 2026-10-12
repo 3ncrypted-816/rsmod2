@@ -2,6 +2,9 @@ package org.runerealm.server.app
 
 import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.Unpooled
+import java.nio.file.Path
+import kotlin.io.path.isDirectory
+import kotlin.io.path.listDirectoryEntries
 import org.openrs2.cache.Cache
 
 /**
@@ -15,13 +18,23 @@ internal object ClientBranding {
     private const val BINARY_ARCHIVE = 10
     private const val SPRITE_ARCHIVE = 8
 
-    fun apply(cache: Cache) {
-        val updated =
-            write(cache, BINARY_ARCHIVE, "title.jpg", resource("title.jpg")) or
-                write(cache, SPRITE_ARCHIVE, "logo", resource("logo.dat"))
-        if (updated) {
-            cache.flush()
-            logger.info { "Packed RuneRealm login screen into the client cache." }
+    /**
+     * Opens the js5 cache at [js5CachePath], packs the assets when they differ, and closes it
+     * again. The cache must not stay open: the type updater deletes and re-copies the js5 cache
+     * directory, which fails (leaving a mix of old and new files) while file handles are held,
+     * notably on Windows.
+     */
+    fun apply(js5CachePath: Path) {
+        if (!js5CachePath.isDirectory() || js5CachePath.listDirectoryEntries().isEmpty()) {
+            return
+        }
+        Cache.open(js5CachePath).use { cache ->
+            val updated =
+                write(cache, BINARY_ARCHIVE, "title.jpg", resource("title.jpg")) or
+                    write(cache, SPRITE_ARCHIVE, "logo", resource("logo.dat"))
+            if (updated) {
+                logger.info { "Packed RuneRealm login screen into the client cache." }
+            }
         }
     }
 
