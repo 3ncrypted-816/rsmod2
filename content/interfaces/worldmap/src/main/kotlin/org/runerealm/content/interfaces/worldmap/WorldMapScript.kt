@@ -1,13 +1,18 @@
 package org.runerealm.content.interfaces.worldmap
 
 import jakarta.inject.Inject
+import org.runerealm.api.config.refs.components
 import org.runerealm.api.player.ui.ifCloseOverlay
 import org.runerealm.api.player.ui.ifOpenOverlay
+import org.runerealm.api.player.ui.ifSetEvents
 import org.runerealm.api.script.onIfOverlayButton
 import org.runerealm.api.type.refs.comp.ComponentReferences
 import org.runerealm.api.type.refs.interf.InterfaceReferences
 import org.runerealm.events.EventBus
 import org.runerealm.game.entity.Player
+import org.runerealm.game.type.comp.ComponentType
+import org.runerealm.game.type.interf.IfEvent
+import org.runerealm.game.ui.Component
 import org.runerealm.plugin.scripts.PluginScript
 import org.runerealm.plugin.scripts.ScriptContext
 
@@ -27,11 +32,25 @@ class WorldMapScript @Inject constructor(private val eventBus: EventBus) : Plugi
             closeWorldMap()
             return
         }
-        ifOpenOverlay(worldmap_interfaces.worldmap, worldmap_components.map_container, eventBus)
+        val floating = worldmap_components.map_container.toComponent()
+        if (ui.gameframe.getOrNull(floating)?.packed?.let { it != -1 } ?: true) {
+            // Resizable layouts have a floating map container; the 8 edge/corner handles resize it.
+            ifOpenOverlay(worldmap_interfaces.worldmap, worldmap_components.map_container, eventBus)
+            ifSetEvents(worldmap_components.content, 0..<RESIZE_HANDLES, IfEvent.Depth1)
+        } else {
+            // Fixed mode has no floating container, so the map covers the game view instead.
+            ifOpenOverlay(worldmap_interfaces.worldmap, components.mainmodal, eventBus)
+        }
     }
 
     private fun Player.closeWorldMap() {
         ifCloseOverlay(worldmap_interfaces.worldmap, eventBus)
+    }
+
+    private fun ComponentType.toComponent(): Component = Component(packed)
+
+    private companion object {
+        const val RESIZE_HANDLES = 8
     }
 }
 
@@ -48,4 +67,5 @@ object WorldMapComponents : ComponentReferences() {
     val map_container = find("toplevel_osrs_stretch:map_container")
     val close = find("worldmap:close")
     val esckey = find("worldmap:esckey")
+    val content = find("worldmap:content")
 }
