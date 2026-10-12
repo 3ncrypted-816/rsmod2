@@ -5,5 +5,7 @@ plugins {
 
 dependencies {
     implementation(projects.api.pluginCommons)
+    implementation(projects.content.areas.wilderness)
+    integrationImplementation(projects.api.invPlugin)
     integrationImplementation(projects.api.player)
 }
