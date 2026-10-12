@@ -6,6 +6,7 @@ import kotlin.jvm.java
 import net.rsprot.protocol.game.incoming.buttons.If3Button
 import net.rsprot.protocol.game.incoming.buttons.IfButtonD
 import net.rsprot.protocol.game.incoming.buttons.IfButtonT
+import net.rsprot.protocol.game.incoming.friendchat.FriendChatJoinLeave
 import net.rsprot.protocol.game.incoming.locs.OpLoc
 import net.rsprot.protocol.game.incoming.locs.OpLoc6
 import net.rsprot.protocol.game.incoming.locs.OpLocT
@@ -36,6 +37,7 @@ import net.rsprot.protocol.message.codec.incoming.GameMessageConsumerRepositoryB
 import net.rsprot.protocol.message.codec.incoming.provider.DefaultGameMessageConsumerRepositoryProvider
 import org.runerealm.api.net.rsprot.handlers.ClientCheatHandler
 import org.runerealm.api.net.rsprot.handlers.CloseModalHandler
+import org.runerealm.api.net.rsprot.handlers.FriendChatJoinLeaveHandler
 import org.runerealm.api.net.rsprot.handlers.FriendListAddHandler
 import org.runerealm.api.net.rsprot.handlers.FriendListDelHandler
 import org.runerealm.api.net.rsprot.handlers.If3ButtonHandler
@@ -94,6 +96,7 @@ constructor(
     private val ifButtonD: IfButtonDHandler,
     private val ifButtonT: IfButtonTHandler,
     private val mapBuildComplete: MapBuildCompleteHandler,
+    private val friendChatJoinLeave: FriendChatJoinLeaveHandler,
     private val ignoreListDel: IgnoreListDelHandler,
     private val ignoreListAdd: IgnoreListAddHandler,
     private val friendListDel: FriendListDelHandler,
@@ -102,6 +105,7 @@ constructor(
     fun get(): DefaultGameMessageConsumerRepositoryProvider<Player> {
         val builder = GameMessageConsumerRepositoryBuilder<Player>()
         builder.addListener(WindowStatus::class.java, windowStatus)
+        builder.addListener(FriendChatJoinLeave::class.java, friendChatJoinLeave)
         builder.addListener(IgnoreListDel::class.java, ignoreListDel)
         builder.addListener(IgnoreListAdd::class.java, ignoreListAdd)
         builder.addListener(FriendListDel::class.java, friendListDel)
