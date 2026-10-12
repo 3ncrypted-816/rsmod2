@@ -2,8 +2,10 @@ package org.runerealm.content.interfaces.bank.scripts
 
 import jakarta.inject.Inject
 import org.runerealm.api.config.constants
+import org.runerealm.api.player.input.ResumePauseButtonInput
 import org.runerealm.api.player.output.runClientScript
 import org.runerealm.api.player.protect.ProtectedAccess
+import org.runerealm.api.player.ui.ifCloseOverlay
 import org.runerealm.api.player.vars.intVarBit
 import org.runerealm.api.script.onIfClose
 import org.runerealm.api.script.onIfModalButton
@@ -91,8 +93,14 @@ class BankTutorialScript @Inject constructor(private val eventBus: EventBus) : P
         if (pageIndex in pages.indices) {
             showPage(pageIndex)
         } else {
-            showPage(tutorialPage)
+            finish()
         }
+    }
+
+    /** "Finish" on the last page ends the tutorial the same way as its close button. */
+    private fun Player.finish() {
+        ifCloseOverlay(bank_interfaces.tutorial_overlay, eventBus)
+        resumeActiveCoroutine(ResumePauseButtonInput(bank_components.tutorial_close_button, -1))
     }
 
     private fun Player.onTutorialClose() {
