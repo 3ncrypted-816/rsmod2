@@ -37,6 +37,7 @@ dependencies {
     implementation(projects.engine.routefinder)
     integrationImplementation(libs.fastutil)
     integrationImplementation(libs.rsprot.api)
+    integrationImplementation(projects.api.areaChecker)
     integrationImplementation(projects.api.combat.combatCommons)
     integrationImplementation(projects.api.deathPlugin)
     integrationImplementation(projects.api.hitPlugin)

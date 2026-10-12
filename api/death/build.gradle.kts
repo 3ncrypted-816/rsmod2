@@ -8,6 +8,7 @@ kotlin {
 
 dependencies {
     implementation(libs.guice)
+    implementation(projects.api.areaChecker)
     implementation(projects.api.config)
     implementation(projects.api.dropTable)
     implementation(projects.api.random)
