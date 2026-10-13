@@ -6,11 +6,13 @@ import org.runerealm.api.account.character.CharacterDataStage
 import org.runerealm.game.entity.Player
 import org.runerealm.game.entity.player.FriendChatSettings
 import org.runerealm.game.type.mod.ModLevelTypeList
+import org.runerealm.game.type.varp.VarpLifetime
+import org.runerealm.game.type.varp.VarpTypeList
 import org.runerealm.map.CoordGrid
 
 public class CharacterAccountApplier
 @Inject
-constructor(private val modLevelTypes: ModLevelTypeList) :
+constructor(private val modLevelTypes: ModLevelTypeList, private val varpTypes: VarpTypeList) :
     CharacterDataStage.Applier<CharacterAccountData> {
     override fun apply(player: Player, data: CharacterAccountData) {
         player.accountId = data.accountId
@@ -34,7 +36,15 @@ constructor(private val modLevelTypes: ModLevelTypeList) :
         player.runEnergy = data.runEnergy
         player.xpRate = data.xpRate
         player.lastLogin = LocalDateTime.now()
-        player.vars.backing.putAll(data.varps)
+        // Only restore varps that are still persistent. Saves are keyed by varp id, so a
+        // server-only
+        // varp that was renumbered (or made temporary) would otherwise load a stale value into
+        // whatever varp now owns that id.
+        for ((id, value) in data.varps) {
+            if (varpTypes[id]?.scope == VarpLifetime.Perm) {
+                player.vars.backing[id] = value
+            }
+        }
         player.assignModLevel(data.modLevel)
         data.appearance?.let { player.assignAppearance(it) }
         player.friendList.clear()
