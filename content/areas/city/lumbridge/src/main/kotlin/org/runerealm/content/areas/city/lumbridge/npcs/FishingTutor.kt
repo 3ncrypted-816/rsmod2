@@ -83,7 +83,7 @@ class FishingTutor : PluginScript() {
                 "castle in Lumbridge and a cookin' range in the castle " +
                 "kitchen.",
         )
-        if (player.members && vars[FishingTutorVarps.fishingcompo] == 0) {
+        if (vars[FishingTutorVarps.fishingcompo] == 0) {
             chatNpc(
                 neutral,
                 "Arrr.. if yer lookin' fer quests you should head over to " +
@@ -109,10 +109,6 @@ class FishingTutor : PluginScript() {
                 "away as you can get valuable cooking experience from " +
                 "them, gar! Look out for other things too...",
         )
-        if (!player.members) {
-            mainMenu()
-            return
-        }
         chatNpc(neutral, "Then of course there is always the trawler...")
         chatNpc(
             neutral,
@@ -133,10 +129,6 @@ class FishingTutor : PluginScript() {
                 "fish for things like Tuna and Swordfish. These be very " +
                 "good for combat.",
         )
-        if (!player.members) {
-            mainMenu()
-            return
-        }
         chatNpc(
             neutral,
             "Of course, after that you will get Shark, and if you " +
@@ -218,9 +210,7 @@ class FishingTutor : PluginScript() {
             if (level < 39) {
                 add("Small Net Fish" to FishTopic.SmallNet)
             }
-            if (player.members) {
-                add("Big Net Fish" to FishTopic.BigNet)
-            }
+            add("Big Net Fish" to FishTopic.BigNet)
             add("Rod and Fly Fishing" to FishTopic.Rod)
             if (level >= 25) {
                 add("Lobster pot" to FishTopic.LobsterPot)
@@ -377,14 +367,12 @@ class FishingTutor : PluginScript() {
             FishingTutorObjs.swordfish,
             "With it you can catch Tuna and Swordfish.",
         )
-        if (player.members) {
-            objbox(FishingTutorObjs.shark, "... and shark.")
-            chatNpc(
-                happy,
-                "Ahoy, there's also the fishin' guild if ya skilled enough, " +
-                    "you can find it south west of Seers' Village.",
-            )
-        }
+        objbox(FishingTutorObjs.shark, "... and shark.")
+        chatNpc(
+            happy,
+            "Ahoy, there's also the fishin' guild if ya skilled enough, " +
+                "you can find it south west of Seers' Village.",
+        )
         fishMenu()
     }
 
@@ -405,42 +393,9 @@ class FishingTutor : PluginScript() {
                 chatPlayer(shifty, "Oookay...sure, a parrot, on your shoulder.")
                 chatNpc(laugh, "Arrr!")
             }
-            player.members -> membersAdvice(level)
-            else -> freeToPlayAdvice(level)
+            else -> membersAdvice(level)
         }
         mainMenu()
-    }
-
-    private suspend fun Dialogue.freeToPlayAdvice(level: Int) {
-        val text =
-            when {
-                level < 15 ->
-                    "Herrin' can be fished from south of Draynor Village or " +
-                        "the pier on the island of Karamja when you reach " +
-                        "level 10."
-                level < 20 ->
-                    "You can use your small net to catch Anchovies from " +
-                        "south of Draynor when you reach level 15."
-                level < 25 ->
-                    "You can practice your fly fishin' in the Lumbridge river " +
-                        "to catch Trout at level 20."
-                level < 35 ->
-                    "Pike can be fished from Lumbridge river using your " +
-                        "fishing rod and some bait with at least level 25 " +
-                        "fishing."
-                level < 40 ->
-                    "Use your harpoon and see if you can catch yourself a " +
-                        "few Tuna from the pier on the island of Karamja at " +
-                        "level 35."
-                level < 50 ->
-                    "You can use that Lobster pot from the pier on the " +
-                        "island of Karamja to get yourself a whole bunch of the " +
-                        "little critters once you reach level 40."
-                else ->
-                    "Congratulations, you can now harpoon Swordfish after " +
-                        "level 50. Try the pier on the island of Karamja."
-            }
-        chatNpc(neutral, text)
     }
 
     private suspend fun Dialogue.membersAdvice(level: Int) {

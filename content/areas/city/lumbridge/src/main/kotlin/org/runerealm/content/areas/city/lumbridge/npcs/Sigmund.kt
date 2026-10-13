@@ -15,7 +15,7 @@ import org.runerealm.plugin.scripts.ScriptContext
  * `lost_tribe_sigmund` is a multinpc; the handler is registered on the base type so that it fires
  * for whichever variant the player sees (op events are keyed by the npc's base type id).
  *
- * The visible variant's "Pickpocket" option (op3) is left unhandled as Thieving is not implemented.
+ * The visible variant's "Pickpocket" option (op3) is handled by the Thieving module.
  */
 class Sigmund : PluginScript() {
     override fun ScriptContext.startup() {

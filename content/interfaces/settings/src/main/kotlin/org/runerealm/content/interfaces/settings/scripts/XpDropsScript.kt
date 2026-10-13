@@ -1,8 +1,12 @@
 package org.runerealm.content.interfaces.settings.scripts
 
 import jakarta.inject.Inject
+import org.runerealm.api.config.refs.components
+import org.runerealm.api.config.refs.interfaces
 import org.runerealm.api.player.protect.ProtectedAccess
+import org.runerealm.api.player.ui.ifCloseOverlay
 import org.runerealm.api.player.ui.ifOpenMainModal
+import org.runerealm.api.player.ui.ifOpenOverlay
 import org.runerealm.api.player.ui.ifSetEvents
 import org.runerealm.api.player.vars.boolVarBit
 import org.runerealm.api.script.onIfModalButton
@@ -27,7 +31,7 @@ class XpDropsScript @Inject constructor(private val eventBus: EventBus) : Plugin
     override fun ScriptContext.startup() {
         onIfOverlayButton(xpdrops_components.orb) {
             when (op) {
-                IfButtonOp.Op1 -> player.xpDropsEnabled = !player.xpDropsEnabled
+                IfButtonOp.Op1 -> player.toggleXpDrops()
                 IfButtonOp.Op2 -> player.openSetup()
                 else -> {}
             }
@@ -37,6 +41,22 @@ class XpDropsScript @Inject constructor(private val eventBus: EventBus) : Plugin
         }
         onIfModalButton(xpdrops_components.save) { ifClose() }
         onIfModalButton(xpdrops_components.cancel) { ifClose() }
+    }
+
+    /**
+     * The client only uses `xpdrops_enabled` to draw the orb ("Show"/"Hide"). The drops are drawn
+     * by the `xp_drops` overlay, which the server opens into (or closes from) the toplevel xp drops
+     * target. The target is translated to the active gameframe, so this works in both fixed and
+     * resizable modes.
+     */
+    private fun Player.toggleXpDrops() {
+        val enable = !xpDropsEnabled
+        xpDropsEnabled = enable
+        if (enable) {
+            ifOpenOverlay(interfaces.xp_drops, components.toplevel_target_xp_drops, eventBus)
+        } else {
+            ifCloseOverlay(interfaces.xp_drops, eventBus)
+        }
     }
 
     private fun Player.openSetup() {

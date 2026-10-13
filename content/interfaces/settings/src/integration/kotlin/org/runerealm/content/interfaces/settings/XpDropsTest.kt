@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.runerealm.api.config.refs.components
 import org.runerealm.api.config.refs.interfaces
+import org.runerealm.api.player.ui.ifCloseOverlay
 import org.runerealm.api.player.vars.intVarBit
 import org.runerealm.api.testing.GameTestState
 import org.runerealm.content.interfaces.settings.scripts.XpDropsScript
@@ -22,13 +23,18 @@ class XpDropsTest {
             player.ifOpenOverlay(interfaces.orbs, components.toplevel_target_orbs)
             assertEquals(0, player.xpDropsEnabled)
 
+            player.ifCloseOverlay(interfaces.xp_drops, eventBus)
+            assertFalse(player.ui.containsOverlay(interfaces.xp_drops))
+
             player.ifButton(xpdrops_components.orb, op = IfButtonOp.Op1)
             advance()
             assertEquals(1, player.xpDropsEnabled)
+            assertTrue(player.ui.containsOverlay(interfaces.xp_drops))
 
             player.ifButton(xpdrops_components.orb, op = IfButtonOp.Op1)
             advance()
             assertEquals(0, player.xpDropsEnabled)
+            assertFalse(player.ui.containsOverlay(interfaces.xp_drops))
 
             player.ifButton(xpdrops_components.orb, op = IfButtonOp.Op2)
             advance()

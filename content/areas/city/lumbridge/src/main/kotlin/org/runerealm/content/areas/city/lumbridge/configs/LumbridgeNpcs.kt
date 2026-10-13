@@ -61,6 +61,7 @@ object LumbridgeNpcs : NpcReferences() {
     val ranged_tutor = find("aide_tutor_ranging")
     val seth_groats = find("favour_seth_groats")
     val tool_leprechaun = find("farming_tools_leprechaun")
+    val penguin_sheep = find("sheep_shearer_the_thing")
 }
 
 internal object LumbridgeNpcEditor : NpcEditor() {

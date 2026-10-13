@@ -7,8 +7,6 @@ import org.runerealm.api.repo.loc.LocRepository
 import org.runerealm.api.script.onOpLoc1
 import org.runerealm.api.script.onOpLoc2
 import org.runerealm.api.script.onOpLoc3
-import org.runerealm.api.script.onOpLoc4
-import org.runerealm.api.script.onOpLoc5
 import org.runerealm.game.loc.BoundLocInfo
 import org.runerealm.game.loc.LocAngle
 import org.runerealm.game.loc.LocInfo
@@ -35,16 +33,10 @@ constructor(private val locRepo: LocRepository, private val locTypes: LocTypeLis
             climbDown(it.loc)
         }
 
+        // "Top-floor"/"Bottom-floor" only exist on the ground and top floor staircases of taller
+        // stacks (e.g. Lumbridge Castle's `spiralstairsbottom_3`/`spiralstairstop_3`).
         onOpLoc2(content.spiralstaircase_up) { climbToTop(it.loc) }
         onOpLoc2(content.spiralstaircase_down) { climbToBottom(it.loc) }
-        onOpLoc4(content.spiralstaircase_option) {
-            arriveDelay()
-            climbToTop(it.loc)
-        }
-        onOpLoc5(content.spiralstaircase_option) {
-            arriveDelay()
-            climbToBottom(it.loc)
-        }
     }
 
     private fun ProtectedAccess.climbDown(loc: BoundLocInfo) =

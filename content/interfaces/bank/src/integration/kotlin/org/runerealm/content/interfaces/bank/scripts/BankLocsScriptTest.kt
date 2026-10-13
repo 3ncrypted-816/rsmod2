@@ -49,6 +49,33 @@ class BankLocsScriptTest {
             assertEquals(100, bank.count(objs.coins))
         }
 
+    @Test
+    fun GameTestState.`deposit box banks and removes single worn items`() =
+        runGameTest(BankLocsScript::class, BankInvScript::class, DepositBoxScript::class) {
+            allocZoneCollision(base)
+            val box = placeMapLoc(base, locType("bank_deposit_box"))
+            player.teleport(base.translateX(-1))
+            val bank = bank(player)
+            player.clearInv()
+            player.worn[12] = InvObj(objs.berserker_ring, 1)
+            player.opLoc1(box)
+            advance(ticks = 5)
+            assertTrue(player.ui.containsModal(depositbox_interfaces.depositbox))
+
+            // "Bank" deposits the worn item straight into the bank.
+            player.ifButton(depositbox_components.worn_slots.getValue(12), op = IfButtonOp.Op2)
+            advance()
+            assertEquals(null, player.worn[12])
+            assertEquals(1, bank.count(objs.berserker_ring))
+
+            // "Remove" unequips it into the inventory.
+            player.worn[12] = InvObj(objs.archers_ring_i, 1)
+            player.ifButton(depositbox_components.worn_slots.getValue(12), op = IfButtonOp.Op1)
+            advance()
+            assertEquals(null, player.worn[12])
+            assertEquals(objs.archers_ring_i.id, player.inv[0]?.id)
+        }
+
     private fun GameTestState.locType(name: String) =
         cacheTypes.locs.values.first { it.internalName == name }
 }

@@ -161,22 +161,13 @@ class CookingTutor : PluginScript() {
             "You might find that when killing monsters, they drop " +
                 "some raw meat for you to cook.",
         )
-        if (player.members) {
-            chatNpc(
-                neutral,
-                "Some foods have hidden properties. Anglerfish can " +
-                    "provide you with an overheal effect where you have a " +
-                    "few more hitpoints than your level. The higher your " +
-                    "hitpoints the better the boost.",
-            )
-        } else {
-            chatNpc(
-                neutral,
-                "Some of them might have hidden properties. Such as " +
-                    "anglerfish, but you will find it hard getting hold of " +
-                    "any of them at this time.",
-            )
-        }
+        chatNpc(
+            neutral,
+            "Some foods have hidden properties. Anglerfish can " +
+                "provide you with an overheal effect where you have a " +
+                "few more hitpoints than your level. The higher your " +
+                "hitpoints the better the boost.",
+        )
         chatNpc(
             neutral,
             "Most of the time, cooking meat and fish requires nothing " +
@@ -194,46 +185,23 @@ class CookingTutor : PluginScript() {
             "You can brew your own beers using the fermenting vats in " +
                 "either Keldagrim or Port Phasmatys.",
         )
-        if (player.members) {
-            chatNpc(
-                neutral,
-                "Use two buckets of water, two handfuls of barley malt, 4 " +
-                    "hops of your choice and a pot of ale yeast, then leave " +
-                    "to ferment for a few days!",
-            )
-            chatNpc(
-                neutral,
-                "Simply turn the tap and let the ale flow into the barrel " +
-                    "next to the vat, then use empty beer glasses on the " +
-                    "barrel.",
-            )
-        } else {
-            chatNpc(
-                neutral,
-                "You might find it hard getting to these places but you " +
-                    "can always buy beer at any pub. Some pubs sell unique " +
-                    "beers too.",
-            )
-        }
+        chatNpc(
+            neutral,
+            "Use two buckets of water, two handfuls of barley malt, 4 " +
+                "hops of your choice and a pot of ale yeast, then leave " +
+                "to ferment for a few days!",
+        )
+        chatNpc(
+            neutral,
+            "Simply turn the tap and let the ale flow into the barrel " +
+                "next to the vat, then use empty beer glasses on the " +
+                "barrel.",
+        )
         anythingElseMentioned()
     }
 
     private suspend fun Dialogue.vegetables() {
         chatPlayer(quiz, "Tell me about Vegetables.")
-        if (!player.members) {
-            objbox(
-                CookingTutorObjs.tuna_potato,
-                "Baked potatoes are a more advanced food and are healthy too!",
-            )
-            chatNpc(
-                neutral,
-                "They require many different ingredients to make, such as " +
-                    "butter and vegetables, but you will find it hard to " +
-                    "acquire the ingredients needed.",
-            )
-            anythingElseMentioned()
-            return
-        }
         doubleobjbox(
             CookingTutorObjs.potato,
             CookingTutorObjs.tuna_potato,
@@ -280,12 +248,10 @@ class CookingTutor : PluginScript() {
             happy,
             "Finally cook your pie by using the unbaked pie on a cooking range. Mmmm...pie.",
         )
-        if (player.members) {
-            chatNpc(
-                neutral,
-                "Some pies might even be able to boost some of your " + "skills, be it temporarily.",
-            )
-        }
+        chatNpc(
+            neutral,
+            "Some pies might even be able to boost some of your " + "skills, be it temporarily.",
+        )
         chatNpc(
             neutral,
             "Next, we have pizza. You will first need to make yourself " +

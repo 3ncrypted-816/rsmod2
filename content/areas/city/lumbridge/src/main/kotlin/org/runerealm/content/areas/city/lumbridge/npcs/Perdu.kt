@@ -3,6 +3,8 @@ package org.runerealm.content.areas.city.lumbridge.npcs
 import org.runerealm.api.player.dialogue.Dialogue
 import org.runerealm.api.player.protect.ProtectedAccess
 import org.runerealm.api.script.onOpNpc1
+import org.runerealm.api.script.onOpNpc3
+import org.runerealm.api.type.refs.interf.InterfaceReferences
 import org.runerealm.api.type.refs.obj.ObjReferences
 import org.runerealm.content.areas.city.lumbridge.configs.lumbridge_npcs
 import org.runerealm.game.entity.Npc
@@ -17,8 +19,7 @@ import org.runerealm.plugin.scripts.ScriptContext
 class Perdu : PluginScript() {
     override fun ScriptContext.startup() {
         onOpNpc1(lumbridge_npcs.perdu) { perduDialogue(it.npc) }
-        // TODO(content): Trade (op3) - Lost Property shop (`lost_property` interface) requires
-        //  tracking which reward items the player has unlocked and lost.
+        onOpNpc3(lumbridge_npcs.perdu) { openLostProperty() }
     }
 
     private suspend fun ProtectedAccess.perduDialogue(npc: Npc) = startDialogue(npc) { perdu() }
@@ -77,7 +78,7 @@ class Perdu : PluginScript() {
 
     private suspend fun Dialogue.showFound() {
         chatPlayer(neutral, "Show me what you've found.")
-        // TODO(content): Open the Lost Property shop.
+        access.openLostProperty()
     }
 
     private suspend fun Dialogue.breakableItems() {
@@ -127,6 +128,24 @@ class Perdu : PluginScript() {
                 "Standing. Bring the parchment here, then show me the item you want to lock.",
         )
     }
+}
+
+/**
+ * Opens the Lost Property shop. `lost_property_init` draws one entry for every bit set in its two
+ * "lost item" bitmasks (indices into `enum_767`).
+ *
+ * TODO(content): Track which reward items the player has unlocked and lost, and handle "Buy". Until
+ *   then the shop is always empty, which is what a player who has lost nothing sees.
+ */
+private fun ProtectedAccess.openLostProperty() {
+    ifOpenMainModal(PerduInterfaces.lost_property)
+    runClientScript(LOST_PROPERTY_INIT, 0, 0, -1)
+}
+
+private const val LOST_PROPERTY_INIT = 226
+
+internal object PerduInterfaces : InterfaceReferences() {
+    val lost_property = find("lost_property")
 }
 
 internal object PerduObjs : ObjReferences() {

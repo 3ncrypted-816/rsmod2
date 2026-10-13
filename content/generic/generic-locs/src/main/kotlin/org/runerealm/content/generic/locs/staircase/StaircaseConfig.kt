@@ -3,6 +3,7 @@ package org.runerealm.content.generic.locs.staircase
 import org.runerealm.api.config.refs.content
 import org.runerealm.api.type.editors.loc.LocEditor
 import org.runerealm.api.type.refs.loc.LocReferences
+import org.runerealm.game.type.loc.LocType
 
 typealias staircase_locs = StaircaseLocs
 
@@ -20,51 +21,53 @@ object StaircaseLocs : LocReferences() {
 }
 
 /**
- * Spiral staircases. Besides the regular climb options, every staircase that leads up offers
- * "Top-floor" and every staircase that leads down offers "Bottom-floor", jumping straight to the
- * highest/lowest floor of the staircase stack. (Lumbridge Castle's staircases have these options in
- * the base game; they are added to the other spiral staircases on this server.)
+ * Spiral staircases keep their cache ops, as in OSRS: "Top-floor"/"Bottom-floor" are not added by
+ * the server but belong to dedicated loc types. Lumbridge Castle's three-floor staircases use
+ * `spiralstairsbottom_3` on the ground floor ("Climb-up", "Top-floor") and `spiralstairstop_3` on
+ * the top floor ("Climb-down", "Bottom-floor"), while its middle floor is a plain
+ * `spiralstairsmiddle` ("Climb", "Climb-up", "Climb-down"). Every other staircase only has the
+ * regular climb ops.
  */
-// An edit that sets any op replaces the loc's whole op list, so the original climb ops are set
-// again alongside the new ones.
+// The ops below match the cache. They are restated because earlier builds added "Top-floor" and
+// "Bottom-floor" to every staircase, and a packed game cache only repacks a loc when an edit for
+// it differs: without these ops, servers would keep serving the old menu. An edit that sets any op
+// replaces the loc's whole op list.
 internal object StaircaseLocEdits : LocEditor() {
     init {
-        bottom(staircase_locs.spiral_bottom)
-        bottom(staircase_locs.wooden_spiral_bottom)
-        bottom(staircase_locs.lumbridge_spiral_bottom)
+        up(staircase_locs.spiral_bottom)
+        up(staircase_locs.wooden_spiral_bottom)
+        up(staircase_locs.lumbridge_spiral_bottom, TOP_FLOOR)
 
-        top(staircase_locs.spiral_top)
-        top(staircase_locs.spiral_down)
-        top(staircase_locs.wooden_spiral_top)
-        top(staircase_locs.wooden_spiral_down)
-        top(staircase_locs.lumbridge_spiral_top)
+        down(staircase_locs.spiral_top)
+        down(staircase_locs.spiral_down)
+        down(staircase_locs.wooden_spiral_top)
+        down(staircase_locs.wooden_spiral_down)
+        down(staircase_locs.lumbridge_spiral_top, BOTTOM_FLOOR)
 
-        middle(staircase_locs.spiral_middle)
-        middle(staircase_locs.wooden_spiral_middle)
+        option(staircase_locs.spiral_middle)
+        option(staircase_locs.wooden_spiral_middle)
     }
 
-    private fun bottom(type: org.runerealm.game.type.loc.LocType) =
+    private fun up(type: LocType, op2: String? = null) =
         edit(type) {
             contentGroup = content.spiralstaircase_up
             op1 = "Climb-up"
-            op2 = TOP_FLOOR
+            this.op2 = op2
         }
 
-    private fun top(type: org.runerealm.game.type.loc.LocType) =
+    private fun down(type: LocType, op2: String? = null) =
         edit(type) {
             contentGroup = content.spiralstaircase_down
             op1 = "Climb-down"
-            op2 = BOTTOM_FLOOR
+            this.op2 = op2
         }
 
-    private fun middle(type: org.runerealm.game.type.loc.LocType) =
+    private fun option(type: LocType) =
         edit(type) {
             contentGroup = content.spiralstaircase_option
             op1 = "Climb"
             op2 = "Climb-up"
             op3 = "Climb-down"
-            op4 = TOP_FLOOR
-            op5 = BOTTOM_FLOOR
         }
 
     const val TOP_FLOOR = "Top-floor"

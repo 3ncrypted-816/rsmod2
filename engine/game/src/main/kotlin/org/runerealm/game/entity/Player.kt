@@ -16,6 +16,7 @@ import org.runerealm.game.client.ClientCycle
 import org.runerealm.game.client.NoopClient
 import org.runerealm.game.client.NoopClientCycle
 import org.runerealm.game.entity.player.Appearance
+import org.runerealm.game.entity.player.FriendChatSettings
 import org.runerealm.game.entity.player.PlayerUid
 import org.runerealm.game.entity.player.PublicMessage
 import org.runerealm.game.entity.util.EntityFaceAngle
@@ -164,7 +165,22 @@ public class Player(
 
     /** Display names on the player's ignore list, in the order they were added. */
     public val ignoreList: MutableList<String> = mutableListOf()
-    public var members: Boolean = false
+
+    /**
+     * Friends chat ranks (1 = Recruit up to 6 = General) the player gave to names on their friend
+     * list, keyed by lowercase name. Friends without an entry are unranked.
+     */
+    public val friendChatRanks: MutableMap<String, Int> = mutableMapOf()
+
+    /** The player's own friends chat channel setup. */
+    public var friendChat: FriendChatSettings = FriendChatSettings.DEFAULT
+    /**
+     * Every account is treated as a member: this server has no members/free-to-play distinction, so
+     * members-only content is always available and the client is told it is on a members world.
+     */
+    public val members: Boolean
+        get() = true
+
     public var lastKnownDevice: Int? = null
 
     public var followCoord: CoordGrid = CoordGrid.NULL

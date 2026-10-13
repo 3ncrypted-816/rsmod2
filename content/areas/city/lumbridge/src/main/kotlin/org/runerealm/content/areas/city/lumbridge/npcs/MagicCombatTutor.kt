@@ -8,7 +8,7 @@ import org.runerealm.api.player.protect.ProtectedAccess
 import org.runerealm.api.player.stat.baseMagicLvl
 import org.runerealm.api.player.stat.baseRunecraftingLvl
 import org.runerealm.api.script.onOpNpc1
-import org.runerealm.api.script.onOpNpc2
+import org.runerealm.api.script.onOpNpc3
 import org.runerealm.api.type.refs.varbit.VarBitReferences
 import org.runerealm.api.type.refs.varp.VarpReferences
 import org.runerealm.content.areas.city.lumbridge.configs.lumbridge_npcs
@@ -24,7 +24,7 @@ import org.runerealm.plugin.scripts.ScriptContext
 class MagicCombatTutor : PluginScript() {
     override fun ScriptContext.startup() {
         onOpNpc1(lumbridge_npcs.magic_tutor) { startDialogue(it.npc) }
-        onOpNpc2(lumbridge_npcs.magic_tutor) { claim(it.npc) }
+        onOpNpc3(lumbridge_npcs.magic_tutor) { claim(it.npc) }
     }
 
     private suspend fun ProtectedAccess.startDialogue(npc: Npc) {
@@ -141,9 +141,6 @@ class MagicCombatTutor : PluginScript() {
                 "level magic if you are not interested in the combat " +
                 "aspect of magic.",
         )
-        if (!player.members) {
-            return
-        }
         chatNpc(
             neutral,
             "There's always the Magic Training Arena. You can find it " +

@@ -32,6 +32,8 @@ public data class CharacterAccountData(
     val appearance: CharacterAppearanceData?,
     val friends: List<String> = emptyList(),
     val ignores: List<String> = emptyList(),
+    val friendChat: CharacterFriendChatData? = null,
+    val friendChatRanks: Map<String, Int> = emptyMap(),
 ) : CharacterDataStage.Segment {
     // Do not include sensitive fields (e.g., password hash, 2fa secret, known device).
     override fun toString(): String =
