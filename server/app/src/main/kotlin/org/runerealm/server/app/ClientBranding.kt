@@ -35,7 +35,7 @@ internal object ClientBranding {
             if (updated) {
                 logger.info { "Packed RuneRealm login screen into the client cache." }
             }
-            val renamed = TEXT_ARCHIVES.sumOf { renameText(cache, it) }
+            val renamed = renameText(cache, TEXT_ARCHIVES)
             if (renamed > 0) {
                 logger.info { "Renamed RuneScape to RuneRealm in $renamed client cache files." }
             }
@@ -72,24 +72,30 @@ internal object ClientBranding {
      * binary data (string terminators, offsets) stays valid. URLs (`oldschool.runescape.wiki`) and
      * identifiers (`mtol_whistle_runescape`) are left alone so wiki lookups and links still work.
      */
-    private fun renameText(cache: Cache, archive: Int): Int {
-        if (!cache.exists(archive)) {
-            return 0
-        }
-        var renamed = 0
-        for (group in cache.list(archive).asSequence().toList()) {
-            for (file in cache.list(archive, group.id).asSequence().toList()) {
-                val bytes =
-                    cache.read(archive, group.id, file.id).use { buf ->
-                        ByteArray(buf.readableBytes()).also(buf::readBytes)
+    private fun renameText(cache: Cache, archives: IntArray): Int {
+        // Read everything before writing anything: once openrs2 rewrites a group, reading files
+        // from it again in the same session fails with a version mismatch.
+        val changes = mutableListOf<Triple<Int, Int, Pair<Int, ByteArray>>>()
+        for (archive in archives) {
+            if (!cache.exists(archive)) {
+                continue
+            }
+            for (group in cache.list(archive).asSequence().toList()) {
+                for (file in cache.list(archive, group.id).asSequence().toList()) {
+                    val bytes =
+                        cache.read(archive, group.id, file.id).use { buf ->
+                            ByteArray(buf.readableBytes()).also(buf::readBytes)
+                        }
+                    if (renameRuneScape(bytes)) {
+                        changes += Triple(archive, group.id, file.id to bytes)
                     }
-                if (renameRuneScape(bytes)) {
-                    cache.write(archive, group.id, file.id, Unpooled.wrappedBuffer(bytes))
-                    renamed++
                 }
             }
         }
-        return renamed
+        for ((archive, group, file) in changes) {
+            cache.write(archive, group, file.first, Unpooled.wrappedBuffer(file.second))
+        }
+        return changes.size
     }
 
     /** Rewrites [bytes] in place, returning `true` if anything changed. */
