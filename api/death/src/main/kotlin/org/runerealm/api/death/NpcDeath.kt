@@ -8,6 +8,7 @@ import org.runerealm.api.config.refs.params
 import org.runerealm.api.config.refs.varns
 import org.runerealm.api.config.refs.varps
 import org.runerealm.api.drop.table.NpcDropTables
+import org.runerealm.api.freeze.clearFreeze
 import org.runerealm.api.npc.access.StandardNpcAccess
 import org.runerealm.api.npc.vars.typePlayerUidVarn
 import org.runerealm.api.player.ironman.isIronman
@@ -130,6 +131,8 @@ public suspend fun StandardNpcAccess.death(
     val deathAnim = param(params.death_anim)
     anim(deathAnim)
     delay(seqTypes[deathAnim])
+
+    npc.clearFreeze()
 
     if (npc.respawns) {
         npcRepo.despawn(npc, npc.type.respawnRate)

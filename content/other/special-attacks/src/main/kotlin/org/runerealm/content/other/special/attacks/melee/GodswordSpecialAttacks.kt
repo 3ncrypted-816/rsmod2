@@ -6,6 +6,7 @@ import org.runerealm.api.combat.commons.CombatAttack
 import org.runerealm.api.combat.commons.types.MeleeAttackType
 import org.runerealm.api.config.constants
 import org.runerealm.api.config.refs.stats
+import org.runerealm.api.freeze.freeze
 import org.runerealm.api.player.protect.ProtectedAccess
 import org.runerealm.api.player.stat.stat
 import org.runerealm.api.player.stat.statSub
@@ -33,8 +34,8 @@ import org.runerealm.game.type.stat.StatType
  *   only), Attack, Magic and Ranged, carrying any excess over to the next stat.
  * - Saradomin godsword "Healing Blade": heals the user by 50% of the damage dealt (minimum 10) and
  *   restores Prayer by 25% of the damage dealt (minimum 5).
- * - Zamorak godsword "Ice Cleave": no extra damage. (The freeze effect is not implemented; there is
- *   no shared freeze mechanism yet.)
+ * - Zamorak godsword "Ice Cleave": no extra damage. A successful hit freezes the target for 32
+ *   cycles (19.2 seconds), subject to the usual freeze immunity rules.
  */
 class GodswordSpecialAttacks : SpecialAttackMap {
     override fun SpecialAttackRepository.register(manager: SpecialAttackManager) {
@@ -127,6 +128,8 @@ class GodswordSpecialAttacks : SpecialAttackMap {
 
             if (effect == Effect.HealingBlade) {
                 healingBlade(damage)
+            } else if (effect == Effect.IceCleave) {
+                iceCleave(target, damage)
             }
 
             manager.continueCombat(this, target)
@@ -169,6 +172,15 @@ class GodswordSpecialAttacks : SpecialAttackMap {
             val restore = max(MIN_PRAYER_RESTORE, damage / 4)
             statHeal(stats.hitpoints, constant = heal, percent = 0)
             statHeal(stats.prayer, constant = restore, percent = 0)
+        }
+
+        private fun ProtectedAccess.iceCleave(target: PathingEntity, damage: Int) {
+            // Only a successful (accurate) hit freezes the target; accurate hits deal at least 1.
+            if (damage <= 0) {
+                return
+            }
+            target.spotanim(special_spots.ice_barrage_impact)
+            target.freeze(ICE_CLEAVE_FREEZE_CYCLES, random, source = player)
         }
 
         private fun warstrike(target: Npc, damage: Int) {
@@ -216,6 +228,7 @@ class GodswordSpecialAttacks : SpecialAttackMap {
         private const val GODSWORD_MAX_HIT_MULTIPLIER = 1.1
         private const val MIN_HITPOINTS_HEAL = 10
         private const val MIN_PRAYER_RESTORE = 5
+        private const val ICE_CLEAVE_FREEZE_CYCLES = 32
 
         private val PLAYER_WARSTRIKE_ORDER: List<StatType> by lazy {
             listOf(

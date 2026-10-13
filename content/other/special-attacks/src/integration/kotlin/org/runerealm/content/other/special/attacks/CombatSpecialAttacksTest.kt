@@ -14,8 +14,17 @@ import org.runerealm.api.combat.commons.types.MeleeAttackType
 import org.runerealm.api.combat.weapon.scripts.WeaponAttackStylesScript
 import org.runerealm.api.combat.weapon.styles.AttackStyles
 import org.runerealm.api.combat.weapon.types.AttackTypes
+import org.runerealm.api.config.constants
 import org.runerealm.api.config.refs.stats
+import org.runerealm.api.config.refs.varbits
+import org.runerealm.api.config.refs.walktriggers
+import org.runerealm.api.freeze.FreezeScript
+import org.runerealm.api.freeze.isFreezeImmune
+import org.runerealm.api.freeze.isFrozen
+import org.runerealm.api.freeze.remainingFreezeCycles
 import org.runerealm.api.hit.plugin.NpcHitScript
+import org.runerealm.api.hit.plugin.PlayerHitScript
+import org.runerealm.api.player.isProtectionPrayerDisabled
 import org.runerealm.api.specials.SpecialAttack
 import org.runerealm.api.specials.SpecialAttackModule as ApiSpecialAttackModule
 import org.runerealm.api.specials.SpecialAttackRegistry
@@ -23,10 +32,15 @@ import org.runerealm.api.testing.GameTestState
 import org.runerealm.api.testing.factory.npcTypeFactory
 import org.runerealm.api.testing.scope.GameTestScope
 import org.runerealm.content.other.special.attacks.configs.special_objs
+import org.runerealm.content.other.special.attacks.configs.special_spots
 import org.runerealm.game.entity.Npc
+import org.runerealm.game.entity.PathingEntity
+import org.runerealm.game.entity.Player
 import org.runerealm.game.entity.npc.NpcMode
 import org.runerealm.game.inv.InvObj
+import org.runerealm.game.spot.EntitySpotanim
 import org.runerealm.game.type.obj.ObjType
+import org.runerealm.game.type.walktrig.isType
 import org.runerealm.map.CoordGrid
 import org.runerealm.plugin.scripts.PluginScript
 
@@ -129,6 +143,115 @@ class CombatSpecialAttacksTest {
         assertEquals(DUMMY_HITPOINTS - 41, npc.hitpoints)
     }
 
+    @Test
+    fun GameTestState.`zamorak godsword freezes the target on a successful hit`() =
+        runSpecialsTest { deps ->
+            val npc = spawnDummy()
+            advance()
+            random.next = HIT_ROLL
+            random.then = 5
+            useMeleeSpecial(deps, special_objs.zamorak_godsword, npc, MeleeAttackType.Slash)
+            assertTrue(npc.isFrozen())
+            assertEquals(ICE_CLEAVE_FREEZE_CYCLES, npc.remainingFreezeCycles())
+            val spotanims = npc.pendingSpotanims.map { EntitySpotanim(it).id }
+            assertEquals(listOf(special_spots.ice_barrage_impact.id), spotanims)
+
+            advance(ticks = ICE_CLEAVE_FREEZE_CYCLES - 1)
+            assertTrue(npc.isFrozen())
+            advance()
+            assertFalse(npc.isFrozen())
+            assertTrue(npc.isFreezeImmune())
+        }
+
+    @Test
+    fun GameTestState.`zamorak godsword does not freeze on a miss`() = runSpecialsTest { deps ->
+        val npc = spawnDummy()
+        advance()
+        random.next = MISS_ROLL
+        useMeleeSpecial(deps, special_objs.zamorak_godsword_or, npc, MeleeAttackType.Slash)
+        assertFalse(npc.isFrozen())
+        assertTrue(npc.pendingSpotanims.isEmpty())
+    }
+
+    @Test
+    fun GameTestState.`zamorak godsword does not refresh an existing freeze`() =
+        runSpecialsTest { deps ->
+            val npc = spawnDummy()
+            advance()
+            random.next = HIT_ROLL
+            random.then = 5
+            useMeleeSpecial(deps, special_objs.zamorak_godsword, npc, MeleeAttackType.Slash)
+            advance(ticks = 10)
+
+            random.next = HIT_ROLL
+            random.then = 5
+            useMeleeSpecial(deps, special_objs.zamorak_godsword, npc, MeleeAttackType.Slash)
+            assertEquals(ICE_CLEAVE_FREEZE_CYCLES - 10, npc.remainingFreezeCycles())
+        }
+
+    @Test
+    fun GameTestState.`zamorak godsword freeze stops a player target from walking`() =
+        runSpecialsTest { deps ->
+            val target = spawnPlayerTarget()
+            advance()
+            random.next = HIT_ROLL
+            random.then = 5
+            useMeleeSpecial(deps, special_objs.zamorak_godsword, target, MeleeAttackType.Slash)
+            assertTrue(target.isFrozen())
+            assertTrue(target.walkTrigger.isType(walktriggers.pvp_frozen))
+
+            val start = target.coords
+            target.moveGameClick(start.translateX(3))
+            advance()
+            assertEquals(start, target.coords)
+        }
+
+    @Test
+    fun GameTestState.`dragon scimitar disables protection prayers on a successful hit`() =
+        runSpecialsTest { deps ->
+            val target = spawnPlayerTarget()
+            target.setVarBit(varbits.protect_from_melee, 1)
+            target.setVarBit(varbits.piety, 1)
+            target.overheadIcon = constants.overhead_protect_from_melee
+            advance()
+
+            random.next = HIT_ROLL
+            random.then = 3
+            useMeleeSpecial(deps, special_objs.dragon_scimitar, target, MeleeAttackType.Slash)
+            assertEquals(0, target.vars[varbits.protect_from_melee])
+            assertEquals(1, target.vars[varbits.piety])
+            assertNull(target.overheadIcon)
+            assertTrue(target.isProtectionPrayerDisabled())
+
+            advance(ticks = SEVER_DISABLE_CYCLES - 1)
+            assertTrue(target.isProtectionPrayerDisabled())
+            advance()
+            assertFalse(target.isProtectionPrayerDisabled())
+        }
+
+    @Test
+    fun GameTestState.`dragon scimitar does not disable protection prayers on a miss`() =
+        runSpecialsTest { deps ->
+            val target = spawnPlayerTarget()
+            target.setVarBit(varbits.protect_from_melee, 1)
+            advance()
+
+            random.next = MISS_ROLL
+            useMeleeSpecial(deps, special_objs.dragon_scimitar_or, target, MeleeAttackType.Slash)
+            assertEquals(1, target.vars[varbits.protect_from_melee])
+            assertFalse(target.isProtectionPrayerDisabled())
+        }
+
+    private fun GameTestScope.spawnPlayerTarget(): Player {
+        val target = registerPlayer(CoordGrid(0, 50, 50, 0, 0))
+        target.setBaseLevel(stats.prayer, 99)
+        target.setCurrentLevel(stats.prayer, 99)
+        player.placeAt(target.coords.translateZ(1))
+        player.stats[stats.attack] = 99
+        player.stats[stats.strength] = 99
+        return target
+    }
+
     private fun GameTestScope.spawnDummy(): Npc {
         val npc = spawnNpc(CoordGrid(0, 50, 50, 0, 0), dummy)
         player.placeAt(npc.coords.translateZ(1))
@@ -140,7 +263,7 @@ class CombatSpecialAttacksTest {
     private fun GameTestScope.useMeleeSpecial(
         deps: SpecialsTestDependencies,
         weapon: ObjType,
-        target: Npc,
+        target: PathingEntity,
         type: MeleeAttackType,
     ) {
         val special = deps.registry[InvObj(weapon)]
@@ -163,6 +286,8 @@ class CombatSpecialAttacksTest {
             SpecialsTestModule,
             specialAttackScript,
             NpcHitScript::class,
+            PlayerHitScript::class,
+            FreezeScript::class,
             WeaponAttackStylesScript::class,
             testBody = testBody,
         )
@@ -188,6 +313,9 @@ class CombatSpecialAttacksTest {
         private const val DUMMY_HITPOINTS = 200
         private const val DUMMY_DEFENCE = 50
         private const val DUMMY_STRENGTH = 60
+
+        private const val ICE_CLEAVE_FREEZE_CYCLES = 32
+        private const val SEVER_DISABLE_CYCLES = 8
 
         /** `SpecialAttackScript` is internal to `api:specials`; it registers every special map. */
         @Suppress("UNCHECKED_CAST")

@@ -11,6 +11,7 @@ dependencies {
     implementation(projects.api.areaChecker)
     implementation(projects.api.config)
     implementation(projects.api.dropTable)
+    implementation(projects.api.freeze)
     implementation(projects.api.hunt)
     implementation(projects.api.random)
     implementation(projects.api.npc)

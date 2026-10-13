@@ -2278,6 +2278,10 @@
 4846	dom_previous_deepest_level
 4848	collection_count_unsynced
 
+65493	freeze_source
+65494	freeze_immunity_end
+65495	freeze_end
+65496	protect_prayers_disabled_end
 65497	esc_closes_default_applied
 65498	wilderness_inside
 65499	aide_tutor_last_claim
