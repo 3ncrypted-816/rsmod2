@@ -83,7 +83,7 @@ class LumbridgeNpcOpsTest {
     class OpsTestDeps @Inject constructor(val interactions: NpcInteractions)
 
     private companion object {
-        const val SPAWNS_RESOURCE = "/org/rsmod/content/areas/city/lumbridge/npcs.toml"
+        const val SPAWNS_RESOURCE = "/org/runerealm/content/areas/city/lumbridge/npcs.toml"
 
         val NPC_LINE = Regex("""(?m)^npc = '([^']+)'""")
 
