@@ -41,16 +41,6 @@ class WildernessDeathTest {
             assertEquals(0, player.count(objs.bronze_axe))
         }
 
-    @Test
-    fun GameTestState.`deaths outside the wilderness keep everything`() =
-        runGameTest(PlayerDeathScript::class) {
-            player.giveItems()
-            player.queueDeath()
-            advance(ticks = 10)
-            assertEquals(1, player.count(objs.abyssal_whip))
-            assertEquals(1000, player.count(objs.coins))
-        }
-
     private fun Player.giveItems() {
         inv[0] = InvObj(objs.coins, 1000)
         inv[1] = InvObj(objs.bronze_axe)

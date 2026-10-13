@@ -39,6 +39,7 @@ dependencies {
     integrationImplementation(libs.rsprot.api)
     integrationImplementation(projects.api.areaChecker)
     integrationImplementation(projects.api.combat.combatCommons)
+    integrationImplementation(projects.api.death)
     integrationImplementation(projects.api.deathPlugin)
     integrationImplementation(projects.api.hitPlugin)
     integrationImplementation(projects.api.player)
