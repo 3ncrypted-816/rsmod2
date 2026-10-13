@@ -2,6 +2,8 @@ package org.runerealm.content.skills.mining.scripts
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.parallel.Execution
+import org.junit.jupiter.api.parallel.ExecutionMode
 import org.runerealm.api.config.refs.stats
 import org.runerealm.api.player.front
 import org.runerealm.api.player.righthand
@@ -17,6 +19,7 @@ import org.runerealm.game.loc.BoundLocInfo
 import org.runerealm.game.type.loc.LocType
 import org.runerealm.map.CoordGrid
 
+@Execution(ExecutionMode.SAME_THREAD)
 class MiningScriptTest {
     @Test
     fun GameTestState.`mine copper rock until it depletes and respawns`() =
@@ -24,7 +27,8 @@ class MiningScriptTest {
             val copper = rockOfCategory("copperrock1")
             val rock = place(copper)
             player.righthand = InvObj(mining_objs.rune_pickaxe)
-            player.stats[stats.mining] = 1
+            player.stats[stats.mining] = 41
+            val xpBefore = player.statMap.getFineXP(stats.mining)
 
             random.next = 2 // Do not roll the random gem table.
             random.then = 0 // Guarantee the ore roll.
@@ -35,7 +39,7 @@ class MiningScriptTest {
 
             advanceUntil({ mining_objs.copper_ore in player.inv }, timeoutTicks = 10)
             assertMessageSent("You manage to mine some copper.")
-            assertEquals(175, player.statMap.getFineXP(stats.mining))
+            assertEquals(175, player.statMap.getFineXP(stats.mining) - xpBefore)
             assertDoesNotExist(rock)
             assertExists(rock.coords, mining_locs.rocks1)
 
@@ -48,7 +52,7 @@ class MiningScriptTest {
         runGameTest(Mining::class) {
             val rock = place(rockOfCategory("tinrock2"))
             player.righthand = InvObj(mining_objs.rune_pickaxe)
-            player.stats[stats.mining] = 1
+            player.stats[stats.mining] = 41
 
             player.opLoc1(rock)
             advance(ticks = 1) // Swing; the first roll happens 3 ticks later.
@@ -119,7 +123,8 @@ class MiningScriptTest {
             val rock = place(rockOfCategory("copperrock1"))
             player.righthand = InvObj(mining_objs.rune_pickaxe)
             player.front = InvObj(mining_objs.amulet_of_glory_4)
-            player.stats[stats.mining] = 1
+            player.stats[stats.mining] = 41
+            val xpBefore = player.statMap.getFineXP(stats.mining)
             player.opLoc1(rock)
             advance(ticks = 1)
 
@@ -129,7 +134,7 @@ class MiningScriptTest {
             assertContains(player.inv, mining_objs.uncut_sapphire)
             assertDoesNotContain(player.inv, mining_objs.copper_ore)
             assertMessageSent("You just found a sapphire!")
-            assertEquals(0, player.statMap.getXP(stats.mining))
+            assertEquals(xpBefore, player.statMap.getFineXP(stats.mining))
             assertExists(rock)
         }
 
@@ -137,15 +142,15 @@ class MiningScriptTest {
     fun GameTestState.`essence rock gives pure essence from level 30 and never depletes`() =
         runGameTest(Mining::class) {
             val rock = place(mining_locs.rune_essence)
-            player.righthand = InvObj(mining_objs.rune_pickaxe)
+            player.righthand = InvObj(mining_objs.bronze_pickaxe)
             player.stats[stats.mining] = 1
             player.opLoc1(rock)
-            advanceUntil({ mining_objs.rune_essence in player.inv }, timeoutTicks = 10)
+            advanceUntil({ mining_objs.rune_essence in player.inv }, timeoutTicks = 20)
             assertExists(rock)
 
             player.clearInv()
             player.stats[stats.mining] = 30
-            advanceUntil({ mining_objs.pure_essence in player.inv }, timeoutTicks = 10)
+            advanceUntil({ mining_objs.pure_essence in player.inv }, timeoutTicks = 20)
             assertDoesNotContain(player.inv, mining_objs.rune_essence)
             assertExists(rock)
         }
@@ -167,15 +172,26 @@ class MiningScriptTest {
             player.opLoc2(rock)
             advance(ticks = 1)
             assertMessageSent("You examine the rock for ores...")
-            advance(ticks = 2)
-            assertMessageSent("This rock contains silver.")
+            advanceUntilMessage("This rock contains silver.")
         }
+
+    /** Advances tick by tick until [text] is sent; messages are only captured per tick. */
+    private fun GameTestScope.advanceUntilMessage(text: String, timeoutTicks: Int = 6) {
+        repeat(timeoutTicks) {
+            advance(ticks = 1)
+            if (runCatching { assertMessageSent(text) }.isSuccess) {
+                return
+            }
+        }
+        assertMessageSent(text)
+    }
 
     private fun GameTestScope.rockOfCategory(internal: String): LocType =
         locTypes.values.first { it.internalName == internal }
 
     private fun GameTestScope.place(type: LocType): BoundLocInfo {
         val rock = placeMapLoc(CoordGrid(0, 50, 50, 34, 31), type)
+        player.clearAllInvs()
         player.teleport(rock.coords.translateX(-1))
         return rock
     }

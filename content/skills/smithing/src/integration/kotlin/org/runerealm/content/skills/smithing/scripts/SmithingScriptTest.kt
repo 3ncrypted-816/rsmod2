@@ -3,6 +3,8 @@ package org.runerealm.content.skills.smithing.scripts
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.parallel.Execution
+import org.junit.jupiter.api.parallel.ExecutionMode
 import org.runerealm.api.config.refs.components
 import org.runerealm.api.config.refs.interfaces
 import org.runerealm.api.config.refs.stats
@@ -23,6 +25,7 @@ import org.runerealm.game.loc.BoundLocInfo
 import org.runerealm.game.type.obj.ObjType
 import org.runerealm.map.CoordGrid
 
+@Execution(ExecutionMode.SAME_THREAD)
 class SmithingScriptTest {
     @Test
     fun GameTestState.`smelt bronze bars at a furnace`() =
@@ -194,6 +197,7 @@ class SmithingScriptTest {
     private fun GameTestScope.placeFurnace(): BoundLocInfo {
         val type = locTypes.values.first { it.internalName == "furnace" }
         val furnace = placeMapLoc(CoordGrid(0, 50, 50, 30, 30), type)
+        player.clearAllInvs()
         player.teleport(furnace.coords.translateX(3).translateZ(1))
         return furnace
     }
@@ -201,6 +205,7 @@ class SmithingScriptTest {
     private fun GameTestScope.placeAnvil(): BoundLocInfo {
         val type = locTypes.values.first { it.internalName == "anvil" }
         val anvil = placeMapLoc(CoordGrid(0, 50, 50, 34, 31), type)
+        player.clearAllInvs()
         player.teleport(anvil.coords.translateX(-1))
         return anvil
     }
