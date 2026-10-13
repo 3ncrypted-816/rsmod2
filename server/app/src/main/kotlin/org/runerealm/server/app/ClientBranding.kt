@@ -39,6 +39,10 @@ internal object ClientBranding {
             if (renamed > 0) {
                 logger.info { "Renamed RuneScape to RuneRealm in $renamed client cache files." }
             }
+            val overridden = ClientTextOverrides.apply(cache)
+            if (overridden > 0) {
+                logger.info { "Rebranded bank titles in $overridden client cache files." }
+            }
         }
     }
 
