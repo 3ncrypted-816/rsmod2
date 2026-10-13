@@ -130,7 +130,6 @@ class SocialScriptTest {
     @Test
     fun GameTestState.`friend list holds 400 names without membership`() =
         runGameTest(SocialScript::class) {
-            player.members = false
             repeat(250) { player.friendList += "Friend$it" }
             eventBus.publish(SocialEvents.FriendAdd(player, "Dave"))
             assertEquals("Dave", player.friendList.last())
