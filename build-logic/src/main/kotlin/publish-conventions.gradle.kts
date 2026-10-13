@@ -27,12 +27,12 @@ publishing {
         pom {
             name.set(project.name)
             description.set(project.description)
-            url.set("https://github.com/rsmod")
+            url.set("https://github.com/3ncrypted-816")
             inceptionYear.set("2022")
 
             organization {
                 name.set("RuneRealm")
-                url.set("https://github.com/rsmod")
+                url.set("https://github.com/3ncrypted-816")
             }
 
             licenses {
@@ -43,9 +43,9 @@ publishing {
             }
 
             scm {
-                connection.set("scm:git:git://github.com/rsmod/rsmod.git")
-                developerConnection.set("scm:git:git@github.com:github.com/rsmod/rsmod.git")
-                url.set("https://github.com/rsmod/rsmod")
+                connection.set("scm:git:git://github.com/3ncrypted-816/rsmod2.git")
+                developerConnection.set("scm:git:git@github.com:3ncrypted-816/rsmod2.git")
+                url.set("https://github.com/3ncrypted-816/rsmod2")
             }
 
             developers {

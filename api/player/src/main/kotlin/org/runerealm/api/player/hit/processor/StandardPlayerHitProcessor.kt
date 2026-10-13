@@ -37,13 +37,14 @@ public object StandardPlayerHitProcessor : QueuedPlayerHitProcessor {
         }
         preventLogout("You can't log out until 10 seconds after the end of combat.", 16)
 
-        // TODO(combat): Process degradation, ring of recoil, retribution, etc.
+        // TODO(combat): Process degradation, ring of recoil, etc. Retribution is handled on death.
 
         val damage = min(player.hitpoints, hit.damage)
         if (damage > 0) {
             statSub(stats.hitpoints, constant = damage, percent = 0)
         }
 
+        applySmite(hit, damage)
         activateRedemption()
         playDefendSound(hit, random)
 
@@ -57,6 +58,26 @@ public object StandardPlayerHitProcessor : QueuedPlayerHitProcessor {
         val headbar = hit.createHeadbar(player.hitpoints, player.baseHitpointsLvl)
         player.showHeadbar(headbar)
     }
+
+    /**
+     * [Smite](https://oldschool.runescape.wiki/w/Smite): when the attacking player has Smite
+     * active, 25% of the damage done (rounded down) is drained from the target's Prayer points.
+     */
+    private fun ProtectedAccess.applySmite(hit: Hit, damage: Int) {
+        if (!hit.isFromPlayer || damage < SMITE_DIVISOR) {
+            return
+        }
+        val source = findHitPlayerSource(hit) ?: return
+        if (source.vars[varbits.smite] == 0) {
+            return
+        }
+        val drain = min(player.stat(stats.prayer), damage / SMITE_DIVISOR)
+        if (drain > 0) {
+            statSub(stats.prayer, constant = drain, percent = 0)
+        }
+    }
+
+    private const val SMITE_DIVISOR = 4
 
     /**
      * [Redemption](https://oldschool.runescape.wiki/w/Redemption): when hit to (or while below) 10%

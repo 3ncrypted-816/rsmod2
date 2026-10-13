@@ -6,6 +6,7 @@ import org.runerealm.events.KeyedEvent
 import org.runerealm.events.SuspendEvent
 import org.runerealm.events.UnboundEvent
 import org.runerealm.game.entity.Player
+import org.runerealm.game.interact.HeldOp
 import org.runerealm.game.inv.InvObj
 import org.runerealm.game.inv.Inventory
 import org.runerealm.game.type.droptrig.DropTriggerType
@@ -118,6 +119,19 @@ public sealed class HeldObjEvents(id: Number) : OpEvent(id.toLong()) {
         public val obj: InvObj,
         public val type: UnpackedObjType,
         public val inventory: Inventory,
+    ) : HeldObjEvents(obj.id)
+
+    /**
+     * A sub-op picked from the right-click submenu of held [op] (the obj's `isubop` entries), e.g.
+     * "Rub" → "Edgeville". [subop] is 1-based: `1` is the first entry of the submenu.
+     */
+    public class SubOp(
+        public val slot: Int,
+        public val obj: InvObj,
+        public val type: UnpackedObjType,
+        public val inventory: Inventory,
+        public val op: HeldOp,
+        public val subop: Int,
     ) : HeldObjEvents(obj.id)
 }
 
