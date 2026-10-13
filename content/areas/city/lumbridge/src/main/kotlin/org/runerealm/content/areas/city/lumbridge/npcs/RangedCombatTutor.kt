@@ -5,7 +5,7 @@ import org.runerealm.api.player.output.ClientScripts.toplevelSidebuttonSwitch
 import org.runerealm.api.player.protect.ProtectedAccess
 import org.runerealm.api.player.stat.baseRangedLvl
 import org.runerealm.api.script.onOpNpc1
-import org.runerealm.api.script.onOpNpc2
+import org.runerealm.api.script.onOpNpc3
 import org.runerealm.api.script.onOpNpcU
 import org.runerealm.api.type.refs.obj.ObjReferences
 import org.runerealm.api.type.refs.varbit.VarBitReferences
@@ -23,7 +23,7 @@ import org.runerealm.plugin.scripts.ScriptContext
 class RangedCombatTutor : PluginScript() {
     override fun ScriptContext.startup() {
         onOpNpc1(lumbridge_npcs.ranged_tutor) { startDialogue(it.npc) }
-        onOpNpc2(lumbridge_npcs.ranged_tutor) { claim(it.npc) }
+        onOpNpc3(lumbridge_npcs.ranged_tutor) { claim(it.npc) }
         onOpNpcU(lumbridge_npcs.ranged_tutor, RangedTutorObjs.training_bow) {
             returnItem(it.npc, it.invSlot, RangedTutorObjs.training_bow, "Training bow", "bow")
         }
@@ -225,23 +225,6 @@ class RangedCombatTutor : PluginScript() {
             happy,
             "Ahh the art of fletching. Fletching is used to create your own bow and arrows.",
         )
-        if (!player.members) {
-            chatNpc(
-                neutral,
-                "To create your bow and arrows you would need to gather " +
-                    "some wood, feathers, arrow heads and bow string. The " +
-                    "wood would be to make arrow shafts which can be turned " +
-                    "into unstrung bows and arrow shafts.",
-            )
-            chatNpc(
-                sad,
-                "Unfortunately, Fletching is a member only skill so you " +
-                    "will have to get your ranging supplies from shops or " +
-                    "other players.",
-            )
-            anythingElse()
-            return
-        }
         chatNpc(
             neutral,
             "It's quite simple really. You'll need an axe to cut some " +

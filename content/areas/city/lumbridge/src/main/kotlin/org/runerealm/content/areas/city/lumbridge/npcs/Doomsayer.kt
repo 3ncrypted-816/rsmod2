@@ -5,7 +5,7 @@ import org.runerealm.api.player.protect.ProtectedAccess
 import org.runerealm.api.player.vars.resyncVar
 import org.runerealm.api.script.onIfModalButton
 import org.runerealm.api.script.onOpNpc1
-import org.runerealm.api.script.onOpNpc2
+import org.runerealm.api.script.onOpNpc3
 import org.runerealm.api.type.refs.comp.ComponentReferences
 import org.runerealm.api.type.refs.interf.InterfaceReferences
 import org.runerealm.api.type.refs.varbit.VarBitReferences
@@ -29,7 +29,7 @@ import org.runerealm.plugin.scripts.ScriptContext
 class Doomsayer : PluginScript() {
     override fun ScriptContext.startup() {
         onOpNpc1(lumbridge_npcs.doomsayer) { doomsayerDialogue(it.npc) }
-        onOpNpc2(lumbridge_npcs.doomsayer) { openWarnings() }
+        onOpNpc3(lumbridge_npcs.doomsayer) { openWarnings() }
         onIfModalButton(doomsayer_components.close_button) { ifClose() }
         for ((component, varbit) in warningToggles) {
             onIfModalButton(component) { toggleWarning(varbit) }
