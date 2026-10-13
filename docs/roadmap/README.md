@@ -7,7 +7,7 @@
 ## Repository context
 - Repository: https://github.com/3ncrypted-816/rsmod2
 - Stack observed: Kotlin / Gradle; default branch `main`.
-- GitHub Issues are currently disabled on this repository. This roadmap is committed as documentation first; issue-backed Project tracking requires enabling Issues.
+- GitHub Issues are enabled. Initial backlog created in issues #1–#27. A GitHub Project still needs to be created and the issues added to it; the available connector does not expose Project creation actions.
 - This is a roadmap and coverage taxonomy, not a claim that every OSRS entity has already been individually enumerated or implemented.
 
 ## Completion tracking
