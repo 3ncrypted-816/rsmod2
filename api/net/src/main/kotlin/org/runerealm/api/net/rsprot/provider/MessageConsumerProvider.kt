@@ -8,6 +8,8 @@ import net.rsprot.protocol.game.incoming.buttons.IfButtonD
 import net.rsprot.protocol.game.incoming.buttons.IfButtonT
 import net.rsprot.protocol.game.incoming.buttons.IfSubOp
 import net.rsprot.protocol.game.incoming.friendchat.FriendChatJoinLeave
+import net.rsprot.protocol.game.incoming.friendchat.FriendChatKick
+import net.rsprot.protocol.game.incoming.friendchat.FriendChatSetRank
 import net.rsprot.protocol.game.incoming.locs.OpLoc
 import net.rsprot.protocol.game.incoming.locs.OpLoc6
 import net.rsprot.protocol.game.incoming.locs.OpLocT
@@ -39,6 +41,8 @@ import net.rsprot.protocol.message.codec.incoming.provider.DefaultGameMessageCon
 import org.runerealm.api.net.rsprot.handlers.ClientCheatHandler
 import org.runerealm.api.net.rsprot.handlers.CloseModalHandler
 import org.runerealm.api.net.rsprot.handlers.FriendChatJoinLeaveHandler
+import org.runerealm.api.net.rsprot.handlers.FriendChatKickHandler
+import org.runerealm.api.net.rsprot.handlers.FriendChatSetRankHandler
 import org.runerealm.api.net.rsprot.handlers.FriendListAddHandler
 import org.runerealm.api.net.rsprot.handlers.FriendListDelHandler
 import org.runerealm.api.net.rsprot.handlers.If3ButtonHandler
@@ -104,11 +108,15 @@ constructor(
     private val ignoreListAdd: IgnoreListAddHandler,
     private val friendListDel: FriendListDelHandler,
     private val friendListAdd: FriendListAddHandler,
+    private val friendChatKick: FriendChatKickHandler,
+    private val friendChatSetRank: FriendChatSetRankHandler,
 ) {
     fun get(): DefaultGameMessageConsumerRepositoryProvider<Player> {
         val builder = GameMessageConsumerRepositoryBuilder<Player>()
         builder.addListener(WindowStatus::class.java, windowStatus)
         builder.addListener(FriendChatJoinLeave::class.java, friendChatJoinLeave)
+        builder.addListener(FriendChatKick::class.java, friendChatKick)
+        builder.addListener(FriendChatSetRank::class.java, friendChatSetRank)
         builder.addListener(IgnoreListDel::class.java, ignoreListDel)
         builder.addListener(IgnoreListAdd::class.java, ignoreListAdd)
         builder.addListener(FriendListDel::class.java, friendListDel)

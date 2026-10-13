@@ -1,7 +1,6 @@
 package org.runerealm.content.other.social
 
 import jakarta.inject.Inject
-import net.rsprot.protocol.game.outgoing.social.FriendListLoaded
 import net.rsprot.protocol.game.outgoing.social.UpdateFriendList
 import net.rsprot.protocol.game.outgoing.social.UpdateIgnoreList
 import org.runerealm.api.config.refs.components
@@ -26,8 +25,13 @@ import org.runerealm.plugin.scripts.ScriptContext
  * Friend and ignore lists, following the OSRS Wiki ([Friends
  * List](https://oldschool.runescape.wiki/w/Friends_List),
  * [Ignore List](https://oldschool.runescape.wiki/w/Ignore_List)):
- * - Free players may have 200 friends and members 400; the ignore list holds 400 names.
- * - Friends show as online, with their world, while they are logged in.
+ * - The friend list holds 400 names (the wiki's members limit: there is no separate free-player
+ *   limit here) and the ignore list holds 400 names.
+ * - Friends show as online, with their world, while they are logged in, unless they ignore you.
+ *
+ * Names reach the server through the client's `FRIENDLIST_ADD`/`IGNORELIST_ADD` packets, whether
+ * typed after pressing the tab's add button or chosen from a right-click "Add friend"/"Add ignore"
+ * option on a player or a chat line.
  */
 class SocialScript
 @Inject
@@ -58,15 +62,15 @@ constructor(
         }
     }
 
+    /**
+     * Sends both lists on login. The client keeps showing "Loading friends list" on the friends and
+     * ignore tabs - and ignores the add buttons - until it receives an `UPDATE_FRIENDLIST` packet:
+     * `FRIENDLIST_LOADED` alone only moves it to its intermediate "connecting" state. The friend
+     * list is therefore always sent, even when it is empty.
+     */
     private fun Player.sendLists() {
-        if (ignoreList.isNotEmpty()) {
-            client.write(UpdateIgnoreList(ignoreList.map { ignoreEntry(it, added = false) }))
-        }
-        if (friendList.isEmpty()) {
-            client.write(FriendListLoaded)
-        } else {
-            client.write(UpdateFriendList(friendList.map { friendEntry(it, added = false) }))
-        }
+        client.write(UpdateIgnoreList(ignoreList.map { ignoreEntry(it, added = false) }))
+        client.write(UpdateFriendList(friendList.map { friendEntry(it, added = false) }))
     }
 
     private fun Player.addFriend(input: String) {
@@ -78,8 +82,7 @@ constructor(
             mes("You can't add yourself to your own friend list.")
             return
         }
-        val limit = if (members) MEMBERS_FRIEND_LIMIT else FREE_FRIEND_LIMIT
-        if (friendList.size >= limit) {
+        if (friendList.size >= FRIEND_LIMIT) {
             mes("Your friend list is full. Max of 200 for free users, and 400 for members.")
             return
         }
@@ -96,8 +99,10 @@ constructor(
         client.write(UpdateFriendList(listOf(friendEntry(stored, added = true))))
     }
 
-    private fun Player.removeFriend(name: String) {
-        friendList.removeAll { it.equals(name.trim(), ignoreCase = true) }
+    private fun Player.removeFriend(input: String) {
+        val name = input.trim()
+        friendList.removeAll { it.equals(name, ignoreCase = true) }
+        friendChatRanks.remove(name.lowercase())
     }
 
     private fun Player.addIgnore(input: String) {
@@ -121,16 +126,24 @@ constructor(
             mes("Please remove $name from your friend list first.")
             return
         }
-        val stored = onlinePlayer(name)?.displayName ?: name
+        val target = onlinePlayer(name)
+        val stored = target?.displayName ?: name
         ignoreList += stored
         client.write(UpdateIgnoreList(listOf(ignoreEntry(stored, added = true))))
+        // Someone you ignore sees you as offline on their friend list.
+        if (target != null && target.friendList.containsName(displayName)) {
+            target.client.write(UpdateFriendList(listOf(target.offlineEntry(displayName))))
+        }
     }
 
-    private fun Player.removeIgnore(name: String) {
-        val removed = ignoreList.firstOrNull { it.equals(name.trim(), ignoreCase = true) }
-        if (removed != null) {
-            ignoreList.remove(removed)
-            client.write(UpdateIgnoreList(listOf(UpdateIgnoreList.RemovedIgnoredEntry(removed))))
+    private fun Player.removeIgnore(input: String) {
+        val name = input.trim()
+        val removed = ignoreList.firstOrNull { it.equals(name, ignoreCase = true) } ?: return
+        ignoreList.remove(removed)
+        client.write(UpdateIgnoreList(listOf(UpdateIgnoreList.RemovedIgnoredEntry(removed))))
+        val target = onlinePlayer(removed)
+        if (target != null && target.friendList.containsName(displayName)) {
+            target.client.write(UpdateFriendList(listOf(target.friendEntry(displayName, false))))
         }
     }
 
@@ -149,9 +162,9 @@ constructor(
             }
             val entry =
                 if (online) {
-                    onlineEntry(name, added = false)
+                    other.onlineEntry(name, added = false)
                 } else {
-                    UpdateFriendList.OfflineFriend(false, name, null, 0, 0, "")
+                    other.offlineEntry(name)
                 }
             other.client.write(UpdateFriendList(listOf(entry)))
         }
@@ -163,22 +176,28 @@ constructor(
         if (target != null && !target.ignoreList.containsName(displayName)) {
             return onlineEntry(target.displayName, added)
         }
-        return UpdateFriendList.OfflineFriend(added, name, null, 0, 0, "")
+        return offlineEntry(name, added)
     }
 
-    private fun onlineEntry(name: String, added: Boolean): UpdateFriendList.OnlineFriend =
+    private fun Player.onlineEntry(name: String, added: Boolean): UpdateFriendList.OnlineFriend =
         UpdateFriendList.OnlineFriend(
             added,
             name,
             null,
             config.world,
-            0,
+            friendChatRank(name),
             0,
             "",
             "World ${config.world}",
             0,
             0,
         )
+
+    private fun Player.offlineEntry(
+        name: String,
+        added: Boolean = false,
+    ): UpdateFriendList.OfflineFriend =
+        UpdateFriendList.OfflineFriend(added, name, null, friendChatRank(name), 0, "")
 
     private fun ignoreEntry(name: String, added: Boolean): UpdateIgnoreList.IgnoredPlayer =
         UpdateIgnoreList.AddedIgnoredEntry(name, null, "", added)
@@ -193,12 +212,14 @@ constructor(
     private fun isValidName(name: String): Boolean = name.length in 1..MAX_NAME_LENGTH
 
     private companion object {
-        const val FREE_FRIEND_LIMIT = 200
-        const val MEMBERS_FRIEND_LIMIT = 400
+        const val FRIEND_LIMIT = 400
         const val IGNORE_LIMIT = 400
         const val MAX_NAME_LENGTH = 12
     }
 }
+
+/** The friends chat rank (0 = plain friend, 1 Recruit .. 6 General) this player gave [name]. */
+internal fun Player.friendChatRank(name: String): Int = friendChatRanks[name.lowercase()] ?: 0
 
 typealias social_interfaces = SocialInterfaces
 

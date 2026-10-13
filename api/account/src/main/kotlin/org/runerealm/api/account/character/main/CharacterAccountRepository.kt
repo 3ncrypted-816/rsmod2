@@ -136,7 +136,9 @@ constructor(
                         c.xp_rate_in_hundreds,
                         c.appearance,
                         c.friends,
-                        c.ignores
+                        c.ignores,
+                        c.friend_chat,
+                        c.friend_chat_ranks
                     FROM accounts a
                     JOIN characters c ON c.account_id = a.id
                     WHERE c.realm_id = ?
@@ -184,6 +186,14 @@ constructor(
                         resultSet.getString("ignores")?.let {
                             objectMapper.readReifiedValue<List<String>>(it)
                         } ?: emptyList()
+                    val friendChat =
+                        resultSet.getString("friend_chat")?.let {
+                            objectMapper.readReifiedValue<CharacterFriendChatData>(it)
+                        }
+                    val friendChatRanks =
+                        resultSet.getString("friend_chat_ranks")?.let {
+                            objectMapper.readReifiedValue<Map<String, Int>>(it)
+                        } ?: emptyMap()
                     val appearance =
                         appearanceText?.let {
                             objectMapper.readReifiedValue<CharacterAppearanceData>(it)
@@ -218,6 +228,8 @@ constructor(
                             appearance = appearance,
                             friends = friends,
                             ignores = ignores,
+                            friendChat = friendChat,
+                            friendChatRanks = friendChatRanks,
                         )
                     val metadataList = CharacterMetadataList(characterData, mutableListOf())
                     metadataList.add(applier, characterData)
@@ -241,7 +253,7 @@ constructor(
                     UPDATE characters
                     SET x = ?, z = ?, level = ?, varps = ?, last_login = ?, run_energy = ?,
                         xp_rate_in_hundreds = ?, appearance = ?, friends = ?, ignores = ?,
-                        last_logout = CURRENT_TIMESTAMP
+                        friend_chat = ?, friend_chat_ranks = ?, last_logout = CURRENT_TIMESTAMP
                     WHERE id = ?
                 """
                     .trimIndent()
@@ -261,7 +273,10 @@ constructor(
             it.setString(8, objectMapper.writeValueAsString(player.appearanceData()))
             it.setString(9, objectMapper.writeValueAsString(player.friendList.toList()))
             it.setString(10, objectMapper.writeValueAsString(player.ignoreList.toList()))
-            it.setInt(11, characterId)
+            val friendChat = CharacterFriendChatData.from(player.friendChat)
+            it.setString(11, objectMapper.writeValueAsString(friendChat))
+            it.setString(12, objectMapper.writeValueAsString(player.friendChatRanks.toMap()))
+            it.setInt(13, characterId)
             it.executeUpdate()
         }
 

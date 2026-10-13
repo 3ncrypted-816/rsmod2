@@ -18,6 +18,7 @@ import net.rsprot.protocol.game.incoming.locs.OpLocT
 import net.rsprot.protocol.game.incoming.misc.user.MoveGameClick
 import net.rsprot.protocol.game.incoming.npcs.OpNpc
 import net.rsprot.protocol.game.incoming.resumed.ResumePCountDialog
+import net.rsprot.protocol.game.incoming.resumed.ResumePStringDialog
 import net.rsprot.protocol.game.incoming.resumed.ResumePauseButton
 import net.rsprot.protocol.game.outgoing.misc.player.MessageGame
 import net.rsprot.protocol.util.CombinedId
@@ -44,6 +45,7 @@ import org.runerealm.api.net.rsprot.handlers.OpLocHandler
 import org.runerealm.api.net.rsprot.handlers.OpLocTHandler
 import org.runerealm.api.net.rsprot.handlers.OpNpcHandler
 import org.runerealm.api.net.rsprot.handlers.ResumePCountDialogHandler
+import org.runerealm.api.net.rsprot.handlers.ResumePStringDialogHandler
 import org.runerealm.api.net.rsprot.handlers.ResumePauseButtonHandler
 import org.runerealm.api.npc.apPlayer2
 import org.runerealm.api.npc.hit.modifier.NpcHitModifier
@@ -221,6 +223,7 @@ constructor(
     private val ifSubOpHandler: IfSubOpHandler,
     private val gameClickHandler: MoveGameClickHandler,
     private val resumePCountDialog: ResumePCountDialogHandler,
+    private val resumePStringDialog: ResumePStringDialogHandler,
     private val opLocHandler: OpLocHandler,
     private val opLocTHandler: OpLocTHandler,
     private val resumePauseButtonHandler: ResumePauseButtonHandler,
@@ -605,6 +608,11 @@ constructor(
     public fun Player.resumeCountDialog(count: Int) {
         val message = ResumePCountDialog(count)
         captureClient.queue(resumePCountDialog, message)
+    }
+
+    public fun Player.resumeStringDialog(text: String) {
+        val message = ResumePStringDialog(text)
+        captureClient.queue(resumePStringDialog, message)
     }
 
     public fun Player.moveGameClick(dest: CoordGrid, keyCombination: Int = 0) {

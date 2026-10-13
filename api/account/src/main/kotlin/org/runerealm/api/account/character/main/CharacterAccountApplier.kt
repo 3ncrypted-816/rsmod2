@@ -4,6 +4,7 @@ import jakarta.inject.Inject
 import java.time.LocalDateTime
 import org.runerealm.api.account.character.CharacterDataStage
 import org.runerealm.game.entity.Player
+import org.runerealm.game.entity.player.FriendChatSettings
 import org.runerealm.game.type.mod.ModLevelTypeList
 import org.runerealm.map.CoordGrid
 
@@ -41,6 +42,9 @@ constructor(private val modLevelTypes: ModLevelTypeList) :
         player.friendList.addAll(data.friends)
         player.ignoreList.clear()
         player.ignoreList.addAll(data.ignores)
+        player.friendChatRanks.clear()
+        player.friendChatRanks.putAll(data.friendChatRanks)
+        player.friendChat = data.friendChat?.toSettings() ?: FriendChatSettings.DEFAULT
     }
 
     private fun Player.assignAppearance(data: CharacterAppearanceData) {
