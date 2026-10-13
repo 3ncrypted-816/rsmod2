@@ -1,13 +1,16 @@
 package org.runerealm.content.skills.magic.teleports
 
 import jakarta.inject.Inject
-import org.runerealm.api.config.constants
+import org.runerealm.api.area.checker.WildernessArea
 import org.runerealm.api.config.refs.varps
+import org.runerealm.api.player.output.clearMapFlag
 import org.runerealm.api.player.protect.ProtectedAccess
 import org.runerealm.api.player.protect.ProtectedAccessLauncher
 import org.runerealm.api.player.vars.intVarp
 import org.runerealm.api.script.onIfOverlayButton
+import org.runerealm.api.script.onPlayerQueueWithArgs
 import org.runerealm.api.type.refs.comp.ComponentReferences
+import org.runerealm.api.type.refs.queue.QueueReferences
 import org.runerealm.api.type.refs.seq.SeqReferences
 import org.runerealm.api.type.refs.spot.SpotanimReferences
 import org.runerealm.api.type.refs.synth.SynthReferences
@@ -18,7 +21,15 @@ import org.runerealm.plugin.scripts.ScriptContext
 
 /**
  * [Lumbridge Home Teleport](https://oldschool.runescape.wiki/w/Lumbridge_Home_Teleport): no runes,
- * no experience, a 24-tick cast that cannot be started in combat and is interrupted by combat.
+ * no experience and a 24-tick cast.
+ *
+ * Per the wiki ([Home Teleport](https://oldschool.runescape.wiki/w/Home_Teleport)):
+ * - It "can be interrupted at any time by most actions, including combat". Each animation stage is
+ *   therefore scheduled as a **weak queue**: walking, clicking another entity, or opening an
+ *   interface clears weak queues (`clearpendingaction`), which cancels the cast. The player is
+ *   never delayed, so these inputs are accepted while casting.
+ * - It "only can be cast 10 seconds or more after combat has ended (similar to logging out)".
+ * - Like most teleport spells it cannot be cast beyond level 20 Wilderness.
  *
  * This server intentionally has **no** 30-minute cooldown.
  */
@@ -28,36 +39,68 @@ class HomeTeleport @Inject constructor(private val protectedAccess: ProtectedAcc
         onIfOverlayButton(home_teleport_components.standard) {
             protectedAccess.launch(player) { homeTeleport() }
         }
+        onPlayerQueueWithArgs<HomeTeleportCast>(home_teleport_queues.cast) {
+            homeTeleportStage(it.args)
+        }
     }
 }
 
-internal suspend fun ProtectedAccess.homeTeleport() {
+/** State carried between the weak-queued animation stages. */
+internal data class HomeTeleportCast(val stage: Int, val start: Int)
+
+internal fun ProtectedAccess.homeTeleport() {
     if (player.inRecentCombat(mapClock)) {
         mes(RECENT_COMBAT_MESSAGE)
         return
     }
-    val start = mapClock
-    for (stage in HOME_TELEPORT_STAGES) {
-        stage.synth?.let(::soundSynth)
-        anim(stage.seq)
-        spotanim(stage.spot)
-        delay(stage.ticks)
-        if (player.attackedSince(start)) {
-            resetAnim()
-            spotanim(null)
-            return
-        }
+    if (WildernessArea.level(player.coords) > HOME_TELEPORT_WILDERNESS_LIMIT) {
+        mes("A mysterious force blocks your teleport spell!")
+        mes("You can't use this teleport after level $HOME_TELEPORT_WILDERNESS_LIMIT wilderness.")
+        return
     }
-    telejump(LUMBRIDGE_HOME)
-    resetAnim()
+    // Casting stops the player where they stand; any other pending weak action is replaced.
+    player.abortRoute()
+    player.clearMapFlag()
+    clearWeakQueue(home_teleport_queues.cast)
+    playStage(HomeTeleportCast(stage = 0, start = mapClock))
 }
 
+internal fun ProtectedAccess.homeTeleportStage(cast: HomeTeleportCast) {
+    if (player.attackedSince(cast.start)) {
+        resetAnim()
+        spotanim(null)
+        return
+    }
+    if (cast.stage >= HOME_TELEPORT_STAGES.size) {
+        telejump(LUMBRIDGE_HOME)
+        resetAnim()
+        return
+    }
+    playStage(cast)
+}
+
+private fun ProtectedAccess.playStage(cast: HomeTeleportCast) {
+    val stage = HOME_TELEPORT_STAGES[cast.stage]
+    stage.synth?.let(::soundSynth)
+    anim(stage.seq)
+    spotanim(stage.spot)
+    // A queue counts down on the cycle it is added in, so `ticks + 1` makes the next stage start
+    // exactly `ticks` cycles after this one.
+    weakQueue(home_teleport_queues.cast, stage.ticks + 1, cast.copy(stage = cast.stage + 1))
+}
+
+/** The wiki: castable "10 seconds or more after combat has ended (similar to logging out)". */
 private fun Player.inRecentCombat(mapClock: Int): Boolean =
-    lastCombat != 0 && lastCombat + constants.combat_activecombat_delay > mapClock
+    lastCombat != 0 && lastCombat + HOME_TELEPORT_COMBAT_DELAY > mapClock
 
 private fun Player.attackedSince(start: Int): Boolean = lastCombat != 0 && lastCombat >= start
 
 private var Player.lastCombat by intVarp(varps.lastcombat)
+
+/** 10 seconds, matching the logout restriction. */
+const val HOME_TELEPORT_COMBAT_DELAY = 16
+
+const val HOME_TELEPORT_WILDERNESS_LIMIT = 20
 
 const val RECENT_COMBAT_MESSAGE = "You can't use this teleport after recent combat."
 
@@ -85,6 +128,10 @@ typealias home_teleport_components = HomeTeleportComponents
 
 object HomeTeleportComponents : ComponentReferences() {
     val standard = find("magic_spellbook:teleport_home_standard")
+}
+
+internal object home_teleport_queues : QueueReferences() {
+    val cast = find("home_teleport")
 }
 
 internal object home_seqs : SeqReferences() {
