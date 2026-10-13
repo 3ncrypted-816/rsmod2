@@ -9,6 +9,7 @@ import org.runerealm.api.player.ui.IfOpenSub
 import org.runerealm.api.player.ui.IfOverlayButton
 import org.runerealm.api.player.ui.IfOverlayButtonT
 import org.runerealm.api.player.ui.IfOverlayDrag
+import org.runerealm.api.player.ui.IfOverlaySubOp
 import org.runerealm.events.EventBus
 import org.runerealm.game.type.comp.ComponentType
 import org.runerealm.game.type.interf.InterfaceType
@@ -23,6 +24,12 @@ public fun ScriptContext.onIfClose(type: InterfaceType, action: IfCloseSub.() ->
 public fun ScriptContext.onIfOverlayButton(
     button: ComponentType,
     action: IfOverlayButton.() -> Unit,
+): Unit = onEvent(button.packed, action)
+
+/** Registers a script for sub-ops (`IF_SUBOP`) selected on an _overlay_ interface component. */
+public fun ScriptContext.onIfOverlaySubOp(
+    button: ComponentType,
+    action: IfOverlaySubOp.() -> Unit,
 ): Unit = onEvent(button.packed, action)
 
 public fun ScriptContext.onIfModalButton(

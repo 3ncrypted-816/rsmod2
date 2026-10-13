@@ -12,6 +12,7 @@ import kotlin.reflect.KClass
 import net.rsprot.protocol.game.incoming.buttons.If3Button
 import net.rsprot.protocol.game.incoming.buttons.IfButtonD
 import net.rsprot.protocol.game.incoming.buttons.IfButtonT
+import net.rsprot.protocol.game.incoming.buttons.IfSubOp
 import net.rsprot.protocol.game.incoming.locs.OpLoc
 import net.rsprot.protocol.game.incoming.locs.OpLocT
 import net.rsprot.protocol.game.incoming.misc.user.MoveGameClick
@@ -37,6 +38,7 @@ import org.runerealm.api.market.MarketPrices
 import org.runerealm.api.net.rsprot.handlers.If3ButtonHandler
 import org.runerealm.api.net.rsprot.handlers.IfButtonDHandler
 import org.runerealm.api.net.rsprot.handlers.IfButtonTHandler
+import org.runerealm.api.net.rsprot.handlers.IfSubOpHandler
 import org.runerealm.api.net.rsprot.handlers.MoveGameClickHandler
 import org.runerealm.api.net.rsprot.handlers.OpLocHandler
 import org.runerealm.api.net.rsprot.handlers.OpLocTHandler
@@ -216,6 +218,7 @@ constructor(
     private val ifButtonHandler: If3ButtonHandler,
     private val ifButtonDHandler: IfButtonDHandler,
     private val ifButtonTHandler: IfButtonTHandler,
+    private val ifSubOpHandler: IfSubOpHandler,
     private val gameClickHandler: MoveGameClickHandler,
     private val resumePCountDialog: ResumePCountDialogHandler,
     private val opLocHandler: OpLocHandler,
@@ -456,6 +459,39 @@ constructor(
                 else -> throw IllegalArgumentException("Invalid held op: $op")
             }
         ifButton(components.inv_items, comsub = invSlot, op = buttonOp, obj = obj.id)
+    }
+
+    /**
+     * Picks sub-op [subop] (1-based) from held op [op]'s right-click submenu on the inventory obj
+     * in [invSlot] (the client's `IF_SUBOP`), e.g. "Rub" → "Edgeville" on an amulet of glory.
+     */
+    public fun Player.opHeldSubOp(invSlot: Int, op: Int, subop: Int) {
+        val obj = checkNotNull(inv[invSlot]) { "No inv obj in slot `$invSlot`." }
+        if (!ui.containsOverlay(interfaces.inventory)) {
+            ifOpenOverlay(interfaces.inventory, components.toplevel_target_side3)
+        }
+        ifSetEvents(
+            components.inv_items,
+            inv.indices,
+            IfEvent.Op2,
+            IfEvent.Op3,
+            IfEvent.Op4,
+            IfEvent.Op6,
+            IfEvent.Op7,
+        )
+        val buttonOp =
+            when (op) {
+                1 -> IfButtonOp.Op2
+                2 -> IfButtonOp.Op3
+                3 -> IfButtonOp.Op4
+                4 -> IfButtonOp.Op6
+                5 -> IfButtonOp.Op7
+                else -> throw IllegalArgumentException("Invalid held op: $op")
+            }
+        val combinedId =
+            CombinedId(components.inv_items.interfaceId, components.inv_items.component)
+        val message = IfSubOp(combinedId, invSlot, obj.id, buttonOp.slot, subop)
+        captureClient.queue(ifSubOpHandler, message)
     }
 
     /** Uses the inventory obj in [selectedSlot] on the inventory obj in [targetSlot]. */

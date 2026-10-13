@@ -1,55 +1,123 @@
 package org.runerealm.content.skills.magic.teleports
 
 import jakarta.inject.Inject
+import org.runerealm.api.config.constants
+import org.runerealm.api.config.refs.params
 import org.runerealm.api.player.protect.ProtectedAccess
 import org.runerealm.api.script.onOpHeld1
 import org.runerealm.api.script.onOpHeld2
 import org.runerealm.api.script.onOpHeld3
 import org.runerealm.api.script.onOpHeld4
 import org.runerealm.api.script.onOpHeld5
+import org.runerealm.api.script.onOpHeldSubOp
+import org.runerealm.api.script.onOpWorn2
+import org.runerealm.api.script.onOpWorn3
+import org.runerealm.api.script.onOpWorn4
+import org.runerealm.api.script.onOpWorn5
+import org.runerealm.api.script.onOpWorn6
+import org.runerealm.api.script.onOpWorn7
+import org.runerealm.game.inv.Inventory
 import org.runerealm.game.type.obj.ObjType
 import org.runerealm.game.type.obj.ObjTypeList
+import org.runerealm.game.type.obj.UnpackedObjType
 import org.runerealm.map.CoordGrid
 import org.runerealm.plugin.scripts.PluginScript
 import org.runerealm.plugin.scripts.ScriptContext
 
 /**
- * Teleport jewellery, rubbed from the inventory, following the OSRS Wiki item pages (Amulet of
- * glory, Ring of dueling, Games necklace, Combat bracelet, Skills necklace, Ring of wealth). Each
- * teleport uses a charge; the destinations' coordinates are the wiki's map markers.
+ * Teleport jewellery following the OSRS Wiki item pages (Amulet of glory, Ring of dueling, Games
+ * necklace, Combat bracelet, Skills necklace, Ring of wealth). Each teleport uses a charge; the
+ * destinations' coordinates are the wiki's map markers.
+ *
+ * A teleport can be picked three ways, as in the client:
+ * - "Rub" from the inventory, then a destination from the chat menu;
+ * - the destination straight from the "Rub" right-click submenu (the obj's `isubop` entries, sent
+ *   as an `IF_SUBOP` held sub-op);
+ * - the destination's op on the worn item in the equipment tab (the obj's `wear_opN` params).
  */
 class JewelleryTeleports @Inject constructor(private val objTypes: ObjTypeList) : PluginScript() {
     override fun ScriptContext.startup() {
         for (jewellery in JEWELLERY) {
             for ((index, charged) in jewellery.charges.withIndex()) {
                 val type = objTypes.values.firstOrNull { it.internalName == charged } ?: continue
-                val rubOp = type.iop.indexOfFirst { it == "Rub" } + 1
-                if (rubOp !in 1..5) {
-                    continue
-                }
                 val next = jewellery.charges.getOrNull(index + 1) ?: jewellery.empty
-                val action: suspend ProtectedAccess.(Int) -> Unit = { slot ->
-                    rub(jewellery, type, slot, next)
-                }
-                when (rubOp) {
-                    1 -> onOpHeld1(type) { action(it.slot) }
-                    2 -> onOpHeld2(type) { action(it.slot) }
-                    3 -> onOpHeld3(type) { action(it.slot) }
-                    4 -> onOpHeld4(type) { action(it.slot) }
-                    5 -> onOpHeld5(type) { action(it.slot) }
-                }
+                registerRub(jewellery, type, next)
+                registerWornOps(jewellery, type, next)
             }
         }
     }
 
-    private suspend fun ProtectedAccess.rub(
+    private fun ScriptContext.registerRub(
         jewellery: Jewellery,
-        type: ObjType,
-        slot: Int,
+        type: UnpackedObjType,
         next: String?,
     ) {
-        val dest = chooseDestination(jewellery.destinations) ?: return
-        if (player.inv[slot]?.id != type.id) {
+        val rubOp = type.iop.indexOfFirst { it == "Rub" } + 1
+        if (rubOp !in 1..5) {
+            return
+        }
+        val action: suspend ProtectedAccess.(Int) -> Unit = { slot ->
+            val dest = chooseDestination(jewellery.destinations)
+            if (dest != null) {
+                teleport(jewellery, type, player.inv, slot, next, dest)
+            }
+        }
+        when (rubOp) {
+            1 -> onOpHeld1(type) { action(it.slot) }
+            2 -> onOpHeld2(type) { action(it.slot) }
+            3 -> onOpHeld3(type) { action(it.slot) }
+            4 -> onOpHeld4(type) { action(it.slot) }
+            5 -> onOpHeld5(type) { action(it.slot) }
+        }
+        onOpHeldSubOp(type) { event ->
+            val dest = jewellery.destinations.getOrNull(event.subop - 1)
+            if (event.op.slot != rubOp || dest == null) {
+                // Other submenus (e.g. the ring of wealth's "Features") are not implemented.
+                mes(constants.dm_default)
+                return@onOpHeldSubOp
+            }
+            teleport(jewellery, type, player.inv, event.slot, next, dest)
+        }
+    }
+
+    /**
+     * Worn ops come from the obj's `wear_op1`.. params, which list the destinations in the same
+     * order as the rub menu; `wear_opN` is sent as worn op `N + 1` (op 1 is "Remove").
+     */
+    private fun ScriptContext.registerWornOps(
+        jewellery: Jewellery,
+        type: UnpackedObjType,
+        next: String?,
+    ) {
+        for ((index, dest) in jewellery.destinations.withIndex()) {
+            val label = WEAR_OPS.getOrNull(index)?.let(type::paramOrNull) ?: break
+            // The cache abbreviates a few labels (e.g. "Falador" for Falador Park).
+            if (!dest.name.startsWith(label)) {
+                continue
+            }
+            val action: suspend ProtectedAccess.(Int) -> Unit = { slot ->
+                teleport(jewellery, type, player.worn, slot, next, dest)
+            }
+            when (index + 2) {
+                2 -> onOpWorn2(type) { action(it.slot) }
+                3 -> onOpWorn3(type) { action(it.slot) }
+                4 -> onOpWorn4(type) { action(it.slot) }
+                5 -> onOpWorn5(type) { action(it.slot) }
+                6 -> onOpWorn6(type) { action(it.slot) }
+                7 -> onOpWorn7(type) { action(it.slot) }
+            }
+        }
+    }
+
+    private suspend fun ProtectedAccess.teleport(
+        jewellery: Jewellery,
+        type: ObjType,
+        inventory: Inventory,
+        slot: Int,
+        next: String?,
+        dest: Destination,
+    ) {
+        if (inventory[slot]?.id != type.id) {
             return
         }
         if (!ItemTeleports.canTeleport(this, ItemTeleports.JEWELLERY_WILDERNESS_LIMIT)) {
@@ -58,16 +126,28 @@ class JewelleryTeleports @Inject constructor(private val objTypes: ObjTypeList) 
         when {
             next == UNLIMITED -> {}
             next == null -> {
-                invDel(player.inv, type, count = 1, slot = slot)
+                invDel(inventory, type, count = 1, slot = slot)
                 mes(jewellery.crumbleMessage ?: "Your ${jewellery.name} crumbles to dust.")
             }
             else -> {
                 val nextType = objTypes.values.first { it.internalName == next }
-                invReplaceSlot(player.inv, slot, 1, nextType)
+                invReplaceSlot(inventory, slot, 1, nextType)
             }
         }
         ItemTeleports.jewelleryTeleport(this, dest.coords)
         jewellery.chargesMessage(next)?.let(::mes)
+    }
+
+    private companion object {
+        val WEAR_OPS =
+            listOf(
+                params.wear_op1,
+                params.wear_op2,
+                params.wear_op3,
+                params.wear_op4,
+                params.wear_op5,
+                params.wear_op6,
+            )
     }
 
     private suspend fun ProtectedAccess.chooseDestination(
@@ -125,13 +205,13 @@ class JewelleryTeleports @Inject constructor(private val objTypes: ObjTypeList) 
         }
 }
 
-internal data class Destination(val name: String, val coords: CoordGrid)
+data class Destination(val name: String, val coords: CoordGrid)
 
 /**
  * A teleport jewellery family. [charges] lists the charged forms from most to fewest charges; using
  * the last charge turns it into [empty], or destroys it when [empty] is null.
  */
-internal data class Jewellery(
+data class Jewellery(
     val name: String,
     val charges: List<String>,
     val empty: String?,
@@ -165,7 +245,7 @@ private fun coord(x: Int, z: Int, level: Int = 0) = CoordGrid(x, z, level)
 private fun numbered(prefix: String, max: Int): List<String> =
     (max downTo 1).map { "${prefix}_$it" }
 
-internal val JEWELLERY: List<Jewellery> =
+val JEWELLERY: List<Jewellery> =
     listOf(
         Jewellery(
             name = "amulet of glory",

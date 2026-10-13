@@ -8,9 +8,11 @@ import org.runerealm.api.player.protect.ProtectedAccessLauncher
 import org.runerealm.api.player.protect.clearPendingAction
 import org.runerealm.api.player.ui.IfOverlayButton
 import org.runerealm.api.player.ui.IfOverlayDrag
+import org.runerealm.api.player.ui.IfOverlaySubOp
 import org.runerealm.api.player.ui.ifClose
 import org.runerealm.api.script.onIfOverlayButton
 import org.runerealm.api.script.onIfOverlayDrag
+import org.runerealm.api.script.onIfOverlaySubOp
 import org.runerealm.events.EventBus
 import org.runerealm.game.entity.Player
 import org.runerealm.game.interact.HeldOp
@@ -27,6 +29,7 @@ private constructor(
 ) : PluginScript() {
     override fun ScriptContext.startup() {
         onIfOverlayButton(components.inv_items) { opHeldButton() }
+        onIfOverlaySubOp(components.inv_items) { opHeldSubOp() }
         onIfOverlayDrag(components.inv_items) { dragHeldButton() }
     }
 
@@ -48,6 +51,20 @@ private constructor(
         protectedAccess.launch(this) {
             clearPendingAction()
             interactions.interact(this, inv, invSlot, op)
+        }
+    }
+
+    private fun IfOverlaySubOp.opHeldSubOp() {
+        val heldOp = op.toHeldOp() ?: return
+        val invSlot = comsub
+        player.ifClose(eventBus)
+        if (player.isAccessProtected) {
+            resendSlot(player.inv, 0)
+            return
+        }
+        protectedAccess.launch(player) {
+            clearPendingAction()
+            interactions.interactSubOp(this, inv, invSlot, heldOp, subop)
         }
     }
 
