@@ -39,6 +39,10 @@ internal object ClientBranding {
             if (renamed > 0) {
                 logger.info { "Renamed RuneScape to RuneRealm in $renamed client cache files." }
             }
+        }
+        // A separate session: openrs2 refuses to read a group back (version mismatch) after it was
+        // written earlier in the same session, and the rename above rewrites interface groups.
+        Cache.open(js5CachePath).use { cache ->
             val overridden = ClientTextOverrides.apply(cache)
             if (overridden > 0) {
                 logger.info { "Rebranded bank titles in $overridden client cache files." }

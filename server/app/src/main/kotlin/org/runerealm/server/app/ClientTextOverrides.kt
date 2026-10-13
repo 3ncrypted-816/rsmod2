@@ -32,7 +32,9 @@ internal object ClientTextOverrides {
 
     /** Returns the number of cache files that were rewritten. */
     fun apply(cache: Cache): Int {
-        var rewritten = 0
+        // Read everything first and write afterwards: openrs2 cannot read a group back once it has
+        // been written in the same session, and interface groups hold many files.
+        val pending = mutableListOf<PendingWrite>()
         for (archive in intArrayOf(INTERFACE_ARCHIVE, CLIENTSCRIPT_ARCHIVE)) {
             if (!cache.exists(archive)) {
                 continue
@@ -48,13 +50,22 @@ internal object ClientTextOverrides {
                             }
                         }
                     val replaced = replaceStrings(bytes) ?: continue
-                    cache.write(archive, group.id, file.id, Unpooled.wrappedBuffer(replaced))
-                    rewritten++
+                    pending += PendingWrite(archive, group.id, file.id, replaced)
                 }
             }
         }
-        return rewritten
+        for ((archive, group, file, bytes) in pending) {
+            cache.write(archive, group, file, Unpooled.wrappedBuffer(bytes))
+        }
+        return pending.size
     }
+
+    private data class PendingWrite(
+        val archive: Int,
+        val group: Int,
+        val file: Int,
+        val bytes: ByteArray,
+    )
 
     /**
      * Replaces every whole NUL-terminated string in [bytes] that equals one of [REPLACEMENTS]'s
