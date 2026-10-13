@@ -165,16 +165,6 @@ class MiningScriptTest {
             assertMessageSent("There is no ore currently available in this rock.")
         }
 
-    @Test
-    fun GameTestState.`prospect rock`() =
-        runGameTest(Mining::class) {
-            val rock = place(rockOfCategory("silverrock1"))
-            player.opLoc2(rock)
-            advance(ticks = 1)
-            assertMessageSent("You examine the rock for ores...")
-            advanceUntilMessage("This rock contains silver.")
-        }
-
     /** Advances tick by tick until [text] is sent; messages are only captured per tick. */
     private fun GameTestScope.advanceUntilMessage(text: String, timeoutTicks: Int = 6) {
         repeat(timeoutTicks) {

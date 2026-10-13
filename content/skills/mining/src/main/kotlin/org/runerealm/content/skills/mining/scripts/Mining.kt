@@ -10,7 +10,6 @@ import org.runerealm.api.player.stat.miningLvl
 import org.runerealm.api.random.GameRandom
 import org.runerealm.api.repo.loc.LocRepository
 import org.runerealm.api.script.onOpLoc1
-import org.runerealm.api.script.onOpLoc2
 import org.runerealm.api.script.onOpLoc3
 import org.runerealm.api.stats.levelmod.InvisibleLevels
 import org.runerealm.api.stats.xpmod.XpModifiers
@@ -19,7 +18,6 @@ import org.runerealm.content.skills.mining.configs.MiningRock
 import org.runerealm.content.skills.mining.configs.MiningRocks
 import org.runerealm.content.skills.mining.configs.Pickaxe
 import org.runerealm.content.skills.mining.configs.Pickaxes
-import org.runerealm.content.skills.mining.configs.ProspectRockEditor
 import org.runerealm.content.skills.mining.configs.RockKind
 import org.runerealm.content.skills.mining.configs.mining_locs
 import org.runerealm.content.skills.mining.configs.mining_objs
@@ -61,16 +59,10 @@ constructor(
             val type = resolved.type
             onOpLoc1(type) { attempt(it.loc, resolved) }
             onOpLoc3(type) { mine(it.loc, resolved) }
-            if (type.hasProspectOp()) {
-                onOpLoc2(type) { prospect(resolved.rock) }
-            }
         }
         for (id in depleted) {
             val type = locTypes.getValue(id)
             onOpLoc1(type) { mes("There is no ore currently available in this rock.") }
-            if (type.hasProspectOp()) {
-                onOpLoc2(type) { prospectEmpty() }
-            }
         }
     }
 
@@ -270,21 +262,6 @@ constructor(
         return null
     }
 
-    private suspend fun ProtectedAccess.prospect(rock: MiningRock) {
-        spam("You examine the rock for ores...")
-        delay(PROSPECT_DELAY)
-        mes("This rock contains ${rock.oreName}.")
-    }
-
-    private suspend fun ProtectedAccess.prospectEmpty() {
-        spam("You examine the rock for ores...")
-        delay(PROSPECT_DELAY)
-        mes("There is currently no ore available in this rock.")
-    }
-
-    private fun UnpackedLocType.hasProspectOp(): Boolean =
-        op.getOrNull(1).equals(ProspectRockEditor.PROSPECT_OP, ignoreCase = true)
-
     data class ResolvedRock(val type: UnpackedLocType, val rock: MiningRock, val empty: LocType?)
 
     data class MinedRock(
@@ -299,8 +276,6 @@ constructor(
 
         /** How often the mining animation is restarted while mining. */
         private const val ANIM_CYCLE = 4
-
-        private const val PROSPECT_DELAY = 3
 
         /** Gem rock success rate while wearing a charged amulet of glory (3x the base rate). */
         private val GLORY_GEM_ROCK_RATE = MineRate(84, 210)
