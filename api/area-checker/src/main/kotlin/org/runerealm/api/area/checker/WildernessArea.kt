@@ -2,10 +2,36 @@ package org.runerealm.api.area.checker
 
 import org.runerealm.map.CoordGrid
 
-/** Wilderness boundaries and levels, ported from the client's `wilderness_level` proc. */
+/**
+ * Wilderness boundaries and levels.
+ *
+ * Levels are ported from the client's `wilderness_level` proc (clientscript 384). It treats the
+ * whole `0_46_55_0_0`..`3_52_67_63_63` zone (x 2944-3391, z 3520-4351) as the surface Wilderness
+ * with `level = (z - 3520) / 8 + 1`. That zone's southern edge covers the tile south of the
+ * Wilderness ditch (z 3520), the ditch itself (z 3521-3522) and the two tiles north of it (z
+ * 3523-3524). The client only uses the proc while the server shows the `pvp_icons` overlay, and per
+ * the wiki ("Wilderness": "The first two steps (squares/tiles) of the Wilderness are 'safe' zones,
+ * in which players cannot attack or be attacked") the Wilderness proper starts two tiles north of
+ * the ditch, at z [SURFACE_START_Z]. [level] reports `0` for that strip, so the level overlay, PvP,
+ * death and teleport rules all agree.
+ */
 public object WildernessArea {
-    /** Returns the Wilderness level shown by the client at [coord], or `0` outside it. */
+    /** The first surface tile row of the Wilderness proper, two tiles north of the ditch. */
+    public const val SURFACE_START_Z: Int = 3525
+
+    /** Returns the Wilderness level at [coord], or `0` outside it (including the ditch strip). */
     public fun level(coord: CoordGrid): Int {
+        if (inDitchStrip(coord)) {
+            return 0
+        }
+        return clientLevel(coord)
+    }
+
+    /**
+     * Returns the level the client's `wilderness_level` proc computes for [coord]. Unlike [level],
+     * this counts the ditch strip south of [SURFACE_START_Z] as level 1.
+     */
+    public fun clientLevel(coord: CoordGrid): Int {
         val x = coord.x
         val z = coord.z
         val mx = x shr 6
@@ -33,6 +59,13 @@ public object WildernessArea {
      * boundaries but is a safe zone, so it does not count.
      */
     public fun contains(coord: CoordGrid): Boolean = level(coord) > 0 && !inFeroxEnclave(coord)
+
+    /** The ditch and the tiles either side of it that the client proc counts as level 1. */
+    private fun inDitchStrip(coord: CoordGrid): Boolean =
+        coord.x in SURFACE_X && coord.z in SURFACE_ZONE_START_Z until SURFACE_START_Z
+
+    private const val SURFACE_ZONE_START_Z = 55 * 64
+    private val SURFACE_X = 46 * 64 until 53 * 64
 
     private fun inFeroxEnclave(coord: CoordGrid): Boolean =
         coord.level == 0 && coord.x in FEROX_X && coord.z in FEROX_Z
