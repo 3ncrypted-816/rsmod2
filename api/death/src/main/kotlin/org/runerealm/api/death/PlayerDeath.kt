@@ -10,19 +10,32 @@ import org.runerealm.api.config.refs.midis
 import org.runerealm.api.config.refs.objs
 import org.runerealm.api.config.refs.queues
 import org.runerealm.api.config.refs.seqs
+import org.runerealm.api.config.refs.spotanims
+import org.runerealm.api.config.refs.stats
 import org.runerealm.api.config.refs.varbits
+import org.runerealm.api.config.refs.varns
 import org.runerealm.api.config.refs.varps
+import org.runerealm.api.hunt.NpcSearch
+import org.runerealm.api.hunt.PlayerSearch
+import org.runerealm.api.npc.hit.modifier.NpcHitModifier
+import org.runerealm.api.npc.hit.queueHit
+import org.runerealm.api.npc.vars.typePlayerUidVarn
 import org.runerealm.api.player.deathResetTimers
 import org.runerealm.api.player.disablePrayers
+import org.runerealm.api.player.hit.queueHit
 import org.runerealm.api.player.ironman.HARDCORE_DEATH_MESSAGE
 import org.runerealm.api.player.ironman.isHardcoreIronman
 import org.runerealm.api.player.ironman.revokeHardcoreStatus
 import org.runerealm.api.player.protect.ProtectedAccess
 import org.runerealm.api.player.vars.intVarp
 import org.runerealm.api.repo.obj.ObjRepository
+import org.runerealm.game.entity.Npc
 import org.runerealm.game.entity.Player
+import org.runerealm.game.hit.HitType
+import org.runerealm.game.interact.InteractionOp
 import org.runerealm.game.inv.InvObj
 import org.runerealm.game.inv.Inventory
+import org.runerealm.game.type.hunt.HuntVis
 import org.runerealm.game.type.obj.ObjTypeList
 import org.runerealm.game.type.stat.StatTypeList
 import org.runerealm.game.type.util.UncheckedType
@@ -35,6 +48,9 @@ constructor(
     private val statTypes: StatTypeList,
     private val objTypes: ObjTypeList,
     private val objRepo: ObjRepository,
+    private val playerSearch: PlayerSearch,
+    private val npcSearch: NpcSearch,
+    private val npcHitModifier: NpcHitModifier,
 ) {
     private var Player.specialAttackType by intVarp(varps.sa_attack)
 
@@ -43,6 +59,7 @@ constructor(
     }
 
     private suspend fun ProtectedAccess.deathSequence() {
+        activateRetribution()
         val respawn = CoordGrid(0, 50, 50, 21, 18)
         val randomRespawn = mapFindSquareLineOfWalk(respawn, minRadius = 0, maxRadius = 2)
         stopAction()
@@ -79,6 +96,48 @@ constructor(
             components.toplevel_target_side12,
             components.toplevel_target_side13,
         )
+    }
+
+    /**
+     * [Retribution](https://oldschool.runescape.wiki/w/Retribution): on death, deals up to 25% of
+     * the player's base Prayer level (rounded down; it can hit 0) to enemies within one tile. In
+     * multi-way combat every adjacent enemy is hit; in single-way combat only the player's opponent
+     * (the player who dealt the most damage, or the npc fighting them).
+     *
+     * Players are only hit where PvP is allowed: both players must be in the Wilderness.
+     */
+    private fun ProtectedAccess.activateRetribution() {
+        if (player.vars[varbits.retribution] == 0) {
+            return
+        }
+        spotanim(spotanims.retribution)
+        val maxHit = statBase(stats.prayer) / RETRIBUTION_DIVISOR
+        val multi = mapMultiway()
+        val hero = findHero()
+        val coords = player.coords
+
+        val players =
+            playerSearch.findAll(coords, RETRIBUTION_RADIUS, HuntVis.Off).filter {
+                it !== player &&
+                    it.coords.level == coords.level &&
+                    WildernessArea.contains(coords) &&
+                    WildernessArea.contains(it.coords) &&
+                    (multi || it === hero)
+            }
+        for (target in players.toList()) {
+            target.queueHit(player, delay = 1, HitType.Typeless, random.of(0, maxHit))
+        }
+
+        val npcs =
+            npcSearch.findAllAny(coords, RETRIBUTION_RADIUS, HuntVis.Off).filter {
+                it.coords.level == coords.level &&
+                    it.hitpoints > 0 &&
+                    it.type.hasOp(InteractionOp.Op2) &&
+                    (multi || it.aggressivePlayer == player.uid)
+            }
+        for (target in npcs.toList()) {
+            target.queueHit(player, 1, HitType.Typeless, random.of(0, maxHit), npcHitModifier)
+        }
     }
 
     /**
@@ -151,5 +210,9 @@ constructor(
 
     private companion object {
         const val ITEMS_KEPT_ON_DEATH = 3
+        const val RETRIBUTION_DIVISOR = 4
+        const val RETRIBUTION_RADIUS = 1
     }
 }
+
+private var Npc.aggressivePlayer by typePlayerUidVarn(varns.aggressive_player)
