@@ -92,3 +92,7 @@ RuneRealm is available under the terms of the ISC license, which is similar to t
 [homebrew]: https://brew.sh/
 [winget]: https://learn.microsoft.com/en-us/windows/package-manager/winget/
 [rsprox]: https://github.com/blurite/rsprox
+
+## OSRS Remake Roadmap
+
+The dependency-ordered implementation plan and OSRS content coverage checklist are maintained in [`docs/roadmap/README.md`](docs/roadmap/README.md). See [`docs/roadmap/CONTENT_COVERAGE.md`](docs/roadmap/CONTENT_COVERAGE.md) for the audit inventory and [`docs/roadmap/content-inventory.csv`](docs/roadmap/content-inventory.csv) for a starter matrix. The roadmap includes implementation phases, priorities, dependencies, completion criteria and OSRS Wiki references. GitHub Issues are enabled and an initial dependency-ordered backlog is available in [issues #1–#27](https://github.com/3ncrypted-816/rsmod2/issues). Create a GitHub Project and add these issues to enable board/roadmap views.

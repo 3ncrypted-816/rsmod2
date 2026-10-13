@@ -17,6 +17,7 @@ import org.runerealm.api.config.refs.varbits
 import org.runerealm.api.config.refs.varns
 import org.runerealm.api.config.refs.varps
 import org.runerealm.api.death.configs.death_params
+import org.runerealm.api.freeze.clearFreeze
 import org.runerealm.api.hunt.NpcSearch
 import org.runerealm.api.hunt.PlayerSearch
 import org.runerealm.api.npc.hit.modifier.NpcHitModifier
@@ -291,6 +292,7 @@ constructor(
     private fun ProtectedAccess.resetPlayerState(stats: StatTypeList) {
         player.disablePrayers()
         player.deathResetTimers()
+        player.clearFreeze()
 
         player.specialAttackType = 0
         player.skullIcon = null
