@@ -10,6 +10,8 @@ import org.runerealm.api.player.protect.ProtectedAccess
 import org.runerealm.api.player.vars.intVarp
 import org.runerealm.api.script.onIfModalButton
 import org.runerealm.api.script.onOpNpc1
+import org.runerealm.api.script.onOpNpc3
+import org.runerealm.api.script.onOpNpc4
 import org.runerealm.api.script.onPlayerLogin
 import org.runerealm.content.other.ironman.configs.ironman_components
 import org.runerealm.content.other.ironman.configs.ironman_interfaces
@@ -34,6 +36,8 @@ class IronmanTutor @Inject constructor(private val downgrades: IronmanDowngrades
     override fun ScriptContext.startup() {
         onPlayerLogin { downgrades.applyDueDowngrade(player) }
         onOpNpc1(ironman_npcs.adam) { talkToAdam(it.npc) }
+        onOpNpc3(ironman_npcs.adam) { startDialogue(it.npc) { giveArmour() } }
+        onOpNpc4(ironman_npcs.adam) { setup(it.npc) }
 
         onIfModalButton(ironman_components.none_button) { selectMode(IronmanMode.None) }
         onIfModalButton(ironman_components.im_button) { selectMode(IronmanMode.Standard) }
@@ -192,6 +196,11 @@ class IronmanTutor @Inject constructor(private val downgrades: IronmanDowngrades
 
     private suspend fun Dialogue.requestArmour() {
         chatPlayer(quiz, "Have you any armour for me, please?")
+        giveArmour()
+    }
+
+    /** The "Armour" right-click option skips straight to handing out the armour. */
+    private suspend fun Dialogue.giveArmour() {
         val armour = player.ironmanMode.armour()
         if (armour == null) {
             chatNpc(neutral, "You're not an Ironman. This armour is only for them.")
@@ -229,6 +238,22 @@ class IronmanTutor @Inject constructor(private val downgrades: IronmanDowngrades
                 )
             else -> null
         }
+
+    /** The "Setup" right-click option opens the Ironman setup interface directly. */
+    private suspend fun ProtectedAccess.setup(npc: Npc) {
+        if (player.isIronman || downgrades.isFreshAccount(player)) {
+            openSetup()
+            return
+        }
+        startDialogue(npc) {
+            chatNpc(
+                neutral,
+                "You can choose to become an <col=7f0000>Ironman</col> while you're on " +
+                    "Tutorial Island. Although you can't do that on this account, you might " +
+                    "like to bear it in mind for the future.",
+            )
+        }
+    }
 
     private fun ProtectedAccess.openSetup() {
         player.refreshSetupVars()

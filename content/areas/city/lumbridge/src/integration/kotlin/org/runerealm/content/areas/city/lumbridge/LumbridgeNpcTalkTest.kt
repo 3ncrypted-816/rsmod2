@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test
 import org.runerealm.api.testing.GameTestState
 import org.runerealm.api.testing.scope.GameTestScope
 import org.runerealm.content.areas.city.lumbridge.configs.lumbridge_npcs
-import org.runerealm.content.areas.city.lumbridge.npcs.*
 import org.runerealm.game.type.npc.NpcType
 import org.runerealm.map.CoordGrid
 
@@ -100,52 +99,6 @@ class LumbridgeNpcTalkTest {
     private companion object {
         const val BATCH_SIZE = 15
 
-        val SCRIPTS =
-            arrayOf(
-                Abigaila::class,
-                AbigaleAndHewey::class,
-                ArthurTheClueHunter::class,
-                BarfyBill::class,
-                Bartender::class,
-                Bob::class,
-                CandleSeller::class,
-                Cook::class,
-                CookingTutor::class,
-                CountCheck::class,
-                CraftingTutor::class,
-                DonieAndGee::class,
-                Doomsayer::class,
-                DukeHoracio::class,
-                FatherAereck::class,
-                FatherUrhney::class,
-                Fayeth::class,
-                FishingTutor::class,
-                FredTheFarmer::class,
-                GeneralStore::class,
-                GillieGroats::class,
-                Hans::class,
-                HatiusCosaintus::class,
-                Larry::class,
-                LostCityArcher::class,
-                LostCityMonk::class,
-                LostCityWarrior::class,
-                LostCityWizard::class,
-                LumbridgeGuide::class,
-                MagicCombatTutor::class,
-                MeleeCombatTutor::class,
-                MillieMiller::class,
-                MiningTutor::class,
-                Nigel::class,
-                Perdu::class,
-                PrayerTutor::class,
-                RangedCombatTutor::class,
-                SethGroats::class,
-                Sigmund::class,
-                SmithingApprentice::class,
-                ToolLeprechaun::class,
-                Vasquen::class,
-                Veos::class,
-                WoodsmanTutor::class,
-            )
+        val SCRIPTS = LUMBRIDGE_NPC_SCRIPTS
     }
 }
