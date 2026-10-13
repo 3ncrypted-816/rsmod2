@@ -15,4 +15,5 @@ object BaseTimers : TimerReferences() {
     val spec_regen = find("spec_regen")
     val prayer_drain = find("prayer_drain")
     val pk_skull = find("pk_skull")
+    val freeze_thaw = find("freeze_thaw")
 }

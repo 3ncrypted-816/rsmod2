@@ -5,6 +5,8 @@ import org.runerealm.api.config.constants
 import org.runerealm.api.config.refs.components
 import org.runerealm.api.config.refs.interfaces
 import org.runerealm.api.config.refs.varbits
+import org.runerealm.api.player.isProtectionPrayer
+import org.runerealm.api.player.isProtectionPrayerDisabled
 import org.runerealm.api.player.output.mes
 import org.runerealm.api.player.protect.ProtectedAccess
 import org.runerealm.api.player.protect.ProtectedAccessLauncher
@@ -28,6 +30,7 @@ import org.runerealm.content.interfaces.prayer.tab.configs.prayer_interfaces
 import org.runerealm.content.interfaces.prayer.tab.configs.prayer_queues
 import org.runerealm.content.interfaces.prayer.tab.configs.prayer_sounds
 import org.runerealm.content.interfaces.prayer.tab.configs.prayer_varbits
+import org.runerealm.content.interfaces.prayer.tab.util.PROTECTION_PRAYERS_DISABLED_MESSAGE
 import org.runerealm.content.interfaces.prayer.tab.util.disablePrayerDrain
 import org.runerealm.content.interfaces.prayer.tab.util.disablePrayerStatRegen
 import org.runerealm.content.interfaces.prayer.tab.util.enablePrayerDrain
@@ -91,9 +94,9 @@ constructor(
     }
 
     private fun ProtectedAccess.enableQuickPrayers() {
-        val quickPrayerVars = vars[prayer_varbits.quickprayer_selected]
+        val selectedQuickPrayerVars = vars[prayer_varbits.quickprayer_selected]
 
-        if (quickPrayerVars == 0) {
+        if (selectedQuickPrayerVars == 0) {
             mes("You haven't selected any quick-prayers.")
             player.resyncVar(varbits.quickprayer_active)
             return
@@ -101,6 +104,13 @@ constructor(
 
         if (player.prayerLvl == 0) {
             mes("You've run out of prayer points.")
+            player.resyncVar(varbits.quickprayer_active)
+            return
+        }
+
+        val quickPrayerVars = allowedQuickPrayers(selectedQuickPrayerVars)
+        if (quickPrayerVars == 0) {
+            mes(PROTECTION_PRAYERS_DISABLED_MESSAGE)
             player.resyncVar(varbits.quickprayer_active)
             return
         }
@@ -123,6 +133,20 @@ constructor(
             }
         }
         enablePrayerDrain()
+    }
+
+    /** Removes protection prayers from [selected] while they are disabled (e.g., by Sever). */
+    private fun ProtectedAccess.allowedQuickPrayers(selected: Int): Int {
+        if (!player.isProtectionPrayerDisabled()) {
+            return selected
+        }
+        var allowed = selected
+        for (prayer in repo.prayerList) {
+            if (isProtectionPrayer(prayer.enabled)) {
+                allowed = allowed and (1 shl prayer.id).inv()
+            }
+        }
+        return allowed
     }
 
     private fun ProtectedAccess.disableQuickPrayers() {

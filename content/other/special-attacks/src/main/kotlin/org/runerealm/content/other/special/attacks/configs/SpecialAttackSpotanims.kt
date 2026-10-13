@@ -22,4 +22,5 @@ object SpecialAttackSpotanims : SpotanimReferences() {
     val bandos_godsword = find("dh_sword_update_bandos_special_spotanim")
     val saradomin_godsword = find("dh_sword_update_saradomin_special_spotanim")
     val zamorak_godsword = find("dh_sword_update_zamorak_special_spotanim")
+    val ice_barrage_impact = find("ice_barrage_impact")
 }
