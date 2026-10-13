@@ -88,10 +88,6 @@ class WoodsmanTutor : PluginScript() {
             return
         }
         chatPlayer(happy, "Yes, please.")
-        if (!player.members) {
-            chatNpc(sad, "I can't sell you one here. Try talking to me later.")
-            return
-        }
         if (ownsWoodcuttingCape()) {
             val option = choice2("Skillcape", 1, "Hood", 2)
             if (option == 2) {

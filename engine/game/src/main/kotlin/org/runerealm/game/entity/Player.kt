@@ -174,7 +174,13 @@ public class Player(
 
     /** The player's own friends chat channel setup. */
     public var friendChat: FriendChatSettings = FriendChatSettings.DEFAULT
-    public var members: Boolean = false
+    /**
+     * Every account is treated as a member: this server has no members/free-to-play distinction, so
+     * members-only content is always available and the client is told it is on a members world.
+     */
+    public val members: Boolean
+        get() = true
+
     public var lastKnownDevice: Int? = null
 
     public var followCoord: CoordGrid = CoordGrid.NULL

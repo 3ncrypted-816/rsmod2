@@ -28,7 +28,6 @@ constructor(private val modLevelTypes: ModLevelTypeList) :
 
         val device = data.knownDevice
         player.lastKnownDevice = device
-        player.members = data.members
         player.username = data.loginName
         player.displayName = data.displayName ?: ""
         player.coords = CoordGrid(data.coordX, data.coordZ, data.coordLevel)

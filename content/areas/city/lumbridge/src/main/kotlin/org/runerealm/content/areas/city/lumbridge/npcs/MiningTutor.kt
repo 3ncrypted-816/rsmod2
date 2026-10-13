@@ -122,53 +122,37 @@ class MiningTutor : PluginScript() {
                 "east of Falador down some steps. It could be most useful " +
                 "to you!",
         )
-        if (player.members) {
-            chatNpc(
-                neutral,
-                "You might also like to check out the coal mine west of " +
-                    "Seers' village. This will enable you to use the coal " +
-                    "trucks.",
-            )
-            chatPlayer(happy, "Thank you, I'll remember that.")
-            chatNpc(
-                happy,
-                "I could show you where either of the places are on your map if you like?",
-            )
-            val choice =
-                choice3(
-                    "Can you show me where the mining guild is?",
-                    1,
-                    "Can you show me where the coal mine is?",
-                    2,
-                    "No thanks.",
-                    3,
-                )
-            when (choice) {
-                1 -> {
-                    chatPlayer(quiz, "Can you show me where the mining guild is?")
-                    // TODO(content): Open the world map and pan to the Mining Guild.
-                }
-                2 -> {
-                    chatPlayer(quiz, "Can you show me where the coal mine is?")
-                    // TODO(content): Open the world map and pan to the coal truck mining area.
-                }
-                3 -> {
-                    chatPlayer(neutral, "No thanks.")
-                    mainMenu()
-                }
-            }
-            return
-        }
+        chatNpc(
+            neutral,
+            "You might also like to check out the coal mine west of " +
+                "Seers' village. This will enable you to use the coal " +
+                "trucks.",
+        )
         chatPlayer(happy, "Thank you, I'll remember that.")
-        chatNpc(happy, "I could show you where the mining guild is on your map if you like?")
-        val choice = choice2("Yes please.", 1, "No thanks.", 2)
-        if (choice == 1) {
-            chatPlayer(happy, "Yes please.")
-            // TODO(content): Open the world map and pan to the Mining Guild.
-            return
+        chatNpc(happy, "I could show you where either of the places are on your map if you like?")
+        val choice =
+            choice3(
+                "Can you show me where the mining guild is?",
+                1,
+                "Can you show me where the coal mine is?",
+                2,
+                "No thanks.",
+                3,
+            )
+        when (choice) {
+            1 -> {
+                chatPlayer(quiz, "Can you show me where the mining guild is?")
+                // TODO(content): Open the world map and pan to the Mining Guild.
+            }
+            2 -> {
+                chatPlayer(quiz, "Can you show me where the coal mine is?")
+                // TODO(content): Open the world map and pan to the coal truck mining area.
+            }
+            3 -> {
+                chatPlayer(neutral, "No thanks.")
+                mainMenu()
+            }
         }
-        chatPlayer(neutral, "No thanks.")
-        mainMenu()
     }
 
     private suspend fun Dialogue.givePickaxeIfRequired() {
@@ -201,13 +185,11 @@ class MiningTutor : PluginScript() {
                 "found around the anvils north of Falador. I'm sure he " +
                 "can help you out.",
         )
-        if (player.members) {
-            chatNpc(
-                neutral,
-                "You could investigate the Dig Site east of Varrock, I'm " +
-                    "sure you'll find something rewarding there.",
-            )
-        }
+        chatNpc(
+            neutral,
+            "You could investigate the Dig Site east of Varrock, I'm " +
+                "sure you'll find something rewarding there.",
+        )
         mainMenu()
     }
 
