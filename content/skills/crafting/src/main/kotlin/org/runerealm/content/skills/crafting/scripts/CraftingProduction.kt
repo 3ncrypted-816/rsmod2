@@ -105,6 +105,8 @@ constructor(private val objTypes: ObjTypeList, private val xpMods: XpModifiers) 
         access.craftOnce(task)
     }
 
+    // statRandom uses GameRandom; Konsist mistakes it for stdlib Random by name.
+    @Suppress("konsist.avoid usage of stdlib Random in functions")
     private fun ProtectedAccess.craftOnce(task: CraftTask) {
         val recipe = task.recipe
         if (!canCraft(recipe)) {

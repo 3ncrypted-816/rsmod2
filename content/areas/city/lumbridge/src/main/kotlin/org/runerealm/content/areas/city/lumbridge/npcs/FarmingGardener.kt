@@ -50,7 +50,10 @@ internal object FarmingGardener {
                 }
                 2 -> {
                     chatPlayer(quiz, "Can you give me any farming advice?")
-                    chatNpc(neutral, farmingAdvice.random())
+                    chatNpc(
+                        neutral,
+                        farmingAdvice[access.random.of(maxExclusive = farmingAdvice.size)],
+                    )
                 }
                 3 -> {
                     chatNpc(

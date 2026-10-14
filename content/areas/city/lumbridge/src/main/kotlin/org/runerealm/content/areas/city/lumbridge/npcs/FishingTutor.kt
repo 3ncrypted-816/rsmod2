@@ -14,7 +14,7 @@ import org.runerealm.plugin.scripts.ScriptContext
 /**
  * The Fishing tutor.
  *
- * @see <a href="https://oldschool.runescape.wiki/w/Transcript:Fishing_tutor">Transcript</a>
+ * Transcript: https://oldschool.runescape.wiki/w/Transcript:Fishing_tutor
  */
 class FishingTutor : PluginScript() {
     override fun ScriptContext.startup() {
