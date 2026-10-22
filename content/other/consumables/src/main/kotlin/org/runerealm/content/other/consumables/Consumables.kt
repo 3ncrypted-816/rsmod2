@@ -23,6 +23,18 @@ sealed interface ConsumeEffect {
 
     /** Restores [percent]% run energy. */
     data class RunEnergy(val percent: Int) : ConsumeEffect
+
+    /** Reduces run energy drain by 70% for [units] x 10 ticks (stamina potion). */
+    data class Stamina(val units: Int) : ConsumeEffect
+
+    /** Dragonfire protection for [units] x 30 ticks (antifire potions). */
+    data class Antifire(val units: Int) : ConsumeEffect
+
+    /** Full dragonfire protection for [units] x 20 ticks (super antifire potions). */
+    data class SuperAntifire(val units: Int) : ConsumeEffect
+
+    /** Deals [hitpoints] damage; the potion cannot be drunk at or below that many (divine). */
+    data class Damage(val hitpoints: Int) : ConsumeEffect
 }
 
 /**
@@ -260,15 +272,270 @@ internal val POTIONS: List<Potion> =
                 ConsumeEffect.DrainCurrent(stats.ranged, 2, 10),
             ),
         ),
+        Potion(
+            "agility potion",
+            doses(
+                objs.agility_potion4,
+                objs.agility_potion3,
+                objs.agility_potion2,
+                objs.agility_potion1,
+            ),
+            listOf(boost(stats.agility, 3)),
+        ),
+        Potion(
+            "fishing potion",
+            doses(
+                objs.fishing_potion4,
+                objs.fishing_potion3,
+                objs.fishing_potion2,
+                objs.fishing_potion1,
+            ),
+            listOf(boost(stats.fishing, 3)),
+        ),
+        Potion(
+            "hunter potion",
+            doses(
+                objs.hunter_potion4,
+                objs.hunter_potion3,
+                objs.hunter_potion2,
+                objs.hunter_potion1,
+            ),
+            listOf(boost(stats.hunter, 3)),
+        ),
+        // Poison and venom are not modelled yet; these potions are drunk without an effect.
+        Potion(
+            "antipoison potion",
+            doses(objs.antipoison4, objs.antipoison3, objs.antipoison2, objs.antipoison1),
+            emptyList(),
+        ),
+        Potion(
+            "superantipoison potion",
+            doses(
+                objs.superantipoison4,
+                objs.superantipoison3,
+                objs.superantipoison2,
+                objs.superantipoison1,
+            ),
+            emptyList(),
+        ),
+        Potion(
+            "antidote+ potion",
+            doses(
+                objs.antidote_plus4,
+                objs.antidote_plus3,
+                objs.antidote_plus2,
+                objs.antidote_plus1,
+            ),
+            emptyList(),
+        ),
+        Potion(
+            "antidote++ potion",
+            doses(
+                objs.antidote_plus_plus4,
+                objs.antidote_plus_plus3,
+                objs.antidote_plus_plus2,
+                objs.antidote_plus_plus1,
+            ),
+            emptyList(),
+        ),
+        Potion(
+            "anti-venom potion",
+            doses(objs.anti_venom4, objs.anti_venom3, objs.anti_venom2, objs.anti_venom1),
+            emptyList(),
+        ),
+        Potion(
+            "anti-venom+ potion",
+            doses(
+                objs.anti_venom_plus4,
+                objs.anti_venom_plus3,
+                objs.anti_venom_plus2,
+                objs.anti_venom_plus1,
+            ),
+            emptyList(),
+        ),
+        // Wiki: antifire lasts 6 minutes (extended 12); super antifire 3 minutes (extended 6).
+        Potion(
+            "antifire potion",
+            doses(objs.antifire4, objs.antifire3, objs.antifire2, objs.antifire1),
+            listOf(ConsumeEffect.Antifire(ANTIFIRE_UNITS)),
+        ),
+        Potion(
+            "extended antifire potion",
+            doses(
+                objs.extended_antifire4,
+                objs.extended_antifire3,
+                objs.extended_antifire2,
+                objs.extended_antifire1,
+            ),
+            listOf(ConsumeEffect.Antifire(ANTIFIRE_UNITS * 2)),
+        ),
+        Potion(
+            "super antifire potion",
+            doses(
+                objs.super_antifire4,
+                objs.super_antifire3,
+                objs.super_antifire2,
+                objs.super_antifire1,
+            ),
+            listOf(ConsumeEffect.SuperAntifire(SUPER_ANTIFIRE_UNITS)),
+        ),
+        Potion(
+            "extended super antifire potion",
+            doses(
+                objs.extended_super_antifire4,
+                objs.extended_super_antifire3,
+                objs.extended_super_antifire2,
+                objs.extended_super_antifire1,
+            ),
+            listOf(ConsumeEffect.SuperAntifire(SUPER_ANTIFIRE_UNITS * 2)),
+        ),
+        // Wiki: restores 20% run energy and reduces energy drain by 70% for 2 minutes.
+        Potion(
+            "stamina potion",
+            doses(objs.stamina4, objs.stamina3, objs.stamina2, objs.stamina1),
+            listOf(ConsumeEffect.RunEnergy(20), ConsumeEffect.Stamina(STAMINA_UNITS)),
+        ),
+        // Wiki: Attack +20% + 2, Strength +12% + 2, Defence -10% - 2, Hitpoints -12% (current).
+        Potion(
+            "zamorak brew",
+            doses(objs.zamorak_brew4, objs.zamorak_brew3, objs.zamorak_brew2, objs.zamorak_brew1),
+            listOf(
+                boost(stats.attack, 2, 20),
+                boost(stats.strength, 2, 12),
+                ConsumeEffect.DrainCurrent(stats.defence, 2, 10),
+                ConsumeEffect.DrainCurrent(stats.hitpoints, 0, 12),
+            ),
+        ),
+        Potion(
+            "super combat potion",
+            doses(objs.super_combat4, objs.super_combat3, objs.super_combat2, objs.super_combat1),
+            listOf(
+                boost(stats.attack, 5, 15),
+                boost(stats.strength, 5, 15),
+                boost(stats.defence, 5, 15),
+            ),
+        ),
+        Potion(
+            "bastion potion",
+            doses(objs.bastion4, objs.bastion3, objs.bastion2, objs.bastion1),
+            listOf(boost(stats.ranged, 4, 10), boost(stats.defence, 5, 15)),
+        ),
+        Potion(
+            "battlemage potion",
+            doses(objs.battlemage4, objs.battlemage3, objs.battlemage2, objs.battlemage1),
+            listOf(boost(stats.magic, 4), boost(stats.defence, 5, 15)),
+        ),
+        // Wiki: Prayer +10% + 2, Magic +5% + 2, Attack/Strength/Defence -10% - 2.
+        Potion(
+            "ancient brew",
+            doses(objs.ancient_brew4, objs.ancient_brew3, objs.ancient_brew2, objs.ancient_brew1),
+            listOf(
+                restore(stats.prayer, 2, 10),
+                boost(stats.magic, 2, 5),
+                ConsumeEffect.DrainCurrent(stats.attack, 2, 10),
+                ConsumeEffect.DrainCurrent(stats.strength, 2, 10),
+                ConsumeEffect.DrainCurrent(stats.defence, 2, 10),
+            ),
+        ),
+        // Divine potions: the boost of the base potion for 10 Hitpoints. The boost is not held
+        // at its maximum for 5 minutes yet.
+        divine(
+            "divine super attack potion",
+            doses(
+                objs.divine_super_attack4,
+                objs.divine_super_attack3,
+                objs.divine_super_attack2,
+                objs.divine_super_attack1,
+            ),
+            boost(stats.attack, 5, 15),
+        ),
+        divine(
+            "divine super strength potion",
+            doses(
+                objs.divine_super_strength4,
+                objs.divine_super_strength3,
+                objs.divine_super_strength2,
+                objs.divine_super_strength1,
+            ),
+            boost(stats.strength, 5, 15),
+        ),
+        divine(
+            "divine super defence potion",
+            doses(
+                objs.divine_super_defence4,
+                objs.divine_super_defence3,
+                objs.divine_super_defence2,
+                objs.divine_super_defence1,
+            ),
+            boost(stats.defence, 5, 15),
+        ),
+        divine(
+            "divine ranging potion",
+            doses(
+                objs.divine_ranging4,
+                objs.divine_ranging3,
+                objs.divine_ranging2,
+                objs.divine_ranging1,
+            ),
+            boost(stats.ranged, 4, 10),
+        ),
+        divine(
+            "divine magic potion",
+            doses(objs.divine_magic4, objs.divine_magic3, objs.divine_magic2, objs.divine_magic1),
+            boost(stats.magic, 4),
+        ),
+        divine(
+            "divine super combat potion",
+            doses(
+                objs.divine_super_combat4,
+                objs.divine_super_combat3,
+                objs.divine_super_combat2,
+                objs.divine_super_combat1,
+            ),
+            boost(stats.attack, 5, 15),
+            boost(stats.strength, 5, 15),
+            boost(stats.defence, 5, 15),
+        ),
+        divine(
+            "divine bastion potion",
+            doses(
+                objs.divine_bastion4,
+                objs.divine_bastion3,
+                objs.divine_bastion2,
+                objs.divine_bastion1,
+            ),
+            boost(stats.ranged, 4, 10),
+            boost(stats.defence, 5, 15),
+        ),
+        divine(
+            "divine battlemage potion",
+            doses(
+                objs.divine_battlemage4,
+                objs.divine_battlemage3,
+                objs.divine_battlemage2,
+                objs.divine_battlemage1,
+            ),
+            boost(stats.magic, 4),
+            boost(stats.defence, 5, 15),
+        ),
     )
 
 internal const val FOOD_DELAY = 3
 internal const val COMBO_FOOD_ATTACK_DELAY = 2
 internal const val POTION_DELAY = 3
 internal const val MAX_RUN_ENERGY = constants.run_max_energy
+internal const val DIVINE_DAMAGE = 10
+internal const val STAMINA_UNITS = 20
+internal const val ANTIFIRE_UNITS = 20
+internal const val SUPER_ANTIFIRE_UNITS = 15
 
 private fun boost(stat: StatType, constant: Int, percent: Int = 0) =
     ConsumeEffect.Boost(stat, constant, percent)
 
 private fun restore(stat: StatType, constant: Int, percent: Int = 0) =
     ConsumeEffect.Restore(stat, constant, percent)
+
+private fun doses(vararg doses: ObjType): List<ObjType> = doses.toList()
+
+private fun divine(name: String, doses: List<ObjType>, vararg boosts: ConsumeEffect) =
+    Potion(name, doses, boosts.toList() + ConsumeEffect.Damage(DIVINE_DAMAGE))

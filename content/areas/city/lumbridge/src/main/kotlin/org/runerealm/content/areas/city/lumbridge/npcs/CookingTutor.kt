@@ -14,7 +14,7 @@ import org.runerealm.plugin.scripts.ScriptContext
 /**
  * Cordero, the Cooking tutor.
  *
- * @see <a href="https://oldschool.runescape.wiki/w/Transcript:Cooking_tutor">Transcript</a>
+ * Transcript: https://oldschool.runescape.wiki/w/Transcript:Cooking_tutor
  */
 class CookingTutor : PluginScript() {
     override fun ScriptContext.startup() {

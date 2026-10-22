@@ -39,6 +39,8 @@ constructor(private val objRepo: ObjRepository, private val random: GameRandom) 
         onOpNpc3(thieving_npcs.sigmund) { pickpocket(it.npc, PickpocketTarget.Sigmund) }
     }
 
+    // statRandom uses GameRandom; Konsist mistakes it for stdlib Random by name.
+    @Suppress("konsist.avoid usage of stdlib Random in functions")
     private suspend fun ProtectedAccess.pickpocket(npc: Npc, target: PickpocketTarget) {
         val possessive = target.possessive(npc)
         if (statBase(stats.thieving) < target.level) {

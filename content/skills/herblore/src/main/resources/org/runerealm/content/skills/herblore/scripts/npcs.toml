@@ -1,0 +1,4 @@
+# Bob Barter (herbs), south-west corner of the Grand Exchange (3155, 3480).
+[[spawn]]
+npc = 'ge_expert_herbs'
+coords = '0_49_54_19_24'

@@ -5,6 +5,8 @@ package org.runerealm.content.other.consumables.configs
 import org.runerealm.api.type.builders.varp.VarpBuilder
 import org.runerealm.api.type.refs.obj.ObjReferences
 import org.runerealm.api.type.refs.seq.SeqReferences
+import org.runerealm.api.type.refs.timer.TimerReferences
+import org.runerealm.api.type.refs.varbit.VarBitReferences
 import org.runerealm.api.type.refs.varp.VarpReferences
 
 typealias consumable_objs = ConsumableObjs
@@ -12,6 +14,26 @@ typealias consumable_objs = ConsumableObjs
 typealias consumable_varps = ConsumableVarps
 
 typealias consumable_seqs = ConsumableSeqs
+
+typealias consumable_varbits = ConsumableVarBits
+
+typealias consumable_timers = ConsumableTimers
+
+object ConsumableVarBits : VarBitReferences() {
+    /** Remaining stamina effect, in 10-tick units. */
+    val stamina_duration = find("stamina_duration")
+    val stamina_active = find("stamina_active")
+    /** Remaining antifire protection, in 30-tick units. */
+    val antifire = find("antifire_potion")
+    /** Remaining super antifire protection, in 20-tick units. */
+    val super_antifire = find("super_antifire_potion")
+}
+
+object ConsumableTimers : TimerReferences() {
+    val stamina = find("consumable_stamina")
+    val antifire = find("consumable_antifire")
+    val super_antifire = find("consumable_super_antifire")
+}
 
 object ConsumableSeqs : SeqReferences() {
     val eat = find("human_eat")
@@ -139,4 +161,112 @@ object ConsumableObjs : ObjReferences() {
     val saradomin_brew3 = find("3dosepotionofsaradomin")
     val saradomin_brew2 = find("2dosepotionofsaradomin")
     val saradomin_brew1 = find("1dosepotionofsaradomin")
+    val agility_potion4 = find("4dose1agility")
+    val agility_potion3 = find("3dose1agility")
+    val agility_potion2 = find("2dose1agility")
+    val agility_potion1 = find("1dose1agility")
+    val fishing_potion4 = find("4dosefisherspotion")
+    val fishing_potion3 = find("3dosefisherspotion")
+    val fishing_potion2 = find("2dosefisherspotion")
+    val fishing_potion1 = find("1dosefisherspotion")
+    val hunter_potion4 = find("4dosehunting")
+    val hunter_potion3 = find("3dosehunting")
+    val hunter_potion2 = find("2dosehunting")
+    val hunter_potion1 = find("1dosehunting")
+    val antipoison4 = find("4doseantipoison")
+    val antipoison3 = find("3doseantipoison")
+    val antipoison2 = find("2doseantipoison")
+    val antipoison1 = find("1doseantipoison")
+    val superantipoison4 = find("4dose2antipoison")
+    val superantipoison3 = find("3dose2antipoison")
+    val superantipoison2 = find("2dose2antipoison")
+    val superantipoison1 = find("1dose2antipoison")
+    val antidote_plus4 = find("antidote+4")
+    val antidote_plus3 = find("antidote+3")
+    val antidote_plus2 = find("antidote+2")
+    val antidote_plus1 = find("antidote+1")
+    val antidote_plus_plus4 = find("antidote++4")
+    val antidote_plus_plus3 = find("antidote++3")
+    val antidote_plus_plus2 = find("antidote++2")
+    val antidote_plus_plus1 = find("antidote++1")
+    val anti_venom4 = find("antivenom4")
+    val anti_venom3 = find("antivenom3")
+    val anti_venom2 = find("antivenom2")
+    val anti_venom1 = find("antivenom1")
+    val anti_venom_plus4 = find("antivenom+4")
+    val anti_venom_plus3 = find("antivenom+3")
+    val anti_venom_plus2 = find("antivenom+2")
+    val anti_venom_plus1 = find("antivenom+1")
+    val antifire4 = find("4dose1antidragon")
+    val antifire3 = find("3dose1antidragon")
+    val antifire2 = find("2dose1antidragon")
+    val antifire1 = find("1dose1antidragon")
+    val extended_antifire4 = find("4dose2antidragon")
+    val extended_antifire3 = find("3dose2antidragon")
+    val extended_antifire2 = find("2dose2antidragon")
+    val extended_antifire1 = find("1dose2antidragon")
+    val super_antifire4 = find("4dose3antidragon")
+    val super_antifire3 = find("3dose3antidragon")
+    val super_antifire2 = find("2dose3antidragon")
+    val super_antifire1 = find("1dose3antidragon")
+    val extended_super_antifire4 = find("4dose4antidragon")
+    val extended_super_antifire3 = find("3dose4antidragon")
+    val extended_super_antifire2 = find("2dose4antidragon")
+    val extended_super_antifire1 = find("1dose4antidragon")
+    val stamina4 = find("4dosestamina")
+    val stamina3 = find("3dosestamina")
+    val stamina2 = find("2dosestamina")
+    val stamina1 = find("1dosestamina")
+    val zamorak_brew4 = find("4dosepotionofzamorak")
+    val zamorak_brew3 = find("3dosepotionofzamorak")
+    val zamorak_brew2 = find("2dosepotionofzamorak")
+    val zamorak_brew1 = find("1dosepotionofzamorak")
+    val super_combat4 = find("4dose2combat")
+    val super_combat3 = find("3dose2combat")
+    val super_combat2 = find("2dose2combat")
+    val super_combat1 = find("1dose2combat")
+    val bastion4 = find("4dosebastion")
+    val bastion3 = find("3dosebastion")
+    val bastion2 = find("2dosebastion")
+    val bastion1 = find("1dosebastion")
+    val battlemage4 = find("4dosebattlemage")
+    val battlemage3 = find("3dosebattlemage")
+    val battlemage2 = find("2dosebattlemage")
+    val battlemage1 = find("1dosebattlemage")
+    val ancient_brew4 = find("4doseancientbrew")
+    val ancient_brew3 = find("3doseancientbrew")
+    val ancient_brew2 = find("2doseancientbrew")
+    val ancient_brew1 = find("1doseancientbrew")
+    val divine_super_attack4 = find("4dosedivineattack")
+    val divine_super_attack3 = find("3dosedivineattack")
+    val divine_super_attack2 = find("2dosedivineattack")
+    val divine_super_attack1 = find("1dosedivineattack")
+    val divine_super_strength4 = find("4dosedivinestrength")
+    val divine_super_strength3 = find("3dosedivinestrength")
+    val divine_super_strength2 = find("2dosedivinestrength")
+    val divine_super_strength1 = find("1dosedivinestrength")
+    val divine_super_defence4 = find("4dosedivinedefence")
+    val divine_super_defence3 = find("3dosedivinedefence")
+    val divine_super_defence2 = find("2dosedivinedefence")
+    val divine_super_defence1 = find("1dosedivinedefence")
+    val divine_ranging4 = find("4dosedivinerange")
+    val divine_ranging3 = find("3dosedivinerange")
+    val divine_ranging2 = find("2dosedivinerange")
+    val divine_ranging1 = find("1dosedivinerange")
+    val divine_magic4 = find("4dosedivinemagic")
+    val divine_magic3 = find("3dosedivinemagic")
+    val divine_magic2 = find("2dosedivinemagic")
+    val divine_magic1 = find("1dosedivinemagic")
+    val divine_super_combat4 = find("4dosedivinecombat")
+    val divine_super_combat3 = find("3dosedivinecombat")
+    val divine_super_combat2 = find("2dosedivinecombat")
+    val divine_super_combat1 = find("1dosedivinecombat")
+    val divine_bastion4 = find("4dosedivinebastion")
+    val divine_bastion3 = find("3dosedivinebastion")
+    val divine_bastion2 = find("2dosedivinebastion")
+    val divine_bastion1 = find("1dosedivinebastion")
+    val divine_battlemage4 = find("4dosedivinebattlemage")
+    val divine_battlemage3 = find("3dosedivinebattlemage")
+    val divine_battlemage2 = find("2dosedivinebattlemage")
+    val divine_battlemage1 = find("1dosedivinebattlemage")
 }
