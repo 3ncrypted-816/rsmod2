@@ -16,6 +16,7 @@ import org.runerealm.content.other.npcdrops.configs.drop_npcs
 import org.runerealm.content.other.npcdrops.configs.drop_objs
 import org.runerealm.game.type.npc.NpcType
 
+@Suppress("konsist.avoid usage of stdlib Random in functions")
 class LumbridgeNpcDropsTest {
     private val tables = NpcDropTables(setOf(LumbridgeNpcDrops()))
 

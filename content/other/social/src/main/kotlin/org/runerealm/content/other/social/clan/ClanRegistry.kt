@@ -21,11 +21,11 @@ class Clan(
     /** Bumped on every change, as the client expects of its clan update counters. */
     var updateNum: Int = 0
 
-    fun member(characterId: Int): ClanMember? =
-        members.firstOrNull { it.characterId == characterId }
-
     val owner: ClanMember?
         get() = members.firstOrNull { it.rank == ClanRanks.OWNER }
+
+    fun member(characterId: Int): ClanMember? =
+        members.firstOrNull { it.characterId == characterId }
 }
 
 class ClanMember(

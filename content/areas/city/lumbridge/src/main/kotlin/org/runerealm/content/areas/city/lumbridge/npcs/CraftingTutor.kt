@@ -12,7 +12,7 @@ import org.runerealm.plugin.scripts.ScriptContext
 /**
  * Cadmus, the Crafting tutor.
  *
- * @see <a href="https://oldschool.runescape.wiki/w/Transcript:Crafting_tutor">Transcript</a>
+ * Transcript: https://oldschool.runescape.wiki/w/Transcript:Crafting_tutor
  */
 class CraftingTutor : PluginScript() {
     override fun ScriptContext.startup() {
