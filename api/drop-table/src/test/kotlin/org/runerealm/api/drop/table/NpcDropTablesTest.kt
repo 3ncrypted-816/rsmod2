@@ -8,6 +8,7 @@ import org.runerealm.api.testing.random.SequenceRandom
 import org.runerealm.game.type.npc.HashedNpcType
 import org.runerealm.game.type.obj.HashedObjType
 
+@Suppress("konsist.avoid usage of stdlib Random in functions")
 class NpcDropTablesTest {
     private val bones = HashedObjType(null, "bones", 526)
     private val coins = HashedObjType(null, "coins", 995)

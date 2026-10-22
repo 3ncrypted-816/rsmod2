@@ -148,6 +148,8 @@ constructor(
         cook(task)
     }
 
+    // statRandom uses GameRandom; Konsist mistakes it for stdlib Random by name.
+    @Suppress("konsist.avoid usage of stdlib Random in functions")
     private fun ProtectedAccess.cook(task: CookTask) {
         val loc = locRepo.findExact(task.loc.coords, locTypes[task.loc])
         if (loc == null) {
