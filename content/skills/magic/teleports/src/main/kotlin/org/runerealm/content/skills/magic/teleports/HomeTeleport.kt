@@ -9,11 +9,13 @@ import org.runerealm.api.player.protect.ProtectedAccessLauncher
 import org.runerealm.api.player.vars.intVarp
 import org.runerealm.api.script.onIfOverlayButton
 import org.runerealm.api.script.onPlayerQueueWithArgs
+import org.runerealm.api.script.onPlayerSoftTimer
 import org.runerealm.api.type.refs.comp.ComponentReferences
 import org.runerealm.api.type.refs.queue.QueueReferences
 import org.runerealm.api.type.refs.seq.SeqReferences
 import org.runerealm.api.type.refs.spot.SpotanimReferences
 import org.runerealm.api.type.refs.synth.SynthReferences
+import org.runerealm.api.type.refs.timer.TimerReferences
 import org.runerealm.game.entity.Player
 import org.runerealm.map.CoordGrid
 import org.runerealm.plugin.scripts.PluginScript
@@ -42,6 +44,7 @@ class HomeTeleport @Inject constructor(private val protectedAccess: ProtectedAcc
         onPlayerQueueWithArgs<HomeTeleportCast>(home_teleport_queues.cast) {
             homeTeleportStage(it.args)
         }
+        onPlayerSoftTimer(home_teleport_timers.watch) { player.checkHomeTeleportInterrupted() }
     }
 }
 
@@ -63,15 +66,32 @@ internal fun ProtectedAccess.homeTeleport() {
     player.clearMapFlag()
     clearWeakQueue(home_teleport_queues.cast)
     playStage(HomeTeleportCast(stage = 0, start = mapClock))
+    player.softTimer(home_teleport_timers.watch, 1)
+}
+
+/**
+ * Interrupting the cast (walking, opening an interface, ...) clears its weak queue, but the
+ * animation and chalk circle that are already playing would keep going. Once the queue is gone,
+ * stop them straight away, as in OSRS.
+ */
+private fun Player.checkHomeTeleportInterrupted() {
+    if (home_teleport_queues.cast in weakQueueList) {
+        return
+    }
+    clearSoftTimer(home_teleport_timers.watch)
+    resetAnim()
+    resetSpotanim()
 }
 
 internal fun ProtectedAccess.homeTeleportStage(cast: HomeTeleportCast) {
     if (player.attackedSince(cast.start)) {
+        player.clearSoftTimer(home_teleport_timers.watch)
         resetAnim()
         spotanim(null)
         return
     }
     if (cast.stage >= HOME_TELEPORT_STAGES.size) {
+        player.clearSoftTimer(home_teleport_timers.watch)
         telejump(LUMBRIDGE_HOME)
         resetAnim()
         return
@@ -132,6 +152,10 @@ object HomeTeleportComponents : ComponentReferences() {
 
 internal object home_teleport_queues : QueueReferences() {
     val cast = find("home_teleport")
+}
+
+internal object home_teleport_timers : TimerReferences() {
+    val watch = find("home_teleport_watch")
 }
 
 internal object home_seqs : SeqReferences() {

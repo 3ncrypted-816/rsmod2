@@ -18,7 +18,8 @@ import org.runerealm.game.ui.Component
  * Handles `IF_SUBOP`: the client sends it when a player picks an entry from a right-click submenu
  * on an interface component, such as "Rub" → "Edgeville" on an inventory amulet of glory (the obj's
  * `isubop` entries). [IfSubOp.op] is the parent interface op (encoded like `If3Button.op`) and
- * [IfSubOp.subop] is the 1-based sub-op id.
+ * [IfSubOp.subop] is the 0-based index of the picked submenu entry. The server events use 1-based
+ * sub-op ids, so it is converted here.
  */
 class IfSubOpHandler
 @Inject
@@ -35,7 +36,7 @@ constructor(
 
     override fun handle(player: Player, message: IfSubOp) {
         val buttonOp = IfButtonOp.entries.firstOrNull { it.slot == message.op }
-        if (buttonOp == null || message.subop <= 0) {
+        if (buttonOp == null || message.subop < 0) {
             logger.debug { "Invalid IfSubOp: $message" }
             return
         }
@@ -59,7 +60,8 @@ constructor(
                     comsub = message.sub,
                     obj = objTypes[message.obj],
                     op = buttonOp,
-                    subop = message.subop,
+                    // The client sends a 0-based index; events are 1-based.
+                    subop = message.subop + 1,
                 )
             logger.debug { "[Overlay] IfSubOp: $message (event=$event)" }
             eventBus.publish(event)
