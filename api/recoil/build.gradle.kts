@@ -25,4 +25,5 @@ dependencies {
     implementation(projects.engine.plugin)
     integrationImplementation(projects.api.pluginCommons)
     integrationImplementation(projects.api.hitPlugin)
+    integrationImplementation(projects.api.invPlugin)
 }

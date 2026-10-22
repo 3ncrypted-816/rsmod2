@@ -34,10 +34,10 @@ public const val SUFFERING_MAX_CHARGES: Int = 100_000
 public fun recoilDamage(damage: Int): Int = if (damage <= 0) 0 else damage / 10 + 1
 
 /** Damage the player's ring of recoil has already dealt, from `0` to [RECOIL_RING_CHARGES]. */
-internal var Player.recoilDamageDealt: Int by intVarp(recoil_varps.ring_of_recoil_damage)
+public var Player.recoilDamageDealt: Int by intVarp(recoil_varps.ring_of_recoil_damage)
 
 /** Recoil charges stored in the player's ring of suffering. */
-internal var Player.sufferingCharges: Int by intVarBit(recoil_varbits.suffering_charges)
+public var Player.sufferingCharges: Int by intVarBit(recoil_varbits.suffering_charges)
 
 /** @return the damage the player's ring(s) of recoil can still deal before shattering. */
 public val Player.recoilChargesLeft: Int
@@ -75,23 +75,23 @@ internal fun Player.addSufferingCharges(charges: Int): Int {
     return added
 }
 
-internal object recoil_objs : ObjReferences() {
-    val ring_of_recoil: ObjType = find("ring_of_recoil")
-    val ring_of_recoil_cert: ObjType = find("cert_ring_of_recoil")
-    val suffering: ObjType = find("zenyte_ring_enchanted")
-    val suffering_r: ObjType = find("zenyte_ring_enchanted_recoil")
-    val suffering_i: ObjType = find("nzone_zenyte_ring_enchanted")
-    val suffering_ri: ObjType = find("nzone_zenyte_ring_enchanted_recoil")
-    val suffering_sw: ObjType = find("sw_zenyte_ring_enchanted")
-    val suffering_sw_r: ObjType = find("sw_zenyte_ring_enchanted_recoil")
+public object recoil_objs : ObjReferences() {
+    public val ring_of_recoil: ObjType = find("ring_of_recoil")
+    public val ring_of_recoil_cert: ObjType = find("cert_ring_of_recoil")
+    public val suffering: ObjType = find("zenyte_ring_enchanted")
+    public val suffering_r: ObjType = find("zenyte_ring_enchanted_recoil")
+    public val suffering_i: ObjType = find("nzone_zenyte_ring_enchanted")
+    public val suffering_ri: ObjType = find("nzone_zenyte_ring_enchanted_recoil")
+    public val suffering_sw: ObjType = find("sw_zenyte_ring_enchanted")
+    public val suffering_sw_r: ObjType = find("sw_zenyte_ring_enchanted_recoil")
 }
 
-internal object recoil_varps : VarpReferences() {
-    val ring_of_recoil_damage: VarpType = find("ring_of_recoil_damage")
+public object recoil_varps : VarpReferences() {
+    public val ring_of_recoil_damage: VarpType = find("ring_of_recoil_damage")
 }
 
-internal object recoil_varbits : VarBitReferences() {
-    val suffering_charges: VarBitType = find("charges_ring_of_suffering_quantity")
+public object recoil_varbits : VarBitReferences() {
+    public val suffering_charges: VarBitType = find("charges_ring_of_suffering_quantity")
 }
 
 internal object RecoilVarpBuilds : VarpBuilder() {

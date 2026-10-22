@@ -8,19 +8,19 @@ import org.runerealm.game.type.obj.ObjType
 import org.runerealm.game.type.varn.VarnType
 import org.runerealm.game.type.varp.VarpType
 
-internal typealias toxin_varps = ToxinVarps
+public typealias toxin_varps = ToxinVarps
 
 internal typealias toxin_varns = ToxinVarns
 
-internal typealias toxin_objs = ToxinObjs
+public typealias toxin_objs = ToxinObjs
 
-internal object ToxinVarps : VarpReferences() {
+public object ToxinVarps : VarpReferences() {
     /**
      * The client's `poison` varp, which drives the hitpoints orb: `0` is healthy, a positive value
      * below [VENOM_THRESHOLD] is poison, [VENOM_THRESHOLD] and above is venom, and a negative value
      * is the remaining poison immunity. See [PlayerToxins] for the full encoding.
      */
-    val poison: VarpType = find("poison")
+    public val poison: VarpType = find("poison")
 }
 
 internal object ToxinVarns : VarnReferences() {
@@ -37,8 +37,8 @@ internal object ToxinVarnBuilds : VarnBuilder() {
     }
 }
 
-internal object ToxinObjs : ObjReferences() {
-    val serpentine_helm: ObjType = find("serpentine_helm_charged")
-    val serpentine_helm_cyan: ObjType = find("serpentine_helm_charged_cyan")
-    val serpentine_helm_red: ObjType = find("serpentine_helm_charged_red")
+public object ToxinObjs : ObjReferences() {
+    public val serpentine_helm: ObjType = find("serpentine_helm_charged")
+    public val serpentine_helm_cyan: ObjType = find("serpentine_helm_charged_cyan")
+    public val serpentine_helm_red: ObjType = find("serpentine_helm_charged_red")
 }

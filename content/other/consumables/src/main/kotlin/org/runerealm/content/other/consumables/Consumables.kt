@@ -23,6 +23,15 @@ sealed interface ConsumeEffect {
 
     /** Restores [percent]% run energy. */
     data class RunEnergy(val percent: Int) : ConsumeEffect
+
+    /**
+     * Antipoison-style cure: cures poison and grants [immunityIntervals] intervals (18 seconds each)
+     * of poison immunity, or converts venom into poison.
+     */
+    data class CurePoison(val immunityIntervals: Int) : ConsumeEffect
+
+    /** Anti-venom-style cure: cures venom and poison, then grants [immunityIntervals] of immunity. */
+    data class CureVenom(val immunityIntervals: Int) : ConsumeEffect
 }
 
 /**
@@ -259,6 +268,57 @@ internal val POTIONS: List<Potion> =
                 ConsumeEffect.DrainCurrent(stats.magic, 2, 10),
                 ConsumeEffect.DrainCurrent(stats.ranged, 2, 10),
             ),
+        ),
+        // Poison and venom cures, from the OSRS Wiki
+        // [Poison](https://oldschool.runescape.wiki/w/Poison#Curing_poison) immunity table, in
+        // 18-second intervals: antipoison 1.5 minutes (5), superantipoison 6 (20), antidote+ 9 (30),
+        // antidote++ 12 (40), anti-venom 12.3 (41) and anti-venom+ 15 (50). Immunity values below
+        // -38 also protect from venom, which gives antidote++ 18-36 seconds, anti-venom 36-54
+        // seconds and anti-venom+ 3.6 minutes of venom immunity, as on the wiki.
+        Potion(
+            "antipoison potion",
+            listOf(objs.antipoison4, objs.antipoison3, objs.antipoison2, objs.antipoison1),
+            listOf(ConsumeEffect.CurePoison(5)),
+        ),
+        Potion(
+            "superantipoison potion",
+            listOf(
+                objs.superantipoison4,
+                objs.superantipoison3,
+                objs.superantipoison2,
+                objs.superantipoison1,
+            ),
+            listOf(ConsumeEffect.CurePoison(20)),
+        ),
+        Potion(
+            "antidote+ potion",
+            listOf(objs.antidote_plus4, objs.antidote_plus3, objs.antidote_plus2, objs.antidote_plus1),
+            listOf(ConsumeEffect.CurePoison(30)),
+        ),
+        Potion(
+            "antidote++ potion",
+            listOf(
+                objs.antidote_plusplus4,
+                objs.antidote_plusplus3,
+                objs.antidote_plusplus2,
+                objs.antidote_plusplus1,
+            ),
+            listOf(ConsumeEffect.CurePoison(40)),
+        ),
+        Potion(
+            "anti-venom potion",
+            listOf(objs.antivenom4, objs.antivenom3, objs.antivenom2, objs.antivenom1),
+            listOf(ConsumeEffect.CureVenom(41)),
+        ),
+        Potion(
+            "anti-venom+ potion",
+            listOf(
+                objs.antivenom_plus4,
+                objs.antivenom_plus3,
+                objs.antivenom_plus2,
+                objs.antivenom_plus1,
+            ),
+            listOf(ConsumeEffect.CureVenom(50)),
         ),
     )
 

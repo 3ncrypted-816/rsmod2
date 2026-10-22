@@ -13,6 +13,8 @@ import org.runerealm.api.player.stat.statSub
 import org.runerealm.api.player.vars.intVarp
 import org.runerealm.api.script.onOpHeld1
 import org.runerealm.api.script.onOpHeld2
+import org.runerealm.api.toxins.curePoison
+import org.runerealm.api.toxins.cureVenom
 import org.runerealm.content.other.consumables.configs.SIMPLE_FOOD_HEALS
 import org.runerealm.content.other.consumables.configs.consumable_objs
 import org.runerealm.content.other.consumables.configs.consumable_seqs
@@ -144,6 +146,8 @@ constructor(private val objTypes: ObjTypeList, private val statTypes: StatTypeLi
                     val drain = effect.constant + current * effect.percent / 100
                     player.statSub(effect.stat, drain, 0)
                 }
+                is ConsumeEffect.CurePoison -> player.curePoison(effect.immunityIntervals)
+                is ConsumeEffect.CureVenom -> player.cureVenom(effect.immunityIntervals)
                 is ConsumeEffect.RunEnergy -> {
                     val restore = MAX_RUN_ENERGY * effect.percent / 100
                     player.runEnergy = min(MAX_RUN_ENERGY, player.runEnergy + restore)
