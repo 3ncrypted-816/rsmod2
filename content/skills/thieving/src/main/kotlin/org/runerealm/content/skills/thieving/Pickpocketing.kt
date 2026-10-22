@@ -3,12 +3,12 @@ package org.runerealm.content.skills.thieving
 import jakarta.inject.Inject
 import org.runerealm.api.config.refs.content
 import org.runerealm.api.config.refs.objs
-import org.runerealm.api.config.refs.spotanims
 import org.runerealm.api.config.refs.stats
 import org.runerealm.api.player.protect.ProtectedAccess
 import org.runerealm.api.random.GameRandom
 import org.runerealm.api.repo.obj.ObjRepository
 import org.runerealm.api.script.onOpNpc3
+import org.runerealm.api.stun.stun
 import org.runerealm.api.type.refs.npc.NpcReferences
 import org.runerealm.api.type.refs.obj.ObjReferences
 import org.runerealm.api.type.refs.seq.SeqReferences
@@ -69,7 +69,7 @@ constructor(private val objRepo: ObjRepository, private val random: GameRandom) 
         }
     }
 
-    private suspend fun ProtectedAccess.fail(
+    private fun ProtectedAccess.fail(
         npc: Npc,
         target: PickpocketTarget,
         possessive: String,
@@ -79,9 +79,7 @@ constructor(private val objRepo: ObjRepository, private val random: GameRandom) 
         npc.anim(thieving_seqs.human_unarmedpunch)
         npc.say("What do you think you're doing?")
         takeInstantHit(HitType.Typeless, target.damage)
-        spotanim(spotanims.stunned, height = 100)
-        mes("You have been stunned.")
-        delay(STUN_TICKS)
+        player.stun(STUN_TICKS)
     }
 
     private fun PickpocketTarget.rollLoot(): Loot? {

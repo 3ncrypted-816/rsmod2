@@ -169,6 +169,10 @@
 1802	slayer_task_boss_location
 1935	spell_maxhit
 
+65360	npc_attack_style
+65361	npc_magic_maxhit
+65362	proj_impact
+65363	npc_poison_damage
 65378	death_pvm_keep
 65379	death_pvp_drop_as
 65380	death_pvp_coins

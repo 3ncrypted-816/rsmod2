@@ -112,6 +112,14 @@ object BaseParams : ParamReferences() {
     val proj_travel: ParamSpot = find("proj_travel")
     val proj_launch: ParamSpot = find("proj_launch")
     val proj_launch_double: ParamSpot = find("proj_launch_double")
+    /** Spotanim played on the target when an npc's ranged or magic attack lands. */
+    val proj_impact: ParamSpot = find("proj_impact")
+    /** Npc attack style: 0 = melee (default), 1 = ranged, 2 = magic. */
+    val npc_attack_style: ParamInt = find("npc_attack_style")
+    /** Fixed max hit for an npc's magic attack (the spell max hit), before damage reductions. */
+    val npc_magic_maxhit: ParamInt = find("npc_magic_maxhit")
+    /** Initial poison damage an npc's attacks can inflict; `0` means not poisonous. */
+    val npc_poison_damage: ParamInt = find("npc_poison_damage")
     val defence_light: ParamInt = find("defence_light")
     val defence_standard: ParamInt = find("defence_standard")
     val defence_heavy: ParamInt = find("defence_heavy")

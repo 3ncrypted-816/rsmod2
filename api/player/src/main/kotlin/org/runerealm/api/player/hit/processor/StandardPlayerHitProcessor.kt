@@ -9,6 +9,7 @@ import org.runerealm.api.config.refs.spotanims
 import org.runerealm.api.config.refs.stats
 import org.runerealm.api.config.refs.synths
 import org.runerealm.api.config.refs.varbits
+import org.runerealm.api.player.events.PlayerHitEvents
 import org.runerealm.api.player.headbar.InternalPlayerHeadbars
 import org.runerealm.api.player.lefthand
 import org.runerealm.api.player.output.soundSynth
@@ -37,7 +38,8 @@ public object StandardPlayerHitProcessor : QueuedPlayerHitProcessor {
         }
         preventLogout("You can't log out until 10 seconds after the end of combat.", 16)
 
-        // TODO(combat): Process degradation, ring of recoil, etc. Retribution is handled on death.
+        // TODO(combat): Process degradation. Retribution is handled on death. Ring of recoil and
+        //  other "on hit taken" effects subscribe to `PlayerHitEvents.Impact`.
 
         val damage = min(player.hitpoints, hit.damage)
         if (damage > 0) {
@@ -57,6 +59,8 @@ public object StandardPlayerHitProcessor : QueuedPlayerHitProcessor {
 
         val headbar = hit.createHeadbar(player.hitpoints, player.baseHitpointsLvl)
         player.showHeadbar(headbar)
+
+        publish(PlayerHitEvents.Impact(player, hit, damage))
     }
 
     /**
