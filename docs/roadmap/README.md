@@ -32,6 +32,8 @@ Suggested priorities:
 
 **Exit:** each known system is marked existing, partial, missing or intentionally out of scope with evidence.
 
+**Baseline status (2026-10-13):** the first audit is recorded in [CONTENT_COVERAGE.md](CONTENT_COVERAGE.md) and [content-inventory.csv](content-inventory.csv), including RuneRealm-specific differences, known risks/unverified values and a prioritized next-work list.
+
 ### Phase 1 — Engine and protocol foundations (P0)
 - [ ] Protocol, packet decoding/encoding, session lifecycle, login/logout and reconnect.
 - [ ] Tick scheduler, world update cycle, entity lifecycle and deterministic event ordering.
@@ -151,6 +153,29 @@ For each skill, audit actions, requirements, tools, boosts, XP awards, resource 
 - [ ] Load/performance tests, persistence recovery and economy/duplication checks.
 - [ ] Content coverage report: audited/implemented/tested/verified/excluded by domain.
 - [ ] Release-candidate pass and documented known differences.
+
+## Test bots (planned, not built yet)
+
+Automated in-game bots that exercise content the way players do, so parity gaps show up as structured reports instead of being found by hand. **Status:** planned. Add it once the Phase 0 audit and the core systems (Phases 1-3) are in place, and build **Layer 1 first**. Tracked under #11 (verification), with findings filed against the owning issues.
+
+**Bot players**
+- Real, visible in-game players (they appear to other players and in the client), not headless test fixtures.
+- At most **300** bots spawned at once.
+- Each bot is spawned from a profile with configurable skill levels, weapon, worn gear and inventory, so the same task can be tried at different levels and loadouts.
+- Bots attempt a task, record the result, then **move on** to the next task. A failure never stops the run.
+
+**Structured failure reports**
+Each failed attempt records at least: bot id and profile, task id, target (npc/loc/obj type and internal name, coordinates), op or action attempted, expected result, observed result, failure kind (no handler, exception, wrong message, wrong item/XP/state, timeout/stuck), server exception or stack trace if any, tick number, and the wiki URL the expectation came from. Reports are machine-readable so they can be grouped by module and turned into issues, and they feed the coverage counts in [CONTENT_COVERAGE.md](CONTENT_COVERAGE.md).
+
+**Layer 1: cache-driven right-click sweep (build first)**
+- Walk every npc, loc and obj type in the cache (and their spawns), resolve multi-types with the bot's vars, and try every right-click op the client would show.
+- Report any op with no handler (the generic "Nothing interesting happens." fallback), any server error, and any op that leaves the bot stuck or delayed.
+- Needs no hand-written expectations, so it covers the whole world at once. `LumbridgeNpcOpsTest` (`content/areas/city/lumbridge`) is a Lumbridge-only prototype of this check.
+
+**Layer 2: wiki-scripted task bots**
+- Scripted tasks taken from wiki pages (e.g. "chop an oak at level 15 with a steel axe", "cook a raw trout on a range", "pickpocket a man"), each with expected results: items gained/lost, XP, messages, animations, level requirements and failure paths.
+- Run each task across bot profiles (below/at/above the level requirement, with and without the tool) and diff the observed result against the expectation.
+- Tasks cite the wiki page and review date, so a passing task is evidence toward `Verified`.
 
 ## Definition of Verified
 A task is `Verified` only after the current Wiki page and relevant subpages are reviewed and dated; required data/behaviors and edge cases are enumerated; implementation paths/commits are linked; automated tests or documented manual verification pass; differences are fixed or explicitly excluded; and the inventory is updated.
