@@ -14,7 +14,7 @@ import org.runerealm.plugin.scripts.ScriptContext
 /**
  * Monlum, the Mining tutor.
  *
- * @see <a href="https://oldschool.runescape.wiki/w/Transcript:Mining_tutor">Transcript</a>
+ * Transcript: https://oldschool.runescape.wiki/w/Transcript:Mining_tutor
  */
 class MiningTutor : PluginScript() {
     override fun ScriptContext.startup() {

@@ -20,6 +20,13 @@ class SpiralStaircaseScript
 @Inject
 constructor(private val locRepo: LocRepository, private val locTypes: LocTypeList) :
     PluginScript() {
+    private val staircaseGroups =
+        setOf(
+            content.spiralstaircase_up.id,
+            content.spiralstaircase_down.id,
+            content.spiralstaircase_option.id,
+        )
+
     override fun ScriptContext.startup() {
         onOpLoc1(content.spiralstaircase_down) { climbDown(it.loc) }
         onOpLoc1(content.spiralstaircase_up) { climbUp(it.loc) }
@@ -127,11 +134,4 @@ constructor(private val locRepo: LocRepository, private val locTypes: LocTypeLis
                 .flatMap { dx -> (-1..1).map { dz -> dx to dz } }
                 .sortedBy { (dx, dz) -> dx * dx + dz * dz }
     }
-
-    private val staircaseGroups =
-        setOf(
-            content.spiralstaircase_up.id,
-            content.spiralstaircase_down.id,
-            content.spiralstaircase_option.id,
-        )
 }

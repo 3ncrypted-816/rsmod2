@@ -25,6 +25,9 @@ import org.runerealm.game.entity.Player
 import org.runerealm.game.entity.player.SessionStateEvent
 
 class SocialScriptTest {
+    private val Player.captureClient: CaptureClient
+        get() = client as CaptureClient
+
     @Test
     fun GameTestState.`empty lists are still sent on login so the tabs stop loading`() =
         runGameTest(SocialScript::class) {
@@ -187,9 +190,6 @@ class SocialScriptTest {
             advance()
             assertTrue(player.ui.containsOverlay(interfaces.friends))
         }
-
-    private val Player.captureClient: CaptureClient
-        get() = client as CaptureClient
 
     private fun GameTestState.runSocialTest(body: GameTestScope.(SocialTestDependencies) -> Unit) =
         runInjectedGameTest(SocialTestDependencies::class, null, SocialScript::class) { deps ->

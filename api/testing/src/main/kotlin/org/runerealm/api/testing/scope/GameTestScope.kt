@@ -493,7 +493,8 @@ constructor(
             }
         val combinedId =
             CombinedId(components.inv_items.interfaceId, components.inv_items.component)
-        val message = IfSubOp(combinedId, invSlot, obj.id, buttonOp.slot, subop)
+        // [subop] is the 1-based submenu entry; the client sends a 0-based index.
+        val message = IfSubOp(combinedId, invSlot, obj.id, buttonOp.slot, subop - 1)
         captureClient.queue(ifSubOpHandler, message)
     }
 
