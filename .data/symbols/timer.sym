@@ -12,3 +12,6 @@
 11	pk_skull
 12	freeze_thaw
 13	gravestone
+30	consumable_stamina
+31	consumable_antifire
+32	consumable_super_antifire

@@ -23,7 +23,7 @@ Legend: `[ ]` not audited · `[~]` partial/in progress · `[x]` verified · `[-]
 - [ ] Ranged
 - [ ] Prayer
 - [ ] Magic
-- [ ] Runecraft
+- [ ] Runecraft — partial (`content/skills/runecraft`, integration tests): ruins (talisman/tiara/cape), all standard altars incl. astral and Kourend blood/soul, multiple runes per essence, exit portals, combination runes (binding necklace), talisman tiaras, essence pouches. Missing: Abyss, Ourania/ZMI, Guardians of the Rift, Magic Imbue, pouch decay, binding necklace charges, rune essence mine teleports.
 - [ ] Hitpoints
 - [ ] Crafting
 - [ ] Mining
@@ -33,7 +33,7 @@ Legend: `[ ]` not audited · `[~]` partial/in progress · `[x]` verified · `[-]
 - [ ] Firemaking
 - [ ] Woodcutting
 - [ ] Agility
-- [ ] Herblore
+- [ ] Herblore — partial (`content/skills/herblore`, integration tests): herb cleaning, unfinished potions, standard potions to super combat/divine/anti-venom+, dose upgrades, swamp tar, pestle and mortar, dose combining, Bob Barter decanting. Missing: Druidic Ritual gate (not applied), barbarian mixes, quest/minigame potions, amulet of chemistry/goggles, noted decanting, Zahur/Wesley; poison/venom/dragonfire effects pending combat support.
 - [ ] Thieving
 - [ ] Fletching
 - [ ] Slayer
