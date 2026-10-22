@@ -30,6 +30,9 @@ import org.runerealm.game.type.obj.Wearpos
 import org.runerealm.map.CoordGrid
 
 class ClanScriptTest {
+    private val Player.captureClient: CaptureClient
+        get() = client as CaptureClient
+
     @Test
     fun GameTestState.`five players form a clan at the clerk and chat in it`() =
         runClanTest { deps ->
@@ -202,9 +205,6 @@ class ClanScriptTest {
         val selected = CombinedId(component.interfaceId, component.component)
         captureClient.queue(deps.opPlayerT, OpPlayerT(target.slotId, false, selected, -1, -1))
     }
-
-    private val Player.captureClient: CaptureClient
-        get() = client as CaptureClient
 
     private fun Player.messageSent(text: String): Boolean =
         captureClient.filterIsInstance<MessageGame>().any { it.message == text }

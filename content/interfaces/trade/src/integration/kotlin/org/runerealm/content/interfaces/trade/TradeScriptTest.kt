@@ -20,6 +20,9 @@ import org.runerealm.game.type.interf.IfButtonOp
 import org.runerealm.game.type.inv.InvTypeList
 
 class TradeScriptTest {
+    private val Player.captureClient: CaptureClient
+        get() = client as CaptureClient
+
     @Test
     fun GameTestState.`request and accept opens the trade screens`() = runTradeTest { deps ->
         val bob = createBob()
@@ -298,9 +301,6 @@ class TradeScriptTest {
 
     private fun Player.offer(deps: TradeTestDependencies): Inventory =
         invMap.getOrPut(deps.invTypes[invs.tradeoffer])
-
-    private val Player.captureClient: CaptureClient
-        get() = client as CaptureClient
 
     private fun GameTestState.runTradeTest(body: GameTestScope.(TradeTestDependencies) -> Unit) =
         runInjectedGameTest(TradeTestDependencies::class, null, TradeScript::class) { deps ->
