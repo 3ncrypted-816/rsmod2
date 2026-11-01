@@ -18,7 +18,7 @@ import org.runerealm.plugin.scripts.ScriptContext
 /**
  * Nemarti, the Ranged combat tutor.
  *
- * @see <a href="https://oldschool.runescape.wiki/w/Transcript:Ranged_combat_tutor">Transcript</a>
+ * Transcript: https://oldschool.runescape.wiki/w/Transcript:Ranged_combat_tutor
  */
 class RangedCombatTutor : PluginScript() {
     override fun ScriptContext.startup() {
