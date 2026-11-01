@@ -34,4 +34,7 @@ dependencies {
     implementation(projects.engine.game)
     implementation(projects.engine.map)
     implementation(projects.engine.plugin)
+    integrationImplementation(projects.api.hitPlugin)
+    integrationImplementation(projects.api.toxins)
+    integrationImplementation(projects.api.combat.combatWeapon)
 }

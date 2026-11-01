@@ -25,9 +25,9 @@ import org.runerealm.game.type.category.isType
 import org.runerealm.plugin.scripts.PluginScript
 import org.runerealm.plugin.scripts.ScriptContext
 
-internal class NvPCombatScript
+public class NvPCombatScript
 @Inject
-constructor(
+internal constructor(
     private val combat: NvPCombat,
     private val areaChecker: AreaChecker,
     private val interactions: AiPlayerInteractions,
