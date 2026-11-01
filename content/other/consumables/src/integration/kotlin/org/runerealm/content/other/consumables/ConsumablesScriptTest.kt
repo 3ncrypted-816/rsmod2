@@ -1,6 +1,7 @@
 package org.runerealm.content.other.consumables
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -11,6 +12,13 @@ import org.runerealm.api.inv.HeldOpScript
 import org.runerealm.api.player.stat.stat
 import org.runerealm.api.player.stat.statSub
 import org.runerealm.api.testing.GameTestState
+import org.runerealm.api.toxins.envenom
+import org.runerealm.api.toxins.isEnvenomed
+import org.runerealm.api.toxins.isPoisoned
+import org.runerealm.api.toxins.isVenomImmune
+import org.runerealm.api.toxins.nextToxinDamage
+import org.runerealm.api.toxins.poison
+import org.runerealm.api.toxins.poisonImmunityIntervals
 import org.runerealm.content.other.consumables.configs.consumable_objs as objs
 import org.runerealm.game.inv.InvObj
 
@@ -120,5 +128,44 @@ class ConsumablesScriptTest {
             assertEquals(90 + 2 + 13, player.stat(stats.hitpoints))
             assertEquals(90 + 2 + 18, player.stat(stats.defence))
             assertEquals(90 - (2 + 9), player.stat(stats.attack))
+        }
+
+    @Test
+    fun GameTestState.`antipoison cures poison and grants immunity`() =
+        runGameTest(ConsumablesScript::class, HeldOpScript::class) {
+            player.poison(severity = 20)
+            assertTrue(player.isPoisoned())
+            player.inv[0] = InvObj(objs.antipoison4)
+            player.opHeld(0)
+            advance(ticks = 1)
+            assertMessageSent("You drink some of your antipoison potion.")
+            assertEquals(objs.antipoison3.id, player.inv[0]?.id)
+            assertFalse(player.isPoisoned())
+            assertEquals(5, player.poisonImmunityIntervals())
+        }
+
+    @Test
+    fun GameTestState.`antipoison only weakens venom to poison`() =
+        runGameTest(ConsumablesScript::class, HeldOpScript::class) {
+            player.envenom()
+            player.inv[0] = InvObj(objs.superantipoison4)
+            player.opHeld(0)
+            advance(ticks = 1)
+            assertFalse(player.isEnvenomed())
+            assertTrue(player.isPoisoned())
+            assertEquals(6, player.nextToxinDamage())
+        }
+
+    @Test
+    fun GameTestState.`anti-venom cures venom and grants venom immunity`() =
+        runGameTest(ConsumablesScript::class, HeldOpScript::class) {
+            player.envenom()
+            player.inv[0] = InvObj(objs.antivenom4)
+            player.opHeld(0)
+            advance(ticks = 1)
+            assertFalse(player.isEnvenomed())
+            assertFalse(player.isPoisoned())
+            assertTrue(player.isVenomImmune())
+            assertEquals(41, player.poisonImmunityIntervals())
         }
 }
