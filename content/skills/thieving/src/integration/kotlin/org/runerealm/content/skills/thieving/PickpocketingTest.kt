@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.runerealm.api.config.refs.objs
 import org.runerealm.api.config.refs.stats
+import org.runerealm.api.stun.isStunned
 import org.runerealm.api.testing.GameTestState
 import org.runerealm.api.testing.scope.GameTestScope
 import org.runerealm.api.type.refs.npc.NpcReferences
@@ -36,6 +37,7 @@ class PickpocketingTest {
             random.next = 255 // Guarantee a failed roll.
             awaitMessage("You fail to pick the man's pocket.")
             assertMessageSent("You have been stunned.")
+            assertTrue(player.isStunned())
             advance(ticks = 2)
             assertEquals(0, player.inv.count(objs.coins))
             assertTrue(player.statMap.getCurrentLevel(stats.hitpoints) < 10)
