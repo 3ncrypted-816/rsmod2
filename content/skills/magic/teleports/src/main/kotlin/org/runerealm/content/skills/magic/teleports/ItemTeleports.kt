@@ -2,6 +2,8 @@ package org.runerealm.content.skills.magic.teleports
 
 import org.runerealm.api.area.checker.WildernessArea
 import org.runerealm.api.player.protect.ProtectedAccess
+import org.runerealm.api.teleblock.isTeleblocked
+import org.runerealm.api.teleblock.teleblockedMessage
 import org.runerealm.api.type.refs.seq.SeqReferences
 import org.runerealm.api.type.refs.spot.SpotanimReferences
 import org.runerealm.map.CoordGrid
@@ -13,6 +15,10 @@ internal object ItemTeleports {
     const val TABLET_WILDERNESS_LIMIT = 20
 
     fun canTeleport(access: ProtectedAccess, wildernessLimit: Int): Boolean {
+        if (access.player.isTeleblocked()) {
+            access.mes(access.player.teleblockedMessage())
+            return false
+        }
         val level = WildernessArea.level(access.player.coords)
         if (WildernessArea.contains(access.player.coords) && level > wildernessLimit) {
             access.mes("A mysterious force blocks your teleport spell!")
