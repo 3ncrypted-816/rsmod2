@@ -25,12 +25,14 @@ sealed interface ConsumeEffect {
     data class RunEnergy(val percent: Int) : ConsumeEffect
 
     /**
-     * Antipoison-style cure: cures poison and grants [immunityIntervals] intervals (18 seconds each)
-     * of poison immunity, or converts venom into poison.
+     * Antipoison-style cure: cures poison and grants [immunityIntervals] intervals (18 seconds
+     * each) of poison immunity, or converts venom into poison.
      */
     data class CurePoison(val immunityIntervals: Int) : ConsumeEffect
 
-    /** Anti-venom-style cure: cures venom and poison, then grants [immunityIntervals] of immunity. */
+    /**
+     * Anti-venom-style cure: cures venom and poison, then grants [immunityIntervals] of immunity.
+     */
     data class CureVenom(val immunityIntervals: Int) : ConsumeEffect
 }
 
@@ -271,7 +273,8 @@ internal val POTIONS: List<Potion> =
         ),
         // Poison and venom cures, from the OSRS Wiki
         // [Poison](https://oldschool.runescape.wiki/w/Poison#Curing_poison) immunity table, in
-        // 18-second intervals: antipoison 1.5 minutes (5), superantipoison 6 (20), antidote+ 9 (30),
+        // 18-second intervals: antipoison 1.5 minutes (5), superantipoison 6 (20), antidote+ 9
+        // (30),
         // antidote++ 12 (40), anti-venom 12.3 (41) and anti-venom+ 15 (50). Immunity values below
         // -38 also protect from venom, which gives antidote++ 18-36 seconds, anti-venom 36-54
         // seconds and anti-venom+ 3.6 minutes of venom immunity, as on the wiki.
@@ -292,7 +295,12 @@ internal val POTIONS: List<Potion> =
         ),
         Potion(
             "antidote+ potion",
-            listOf(objs.antidote_plus4, objs.antidote_plus3, objs.antidote_plus2, objs.antidote_plus1),
+            listOf(
+                objs.antidote_plus4,
+                objs.antidote_plus3,
+                objs.antidote_plus2,
+                objs.antidote_plus1,
+            ),
             listOf(ConsumeEffect.CurePoison(30)),
         ),
         Potion(

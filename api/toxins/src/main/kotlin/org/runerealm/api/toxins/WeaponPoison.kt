@@ -42,12 +42,14 @@ public object WeaponPoison {
             HitType.Melee -> severity(hit.righthandType(objTypes))
             HitType.Ranged -> {
                 val ammo = hit.secondaryType(objTypes)
-                val base = if (ammo != null) severity(ammo) else severity(hit.righthandType(objTypes))
+                val base =
+                    if (ammo != null) severity(ammo) else severity(hit.righthandType(objTypes))
                 if (base > 0) base - RANGED_SEVERITY_REDUCTION else 0
             }
             else -> 0
         }
 
     /** @return the 1-in-N chance of [hit] poisoning its target. */
-    public fun chance(hit: Hit): Int = if (hit.type == HitType.Ranged) RANGED_CHANCE else MELEE_CHANCE
+    public fun chance(hit: Hit): Int =
+        if (hit.type == HitType.Ranged) RANGED_CHANCE else MELEE_CHANCE
 }

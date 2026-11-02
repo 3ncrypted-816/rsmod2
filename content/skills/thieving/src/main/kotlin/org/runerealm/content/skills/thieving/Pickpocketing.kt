@@ -71,11 +71,7 @@ constructor(private val objRepo: ObjRepository, private val random: GameRandom) 
         }
     }
 
-    private fun ProtectedAccess.fail(
-        npc: Npc,
-        target: PickpocketTarget,
-        possessive: String,
-    ) {
+    private fun ProtectedAccess.fail(npc: Npc, target: PickpocketTarget, possessive: String) {
         mes("You fail to pick $possessive pocket.")
         npcPlayerFaceClose(npc)
         npc.anim(thieving_seqs.human_unarmedpunch)

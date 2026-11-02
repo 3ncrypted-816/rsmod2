@@ -9,8 +9,6 @@ import org.runerealm.api.config.refs.varns
 import org.runerealm.api.config.refs.varps
 import org.runerealm.api.drop.table.NpcDropTables
 import org.runerealm.api.freeze.clearFreeze
-import org.runerealm.api.stun.clearStun
-import org.runerealm.api.toxins.clearToxins
 import org.runerealm.api.npc.access.StandardNpcAccess
 import org.runerealm.api.npc.vars.typePlayerUidVarn
 import org.runerealm.api.player.ironman.isIronman
@@ -20,6 +18,8 @@ import org.runerealm.api.player.vars.typeNpcUidVarp
 import org.runerealm.api.random.GameRandom
 import org.runerealm.api.repo.npc.NpcRepository
 import org.runerealm.api.repo.obj.ObjRepository
+import org.runerealm.api.stun.clearStun
+import org.runerealm.api.toxins.clearToxins
 import org.runerealm.game.entity.Npc
 import org.runerealm.game.entity.Player
 import org.runerealm.game.entity.PlayerList

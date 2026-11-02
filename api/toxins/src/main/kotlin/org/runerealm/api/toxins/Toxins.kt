@@ -261,7 +261,8 @@ public fun Npc.clearToxins() {
 }
 
 /** @return the player credited with this npc's poison damage, if they are still online. */
-public fun Npc.resolveToxinSource(playerList: PlayerList): Player? = toxinSource?.resolve(playerList)
+public fun Npc.resolveToxinSource(playerList: PlayerList): Player? =
+    toxinSource?.resolve(playerList)
 
 private fun Npc.setToxinValue(value: Int, previous: Int) {
     toxinValue = value

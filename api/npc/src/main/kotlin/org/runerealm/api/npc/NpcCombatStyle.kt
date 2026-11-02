@@ -20,7 +20,8 @@ public enum class NpcCombatStyle(public val id: Int) {
         get() = this != Melee
 
     public companion object {
-        public operator fun get(id: Int): NpcCombatStyle = entries.firstOrNull { it.id == id } ?: Melee
+        public operator fun get(id: Int): NpcCombatStyle =
+            entries.firstOrNull { it.id == id } ?: Melee
     }
 }
 

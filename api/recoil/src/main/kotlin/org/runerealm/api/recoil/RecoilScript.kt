@@ -105,7 +105,11 @@ constructor(
         mes("You can inflict $left more points of damage before a ring will shatter.")
     }
 
-    private fun ProtectedAccess.chargeSuffering(recoilSlot: Int, ringSlot: Int, ring: SufferingRing) {
+    private fun ProtectedAccess.chargeSuffering(
+        recoilSlot: Int,
+        ringSlot: Int,
+        ring: SufferingRing,
+    ) {
         if (player.sufferingCharges >= SUFFERING_MAX_CHARGES) {
             mes("Your ring of suffering cannot hold any more charges.")
             return

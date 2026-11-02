@@ -2,7 +2,6 @@ package org.runerealm.api.game.process.npc.hunt
 
 import jakarta.inject.Inject
 import org.runerealm.api.hunt.Hunt
-import org.runerealm.api.npc.usesDistancedCombat
 import org.runerealm.api.npc.apLoc1
 import org.runerealm.api.npc.apLoc2
 import org.runerealm.api.npc.apLoc3
@@ -48,6 +47,7 @@ import org.runerealm.api.npc.opPlayer2
 import org.runerealm.api.npc.opPlayer3
 import org.runerealm.api.npc.opPlayer4
 import org.runerealm.api.npc.opPlayer5
+import org.runerealm.api.npc.usesDistancedCombat
 import org.runerealm.api.random.CoreRandom
 import org.runerealm.api.random.GameRandom
 import org.runerealm.game.MapClock
