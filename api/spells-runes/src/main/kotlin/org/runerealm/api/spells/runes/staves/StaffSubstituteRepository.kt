@@ -1,10 +1,12 @@
 package org.runerealm.api.spells.runes.staves
 
+import jakarta.inject.Singleton
 import org.runerealm.api.spells.runes.staves.configs.staff_enums
 import org.runerealm.game.enums.EnumTypeMapResolver
 import org.runerealm.game.inv.InvObj
 import org.runerealm.game.type.obj.ObjType
 
+@Singleton
 public class StaffSubstituteRepository {
     private lateinit var subs: Map<Int, Set<Int>>
 

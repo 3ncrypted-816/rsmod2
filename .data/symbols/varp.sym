@@ -2278,6 +2278,10 @@
 4846	dom_previous_deepest_level
 4848	collection_count_unsynced
 
+65470	teleblock_end
+65471	charge_spell_end
+65472	spell_delay_end
+65473	teleother_dest
 65491	gravestone_ticks_left
 65492	ring_of_forging_charges
 65493	freeze_source

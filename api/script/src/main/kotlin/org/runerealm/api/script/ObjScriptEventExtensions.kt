@@ -2,7 +2,9 @@ package org.runerealm.api.script
 
 import org.runerealm.api.player.events.interact.ObjContentEvents
 import org.runerealm.api.player.events.interact.ObjEvents
+import org.runerealm.api.player.events.interact.ObjTDefaultEvents
 import org.runerealm.api.player.protect.ProtectedAccess
+import org.runerealm.game.type.comp.ComponentType
 import org.runerealm.game.type.content.ContentGroupType
 import org.runerealm.game.type.obj.ObjType
 import org.runerealm.plugin.scripts.ScriptContext
@@ -56,3 +58,14 @@ public fun ScriptContext.onOpObj5(
     content: ContentGroupType,
     action: suspend ProtectedAccess.(ObjContentEvents.Op5) -> Unit,
 ): Unit = onProtectedEvent(content.id, action)
+
+/* Targeted (interface component on ground obj) functions */
+public fun ScriptContext.onOpObjT(
+    component: ComponentType,
+    action: suspend ProtectedAccess.(ObjTDefaultEvents.Op) -> Unit,
+): Unit = onProtectedEvent(component.packed, action)
+
+public fun ScriptContext.onApObjT(
+    component: ComponentType,
+    action: suspend ProtectedAccess.(ObjTDefaultEvents.Ap) -> Unit,
+): Unit = onProtectedEvent(component.packed, action)

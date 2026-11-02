@@ -4,6 +4,7 @@ import jakarta.inject.Inject
 import org.runerealm.api.config.Constants
 import org.runerealm.api.npc.isValidTarget
 import org.runerealm.api.player.clearInteractionRoute
+import org.runerealm.api.player.events.interact.ObjTDefaultEvents
 import org.runerealm.api.player.interact.LocInteractions
 import org.runerealm.api.player.interact.LocTInteractions
 import org.runerealm.api.player.interact.NpcInteractions
@@ -31,6 +32,7 @@ import org.runerealm.game.interact.InteractionNpc
 import org.runerealm.game.interact.InteractionNpcOp
 import org.runerealm.game.interact.InteractionNpcT
 import org.runerealm.game.interact.InteractionObj
+import org.runerealm.game.interact.InteractionObjT
 import org.runerealm.game.interact.InteractionPlayer
 import org.runerealm.game.interact.InteractionPlayerOp
 import org.runerealm.game.interact.InteractionPlayerT
@@ -197,6 +199,9 @@ constructor(
             is InteractionObj -> {
                 /* no-op */
             }
+            is InteractionObjT -> {
+                /* no-op */
+            }
         }
 
     private fun Player.determinePreMovementStep(interaction: Interaction): InteractionStep =
@@ -204,6 +209,7 @@ constructor(
             is InteractionLoc -> preMovementStep(interaction)
             is InteractionNpc -> preMovementStep(interaction)
             is InteractionObj -> preMovementStep(interaction)
+            is InteractionObjT -> preMovementStep(interaction)
             is InteractionPlayer -> preMovementStep(interaction)
         }
 
@@ -212,6 +218,7 @@ constructor(
             is InteractionLoc -> postMovementStep(interaction)
             is InteractionNpc -> postMovementStep(interaction)
             is InteractionObj -> postMovementStep(interaction)
+            is InteractionObjT -> postMovementStep(interaction)
             is InteractionPlayer -> postMovementStep(interaction)
         }
 
@@ -222,6 +229,7 @@ constructor(
             is InteractionNpcOp -> triggerOp(this, interaction)
             is InteractionNpcT -> triggerOp(this, interaction)
             is InteractionObj -> triggerOp(this, interaction)
+            is InteractionObjT -> triggerOp(this, interaction)
             is InteractionPlayerOp -> triggerOp(this, interaction)
             is InteractionPlayerT -> triggerOp(this, interaction)
         }
@@ -233,6 +241,7 @@ constructor(
             is InteractionNpcOp -> triggerAp(this, interaction)
             is InteractionNpcT -> triggerAp(this, interaction)
             is InteractionObj -> triggerAp(this, interaction)
+            is InteractionObjT -> triggerAp(this, interaction)
             is InteractionPlayerOp -> triggerAp(this, interaction)
             is InteractionPlayerT -> triggerAp(this, interaction)
         }
@@ -346,6 +355,37 @@ constructor(
             distance = interaction.apRange,
         )
 
+    /* Obj-targeted (component on obj) interactions */
+    private fun Player.preMovementStep(interaction: InteractionObjT): InteractionStep =
+        Interactions.earlyStep(
+            target = InteractionTarget.Static,
+            hasScriptOp = interaction.hasOpTrigger,
+            hasScriptAp = interaction.hasApTrigger,
+            validOpLine = isWithinOpRange(interaction),
+            validApLine = isWithinApRange(interaction),
+        )
+
+    private fun Player.postMovementStep(interaction: InteractionObjT): InteractionStep =
+        Interactions.lateStep(
+            hasMoved = hasMovedThisCycle,
+            target = InteractionTarget.Static,
+            hasScriptOp = interaction.hasOpTrigger,
+            hasScriptAp = interaction.hasApTrigger,
+            validOpLine = isWithinOpRange(interaction),
+            validApLine = isWithinApRange(interaction),
+        )
+
+    private fun Player.isWithinOpRange(interaction: InteractionObjT): Boolean =
+        boundValidator.touches(source = avatar, target = interaction.target)
+
+    private fun Player.isWithinApRange(interaction: InteractionObjT): Boolean =
+        isValidApRange(
+            target = interaction.target.coords,
+            width = 1,
+            length = 1,
+            distance = interaction.apRange,
+        )
+
     /* Player interactions */
     private fun Player.preMovementStep(interaction: InteractionPlayer): InteractionStep =
         Interactions.earlyStep(
@@ -439,6 +479,7 @@ constructor(
             is InteractionLoc -> !interaction.isValid()
             is InteractionNpc -> !interaction.isValid()
             is InteractionObj -> !interaction.isValid(this)
+            is InteractionObjT -> !objRegistry.isValid(this, interaction.target)
             is InteractionPlayer -> !interaction.isValid()
         }
 
@@ -541,6 +582,32 @@ constructor(
     public fun triggerAp(player: Player, interaction: InteractionObj) {
         val ap = objInteractions.apTrigger(interaction.target, interaction.op)
         if (ap != null) {
+            protectedAccess.launch(player) { eventBus.publish(this, ap) }
+        }
+    }
+
+    private fun triggerOp(player: Player, interaction: InteractionObjT) {
+        val op =
+            ObjTDefaultEvents.Op(
+                obj = interaction.target,
+                comsub = interaction.comsub,
+                objType = interaction.objType,
+                component = interaction.component,
+            )
+        if (eventBus.contains(op::class.java, op.id)) {
+            protectedAccess.launch(player) { eventBus.publish(this, op) }
+        }
+    }
+
+    private fun triggerAp(player: Player, interaction: InteractionObjT) {
+        val ap =
+            ObjTDefaultEvents.Ap(
+                obj = interaction.target,
+                comsub = interaction.comsub,
+                objType = interaction.objType,
+                component = interaction.component,
+            )
+        if (eventBus.contains(ap::class.java, ap.id)) {
             protectedAccess.launch(player) { eventBus.publish(this, ap) }
         }
     }

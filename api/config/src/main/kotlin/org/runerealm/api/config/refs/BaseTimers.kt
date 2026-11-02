@@ -16,4 +16,6 @@ object BaseTimers : TimerReferences() {
     val prayer_drain = find("prayer_drain")
     val pk_skull = find("pk_skull")
     val freeze_thaw = find("freeze_thaw")
+    val teleblock = find("teleblock")
+    val charge_spell = find("charge_spell")
 }

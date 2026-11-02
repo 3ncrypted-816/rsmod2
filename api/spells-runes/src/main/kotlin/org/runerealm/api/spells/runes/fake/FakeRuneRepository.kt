@@ -1,5 +1,6 @@
 package org.runerealm.api.spells.runes.fake
 
+import jakarta.inject.Singleton
 import org.runerealm.api.spells.runes.fake.configs.fake_enums
 import org.runerealm.game.enums.EnumTypeMapResolver
 import org.runerealm.game.type.obj.ObjType
@@ -10,6 +11,7 @@ import org.runerealm.game.type.obj.ObjType
  * Assault provides runes during the game, but uses secondary "fake" variants instead of the
  * originals as a safeguard.
  */
+@Singleton
 public class FakeRuneRepository {
     private lateinit var fakes: Map<Int, ObjType>
 

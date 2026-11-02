@@ -34,6 +34,7 @@ import org.runerealm.api.player.protect.ProtectedAccess
 import org.runerealm.api.player.vars.intVarp
 import org.runerealm.api.registry.region.RegionRegistry
 import org.runerealm.api.repo.obj.ObjRepository
+import org.runerealm.api.teleblock.clearTeleblock
 import org.runerealm.game.entity.Npc
 import org.runerealm.game.entity.Player
 import org.runerealm.game.hit.HitType
@@ -293,6 +294,7 @@ constructor(
         player.disablePrayers()
         player.deathResetTimers()
         player.clearFreeze()
+        player.clearTeleblock()
 
         player.specialAttackType = 0
         player.skullIcon = null

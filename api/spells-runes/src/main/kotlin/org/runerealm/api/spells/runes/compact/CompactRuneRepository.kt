@@ -1,5 +1,6 @@
 package org.runerealm.api.spells.runes.compact
 
+import jakarta.inject.Singleton
 import org.runerealm.api.spells.runes.compact.configs.compact_enums
 import org.runerealm.game.enums.EnumTypeMapResolver
 import org.runerealm.game.type.obj.ObjType
@@ -8,6 +9,7 @@ import org.runerealm.game.type.obj.ObjType
  * Rune objs have a "compact id" used in places where storage needs to be efficient, such as rune
  * pouches. This class is responsible for providing access to these "compact ids."
  */
+@Singleton
 public class CompactRuneRepository {
     private lateinit var compactIds: Map<Int, Int>
     private lateinit var reverseLookup: Map<Int, ObjType>

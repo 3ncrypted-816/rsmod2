@@ -1,6 +1,8 @@
 package org.runerealm.api.player.events.interact
 
 import org.runerealm.game.obj.Obj
+import org.runerealm.game.type.comp.ComponentType
+import org.runerealm.game.type.obj.ObjType
 
 public sealed class ObjEvents {
     public sealed class Op(public val obj: Obj) : OpEvent(obj.type.toLong())
@@ -84,4 +86,24 @@ public sealed class ObjDefaultEvents {
     public class Ap4(obj: Obj) : Ap(obj)
 
     public class Ap5(obj: Obj) : Ap(obj)
+}
+
+/**
+ * Events for an interface component (such as a spell) used on a ground obj, e.g. Telekinetic Grab.
+ * Keyed by the selected [ComponentType].
+ */
+public class ObjTDefaultEvents {
+    public class Op(
+        public val obj: Obj,
+        public val comsub: Int,
+        public val objType: ObjType?,
+        component: ComponentType,
+    ) : OpEvent(component.packed.toLong())
+
+    public class Ap(
+        public val obj: Obj,
+        public val comsub: Int,
+        public val objType: ObjType?,
+        component: ComponentType,
+    ) : ApEvent(component.packed.toLong())
 }

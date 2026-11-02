@@ -121,6 +121,31 @@ public class InteractionObj(
             ")"
 }
 
+/**
+ * An interface component (such as a spell) used on a ground [target] obj, e.g. Telekinetic Grab.
+ */
+public class InteractionObjT(
+    public val target: Obj,
+    public val objType: ObjType?,
+    public val component: ComponentType,
+    public val comsub: Int,
+    hasOpTrigger: Boolean,
+    hasApTrigger: Boolean,
+    startApRange: Int = PathingEntity.DEFAULT_AP_RANGE,
+) : Interaction(hasOpTrigger, hasApTrigger, startApRange) {
+    override fun toString(): String =
+        "InteractionObjT(" +
+            "target=$target, " +
+            "component=$component, " +
+            "comsub=$comsub, " +
+            "hasOpTrigger=$hasOpTrigger, " +
+            "hasApTrigger=$hasApTrigger, " +
+            "apRange=$apRange, " +
+            "apRangeCalled=$apRangeCalled, " +
+            "interacted=$interacted" +
+            ")"
+}
+
 public sealed class InteractionPlayer(
     public val target: Player,
     hasOpTrigger: Boolean,

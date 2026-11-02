@@ -17,8 +17,11 @@ import org.runerealm.game.type.obj.isType
 public class MagicSpellRegistry
 @Inject
 constructor(private val objTypes: ObjTypeList, private val enumResolver: EnumTypeMapResolver) {
-    private lateinit var objSpells: Map<Int, MagicSpell>
-    private lateinit var autocastSpells: Map<Int, MagicSpell>
+    // Loaded lazily so that instances created outside `MagicSpellModule` (such as just-in-time
+    // bindings in isolated test injectors) are always populated.
+    private val objSpells: Map<Int, MagicSpell> by lazy { loadObjSpells() }
+    private val autocastSpells: Map<Int, MagicSpell> by lazy { loadAutocastSpells(objSpells) }
+    private var initialized = false
 
     public fun getObjSpell(obj: ObjType): MagicSpell? = objSpells[obj.id]
 
@@ -28,13 +31,11 @@ constructor(private val objTypes: ObjTypeList, private val enumResolver: EnumTyp
         objSpells.values.filter { it.type == MagicSpellType.Combat }
 
     internal fun init() {
-        check(!::objSpells.isInitialized) { "`init` already called for this repository." }
-
-        val objSpells = loadObjSpells()
-        this.objSpells = objSpells
-
-        val autocastSpells = loadAutocastSpells(objSpells)
-        this.autocastSpells = autocastSpells
+        check(!initialized) { "`init` already called for this repository." }
+        initialized = true
+        // Touch both maps so any invalid spell data fails at startup.
+        objSpells.size
+        autocastSpells.size
     }
 
     private fun loadObjSpells(): Map<Int, MagicSpell> {
@@ -46,6 +47,25 @@ constructor(private val objTypes: ObjTypeList, private val enumResolver: EnumTyp
             for (spellObj in spellList.values) {
                 spells[spellObj.id] = spellObj.toMagicSpell()
             }
+        }
+
+        // Sub-spells, such as the jewellery enchantments listed under "Jewellery Enchantments", are
+        // not part of the spellbook enums. Any other obj with spell data is registered as well.
+        // Combat spells are excluded so that each combat spell button maps to exactly one spell.
+        val buttons = spells.values.mapTo(HashSet()) { it.component.packed }
+        for (type in objTypes.values) {
+            if (type.id in spells) {
+                continue
+            }
+            val button = type.paramOrNull(params.spell_button) ?: continue
+            if (type.paramOrNull(params.spell_castxp) == null || button.packed in buttons) {
+                continue
+            }
+            if (type.param(params.spell_type) == MagicSpellType.Combat.id) {
+                continue
+            }
+            spells[type.id] = type.toMagicSpell()
+            buttons += button.packed
         }
 
         return spells
