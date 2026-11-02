@@ -2,7 +2,6 @@ package org.runerealm.api.combat.weapon.styles
 
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap
 import jakarta.inject.Inject
-import jakarta.inject.Singleton
 import org.runerealm.api.combat.commons.styles.AttackStyle
 import org.runerealm.api.combat.weapon.righthand
 import org.runerealm.api.combat.weapon.styles.configs.style_enums
@@ -13,7 +12,6 @@ import org.runerealm.game.type.obj.ObjTypeList
 import org.runerealm.game.type.obj.UnpackedObjType
 import org.runerealm.game.type.obj.WeaponCategory
 
-@Singleton
 public class AttackStyles
 @Inject
 constructor(private val objTypes: ObjTypeList, private val enumResolver: EnumTypeMapResolver) {

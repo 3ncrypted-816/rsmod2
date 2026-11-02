@@ -4,6 +4,7 @@ plugins {
 }
 
 dependencies {
+    integrationImplementation(libs.guice)
     integrationImplementation(projects.api.spellsRunes)
     implementation(projects.api.combat.combatManager)
     implementation(projects.api.pluginCommons)

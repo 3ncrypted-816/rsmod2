@@ -1,10 +1,13 @@
 package org.runerealm.content.skills.magic.spell.attacks.standard
 
+import com.google.inject.AbstractModule
+import com.google.inject.Scopes
 import jakarta.inject.Inject
 import kotlin.reflect.KClass
 import org.junit.jupiter.api.Test
 import org.runerealm.api.combat.commons.CombatAttack
 import org.runerealm.api.combat.weapon.scripts.WeaponAttackStylesScript
+import org.runerealm.api.combat.weapon.styles.AttackStyles
 import org.runerealm.api.config.refs.objs
 import org.runerealm.api.config.refs.params
 import org.runerealm.api.config.refs.stats
@@ -40,7 +43,7 @@ class StandardCombatSpellsTest {
 
     @Test
     fun GameTestState.`bind freezes the target for 8 ticks`() =
-        runInjectedGameTest(Spells::class, null, *spellTestScripts()) { spells ->
+        runInjectedGameTest(Spells::class, StylesModule, *spellTestScripts()) { spells ->
             val npc = setup(magic = 20, target = dummy)
             player.give(objs.nature_rune to 2, objs.water_rune to 3, objs.earth_rune to 3)
             random.next = 0 // Accuracy roll: hit.
@@ -54,7 +57,7 @@ class StandardCombatSpellsTest {
 
     @Test
     fun GameTestState.`bind cannot be cast on a frozen target`() =
-        runInjectedGameTest(Spells::class, null, *spellTestScripts()) { spells ->
+        runInjectedGameTest(Spells::class, StylesModule, *spellTestScripts()) { spells ->
             val npc = setup(magic = 79, target = dummy)
             player.give(objs.nature_rune to 6, objs.water_rune to 8, objs.earth_rune to 8)
             random.next = 0
@@ -67,7 +70,7 @@ class StandardCombatSpellsTest {
 
     @Test
     fun GameTestState.`confuse lowers attack by 5 percent once`() =
-        runInjectedGameTest(Spells::class, null, *spellTestScripts()) { spells ->
+        runInjectedGameTest(Spells::class, StylesModule, *spellTestScripts()) { spells ->
             val npc = setup(magic = 3, target = dummy)
             player.give(objs.body_rune to 2, objs.water_rune to 6, objs.earth_rune to 4)
             random.next = 0
@@ -82,7 +85,7 @@ class StandardCombatSpellsTest {
 
     @Test
     fun GameTestState.`stun lowers a player's attack by 10 percent`() =
-        runInjectedGameTest(Spells::class, null, *spellTestScripts()) { spells ->
+        runInjectedGameTest(Spells::class, StylesModule, *spellTestScripts()) { spells ->
             setup(magic = 80, target = null)
             val target = registerPlayer(start.translateX(3))
             allocZoneCollision(target.coords)
@@ -97,7 +100,7 @@ class StandardCombatSpellsTest {
 
     @Test
     fun GameTestState.`crumble undead only affects undead`() =
-        runInjectedGameTest(Spells::class, null, *spellTestScripts()) { spells ->
+        runInjectedGameTest(Spells::class, StylesModule, *spellTestScripts()) { spells ->
             val npc = setup(magic = 39, target = dummy)
             player.give(objs.chaos_rune to 2, objs.earth_rune to 4, objs.air_rune to 4)
             spells.cast(this, objs.spell_crumble_undead, npc)
@@ -113,7 +116,7 @@ class StandardCombatSpellsTest {
 
     @Test
     fun GameTestState.`iban blast needs iban's staff`() =
-        runInjectedGameTest(Spells::class, null, *spellTestScripts()) { spells ->
+        runInjectedGameTest(Spells::class, StylesModule, *spellTestScripts()) { spells ->
             val npc = setup(magic = 50, target = dummy)
             player.give(objs.death_rune to 1, objs.fire_rune to 5)
             spells.cast(this, objs.spell_iban_blast, npc)
@@ -137,7 +140,7 @@ class StandardCombatSpellsTest {
 
     @Test
     fun GameTestState.`tele block blocks the target and cannot be cast on npcs`() =
-        runInjectedGameTest(Spells::class, null, *spellTestScripts()) { spells ->
+        runInjectedGameTest(Spells::class, StylesModule, *spellTestScripts()) { spells ->
             val npc = setup(magic = 85, target = dummy)
             player.give(objs.law_rune to 2, objs.death_rune to 2, objs.chaos_rune to 2)
             spells.cast(this, objs.spell_tele_block, npc)
@@ -193,6 +196,12 @@ class StandardCombatSpellsTest {
 
     private fun Player.give(vararg objs: Pair<ObjType, Int>) {
         objs.forEachIndexed { slot, (obj, count) -> inv[slot] = InvObj(obj, count) }
+    }
+
+    private object StylesModule : AbstractModule() {
+        override fun configure() {
+            bind(AttackStyles::class.java).`in`(Scopes.SINGLETON)
+        }
     }
 
     private companion object {
