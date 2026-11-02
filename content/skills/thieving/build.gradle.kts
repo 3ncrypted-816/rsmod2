@@ -6,4 +6,5 @@ plugins {
 dependencies {
     implementation(projects.api.pluginCommons)
     integrationImplementation(projects.api.player)
+    integrationImplementation(projects.api.stun)
 }
