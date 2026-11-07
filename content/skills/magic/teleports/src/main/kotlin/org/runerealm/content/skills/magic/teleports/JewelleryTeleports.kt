@@ -138,18 +138,6 @@ class JewelleryTeleports @Inject constructor(private val objTypes: ObjTypeList) 
         jewellery.chargesMessage(next)?.let(::mes)
     }
 
-    private companion object {
-        val WEAR_OPS =
-            listOf(
-                params.wear_op1,
-                params.wear_op2,
-                params.wear_op3,
-                params.wear_op4,
-                params.wear_op5,
-                params.wear_op6,
-            )
-    }
-
     private suspend fun ProtectedAccess.chooseDestination(
         destinations: List<Destination>
     ): Destination? {
@@ -203,6 +191,18 @@ class JewelleryTeleports @Inject constructor(private val objTypes: ObjTypeList) 
                     options[4],
                 )
         }
+
+    private companion object {
+        val WEAR_OPS =
+            listOf(
+                params.wear_op1,
+                params.wear_op2,
+                params.wear_op3,
+                params.wear_op4,
+                params.wear_op5,
+                params.wear_op6,
+            )
+    }
 }
 
 data class Destination(val name: String, val coords: CoordGrid)

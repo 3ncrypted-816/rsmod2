@@ -2278,6 +2278,9 @@
 4846	dom_previous_deepest_level
 4848	collection_count_unsynced
 
+65450	agility_course_progress
+65451	agility_course_current
+65452	agility_mark_cooldown
 65491	gravestone_ticks_left
 65492	ring_of_forging_charges
 65493	freeze_source

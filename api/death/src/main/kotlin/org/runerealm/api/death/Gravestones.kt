@@ -44,7 +44,11 @@ constructor(
     private val graves = HashMap<Long, Npc>()
 
     private var Player.graveCoords by typeCoordVarp(death_varps.gravestone_coords)
+
     private var Player.graveTicksLeft by intVarp(death_varps.gravestone_ticks_left)
+
+    private val Player.ownerKey: Long
+        get() = checkNotNull(uuid) { "Player has no uuid: $this" }
 
     public fun gravestoneInv(player: Player): Inventory =
         player.invMap.getOrPut(invTypes[death_invs.gravestone])
@@ -228,9 +232,6 @@ constructor(
         }
         return null
     }
-
-    private val Player.ownerKey: Long
-        get() = checkNotNull(uuid) { "Player has no uuid: $this" }
 
     public companion object {
         public const val TICKS_PER_MINUTE: Int = 100
