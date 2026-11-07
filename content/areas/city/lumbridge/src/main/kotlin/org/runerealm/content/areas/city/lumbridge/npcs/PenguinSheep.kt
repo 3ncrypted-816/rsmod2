@@ -13,7 +13,7 @@ import org.runerealm.plugin.scripts.ScriptContext
  * pen: two penguins in a sheep costume ("The Thing"). It cannot be sheared, and only talks during
  * Cold War, which is not implemented.
  *
- * @see <a href="https://oldschool.runescape.wiki/w/Transcript:Sheep_(penguins)">Transcript</a>
+ * Transcript: https://oldschool.runescape.wiki/w/Transcript:Sheep_(penguins)
  */
 class PenguinSheep : PluginScript() {
     override fun ScriptContext.startup() {

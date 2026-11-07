@@ -1,6 +1,7 @@
 package org.runerealm.content.other.consumables
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -11,7 +12,15 @@ import org.runerealm.api.inv.HeldOpScript
 import org.runerealm.api.player.stat.stat
 import org.runerealm.api.player.stat.statSub
 import org.runerealm.api.testing.GameTestState
+import org.runerealm.api.toxins.envenom
+import org.runerealm.api.toxins.isEnvenomed
+import org.runerealm.api.toxins.isPoisoned
+import org.runerealm.api.toxins.isVenomImmune
+import org.runerealm.api.toxins.nextToxinDamage
+import org.runerealm.api.toxins.poison
+import org.runerealm.api.toxins.poisonImmunityIntervals
 import org.runerealm.content.other.consumables.configs.consumable_objs as objs
+import org.runerealm.content.other.consumables.configs.consumable_varbits
 import org.runerealm.game.inv.InvObj
 
 @Execution(ExecutionMode.SAME_THREAD)
@@ -120,5 +129,92 @@ class ConsumablesScriptTest {
             assertEquals(90 + 2 + 13, player.stat(stats.hitpoints))
             assertEquals(90 + 2 + 18, player.stat(stats.defence))
             assertEquals(90 - (2 + 9), player.stat(stats.attack))
+        }
+
+    @Test
+    fun GameTestState.`antipoison cures poison and grants immunity`() =
+        runGameTest(ConsumablesScript::class, HeldOpScript::class) {
+            player.poison(severity = 20)
+            assertTrue(player.isPoisoned())
+            player.inv[0] = InvObj(objs.antipoison4)
+            player.opHeld(0)
+            advance(ticks = 1)
+            assertMessageSent("You drink some of your antipoison potion.")
+            assertEquals(objs.antipoison3.id, player.inv[0]?.id)
+            assertFalse(player.isPoisoned())
+            assertEquals(5, player.poisonImmunityIntervals())
+        }
+
+    @Test
+    fun GameTestState.`antipoison only weakens venom to poison`() =
+        runGameTest(ConsumablesScript::class, HeldOpScript::class) {
+            player.envenom()
+            player.inv[0] = InvObj(objs.superantipoison4)
+            player.opHeld(0)
+            advance(ticks = 1)
+            assertFalse(player.isEnvenomed())
+            assertTrue(player.isPoisoned())
+            assertEquals(6, player.nextToxinDamage())
+        }
+
+    @Test
+    fun GameTestState.`anti-venom cures venom and grants venom immunity`() =
+        runGameTest(ConsumablesScript::class, HeldOpScript::class) {
+            player.envenom()
+            player.inv[0] = InvObj(objs.anti_venom4)
+            player.opHeld(0)
+            advance(ticks = 1)
+            assertFalse(player.isEnvenomed())
+            assertFalse(player.isPoisoned())
+            assertTrue(player.isVenomImmune())
+            assertEquals(41, player.poisonImmunityIntervals())
+        }
+
+    @Test
+    fun GameTestState.`stamina potion sets the stamina effect and expires`() =
+        runGameTest(ConsumablesScript::class, HeldOpScript::class) {
+            player.inv[0] = InvObj(objs.stamina4)
+            player.opHeld(0)
+            advance(ticks = 1)
+            assertEquals(1, player.vars[consumable_varbits.stamina_active])
+            assertEquals(20, player.vars[consumable_varbits.stamina_duration])
+            assertEquals(objs.stamina3.id, player.inv[0]?.id)
+            advance(ticks = 201)
+            assertEquals(0, player.vars[consumable_varbits.stamina_active])
+        }
+
+    @Test
+    fun GameTestState.`antifire potions set their protection timers`() =
+        runGameTest(ConsumablesScript::class, HeldOpScript::class) {
+            player.inv[0] = InvObj(objs.extended_antifire4)
+            player.inv[1] = InvObj(objs.super_antifire4)
+            player.opHeld(0)
+            advance(ticks = 3)
+            player.opHeld(1)
+            advance(ticks = 1)
+            assertEquals(40, player.vars[consumable_varbits.antifire])
+            assertEquals(15, player.vars[consumable_varbits.super_antifire])
+            advance(ticks = 30)
+            assertEquals(39, player.vars[consumable_varbits.antifire])
+        }
+
+    @Test
+    fun GameTestState.`divine potions cost hitpoints and need more than ten`() =
+        runGameTest(ConsumablesScript::class, HeldOpScript::class) {
+            player.stats[stats.hitpoints] = 10
+            player.stats[stats.attack] = 80
+            player.inv[0] = InvObj(objs.divine_super_attack4)
+            player.opHeld(0)
+            advance(ticks = 1)
+            assertMessageSent(
+                "You need more than 10 Hitpoints to survive the effects of this potion."
+            )
+            assertEquals(objs.divine_super_attack4.id, player.inv[0]?.id)
+
+            player.stats[stats.hitpoints] = 50
+            player.opHeld(0)
+            advance(ticks = 1)
+            assertEquals(40, player.stat(stats.hitpoints))
+            assertEquals(80 + 5 + 12, player.stat(stats.attack))
         }
 }

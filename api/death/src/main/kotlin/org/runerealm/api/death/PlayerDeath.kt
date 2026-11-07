@@ -34,6 +34,8 @@ import org.runerealm.api.player.protect.ProtectedAccess
 import org.runerealm.api.player.vars.intVarp
 import org.runerealm.api.registry.region.RegionRegistry
 import org.runerealm.api.repo.obj.ObjRepository
+import org.runerealm.api.stun.clearStun
+import org.runerealm.api.toxins.clearToxins
 import org.runerealm.game.entity.Npc
 import org.runerealm.game.entity.Player
 import org.runerealm.game.hit.HitType
@@ -293,6 +295,8 @@ constructor(
         player.disablePrayers()
         player.deathResetTimers()
         player.clearFreeze()
+        player.clearToxins()
+        player.clearStun()
 
         player.specialAttackType = 0
         player.skullIcon = null

@@ -47,6 +47,7 @@ import org.runerealm.api.npc.opPlayer2
 import org.runerealm.api.npc.opPlayer3
 import org.runerealm.api.npc.opPlayer4
 import org.runerealm.api.npc.opPlayer5
+import org.runerealm.api.npc.usesDistancedCombat
 import org.runerealm.api.random.CoreRandom
 import org.runerealm.api.random.GameRandom
 import org.runerealm.game.MapClock
@@ -286,7 +287,14 @@ constructor(
         }
         when (mode) {
             NpcMode.OpPlayer1 -> opPlayer1(target, playerInteractions)
-            NpcMode.OpPlayer2 -> opPlayer2(target, playerInteractions)
+            NpcMode.OpPlayer2 ->
+                // Ranged and magic npcs attack from a distance, so they approach (ap) their
+                // target instead of walking up to it, even when their hunt mode uses op.
+                if (usesDistancedCombat()) {
+                    apPlayer2(target, playerInteractions)
+                } else {
+                    opPlayer2(target, playerInteractions)
+                }
             NpcMode.OpPlayer3 -> opPlayer3(target, playerInteractions)
             NpcMode.OpPlayer4 -> opPlayer4(target, playerInteractions)
             NpcMode.OpPlayer5 -> opPlayer5(target, playerInteractions)

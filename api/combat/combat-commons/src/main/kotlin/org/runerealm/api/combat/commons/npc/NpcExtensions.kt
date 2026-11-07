@@ -10,6 +10,7 @@ import org.runerealm.api.config.refs.varns
 import org.runerealm.api.npc.apPlayer2
 import org.runerealm.api.npc.interact.AiPlayerInteractions
 import org.runerealm.api.npc.opPlayer2
+import org.runerealm.api.npc.usesDistancedCombat
 import org.runerealm.api.npc.vars.intVarn
 import org.runerealm.api.npc.vars.typePlayerUidVarn
 import org.runerealm.game.entity.Npc
@@ -42,7 +43,8 @@ public fun Npc.combatDefaultRetaliateOp(interactions: AiPlayerInteractions) {
     val target = interactions.resolvePlayer(aggressivePlayer) ?: return
     attackingPlayer = target.uid
     actionDelay = currentMapClock + (attackRate() / 2)
-    retaliate(target, interactions, ap = false)
+    // Ranged and magic npcs retaliate from a distance instead of walking up to their target.
+    retaliate(target, interactions, ap = usesDistancedCombat())
 }
 
 public fun Npc.combatDefaultRetaliateAp(interactions: AiPlayerInteractions) {

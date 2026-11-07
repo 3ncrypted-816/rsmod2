@@ -7,4 +7,5 @@ dependencies {
     implementation(projects.api.pluginCommons)
     integrationImplementation(projects.api.invPlugin)
     integrationImplementation(projects.api.player)
+    integrationImplementation(projects.api.toxins)
 }

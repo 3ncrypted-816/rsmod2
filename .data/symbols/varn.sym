@@ -6,3 +6,6 @@
 5	flat_armour
 6	freeze_end
 7	freeze_immunity_end
+20	npc_toxin
+21	npc_toxin_source
+22	npc_stun_end

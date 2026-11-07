@@ -18,6 +18,8 @@ import org.runerealm.api.player.vars.typeNpcUidVarp
 import org.runerealm.api.random.GameRandom
 import org.runerealm.api.repo.npc.NpcRepository
 import org.runerealm.api.repo.obj.ObjRepository
+import org.runerealm.api.stun.clearStun
+import org.runerealm.api.toxins.clearToxins
 import org.runerealm.game.entity.Npc
 import org.runerealm.game.entity.Player
 import org.runerealm.game.entity.PlayerList
@@ -133,6 +135,8 @@ public suspend fun StandardNpcAccess.death(
     delay(seqTypes[deathAnim])
 
     npc.clearFreeze()
+    npc.clearToxins()
+    npc.clearStun()
 
     if (npc.respawns) {
         npcRepo.despawn(npc, npc.type.respawnRate)

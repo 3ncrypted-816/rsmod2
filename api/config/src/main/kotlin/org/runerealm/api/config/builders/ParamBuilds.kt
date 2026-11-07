@@ -61,6 +61,12 @@ internal object ParamBuilds : ParamBuilder() {
         build<SpotanimType>("proj_travel")
         build<SpotanimType>("proj_launch")
         build<SpotanimType>("proj_launch_double")
+        build<SpotanimType>("proj_impact")
+
+        // Npc attack configuration. See `org.runerealm.api.npc.NpcCombatStyle`.
+        build<Int>("npc_attack_style") { default = 0 }
+        build<Int>("npc_magic_maxhit")
+        build<Int>("npc_poison_damage") { default = 0 }
 
         build<Int>("defence_light") { default = 0 }
         build<Int>("defence_standard") { default = 0 }
