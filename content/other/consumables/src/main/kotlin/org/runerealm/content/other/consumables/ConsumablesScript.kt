@@ -15,10 +15,10 @@ import org.runerealm.api.player.vars.VarPlayerIntMapSetter
 import org.runerealm.api.player.vars.intVarp
 import org.runerealm.api.script.onOpHeld1
 import org.runerealm.api.script.onOpHeld2
-import org.runerealm.api.toxins.curePoison
-import org.runerealm.api.toxins.cureVenom
 import org.runerealm.api.script.onPlayerLogin
 import org.runerealm.api.script.onPlayerSoftTimer
+import org.runerealm.api.toxins.curePoison
+import org.runerealm.api.toxins.cureVenom
 import org.runerealm.content.other.consumables.configs.SIMPLE_FOOD_HEALS
 import org.runerealm.content.other.consumables.configs.consumable_objs
 import org.runerealm.content.other.consumables.configs.consumable_seqs
