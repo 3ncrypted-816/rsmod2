@@ -17,6 +17,9 @@ import net.rsprot.protocol.game.incoming.locs.OpLoc
 import net.rsprot.protocol.game.incoming.locs.OpLocT
 import net.rsprot.protocol.game.incoming.misc.user.MoveGameClick
 import net.rsprot.protocol.game.incoming.npcs.OpNpc
+import net.rsprot.protocol.game.incoming.npcs.OpNpcT
+import net.rsprot.protocol.game.incoming.objs.OpObjT
+import net.rsprot.protocol.game.incoming.players.OpPlayerT
 import net.rsprot.protocol.game.incoming.resumed.ResumePCountDialog
 import net.rsprot.protocol.game.incoming.resumed.ResumePStringDialog
 import net.rsprot.protocol.game.incoming.resumed.ResumePauseButton
@@ -44,6 +47,9 @@ import org.runerealm.api.net.rsprot.handlers.MoveGameClickHandler
 import org.runerealm.api.net.rsprot.handlers.OpLocHandler
 import org.runerealm.api.net.rsprot.handlers.OpLocTHandler
 import org.runerealm.api.net.rsprot.handlers.OpNpcHandler
+import org.runerealm.api.net.rsprot.handlers.OpNpcTHandler
+import org.runerealm.api.net.rsprot.handlers.OpObjTHandler
+import org.runerealm.api.net.rsprot.handlers.OpPlayerTHandler
 import org.runerealm.api.net.rsprot.handlers.ResumePCountDialogHandler
 import org.runerealm.api.net.rsprot.handlers.ResumePStringDialogHandler
 import org.runerealm.api.net.rsprot.handlers.ResumePauseButtonHandler
@@ -140,6 +146,7 @@ import org.runerealm.game.loc.LocZoneKey
 import org.runerealm.game.map.LocZoneStorage
 import org.runerealm.game.map.collision.addLoc
 import org.runerealm.game.movement.MoveSpeed
+import org.runerealm.game.obj.Obj
 import org.runerealm.game.queue.EngineQueueCache
 import org.runerealm.game.region.Region
 import org.runerealm.game.region.RegionListLarge
@@ -228,10 +235,14 @@ constructor(
     private val opLocTHandler: OpLocTHandler,
     private val resumePauseButtonHandler: ResumePauseButtonHandler,
     private val opNpcHandler: OpNpcHandler,
+    private val opNpcTHandler: OpNpcTHandler,
+    private val opPlayerTHandler: OpPlayerTHandler,
+    private val opObjTHandler: OpObjTHandler,
     private val aiPlayerInteractions: AiPlayerInteractions,
     private val npcHitModifier: NpcHitModifier,
     private val regionRegistry: RegionRegistry,
     private val regionRepo: RegionRepository,
+    private val objRepo: ObjRepository,
 ) {
     init {
         registerPlayer()
@@ -543,6 +554,91 @@ constructor(
         captureClient.queue(opNpcHandler, message)
     }
 
+    /** Casts the spell (or uses the [component]) on [npc], e.g. a combat spell. */
+    public fun Player.opNpcT(npc: Npc, component: ComponentType, controlKey: Boolean = false) {
+        ensureSpellbookOpen(component)
+        val message =
+            OpNpcT(
+                index = npc.slotId,
+                controlKey = controlKey,
+                selectedObj = -1,
+                selectedSub = -1,
+                selectedCombinedId = CombinedId(component.interfaceId, component.component),
+            )
+        captureClient.queue(opNpcTHandler, message)
+    }
+
+    /** Casts the spell (or uses the [component]) on [target], e.g. Tele Block. */
+    public fun Player.opPlayerT(target: Player, component: ComponentType) {
+        ensureSpellbookOpen(component)
+        val message =
+            OpPlayerT(
+                index = target.slotId,
+                controlKey = false,
+                selectedObj = -1,
+                selectedSub = -1,
+                selectedCombinedId = CombinedId(component.interfaceId, component.component),
+            )
+        captureClient.queue(opPlayerTHandler, message)
+    }
+
+    /** Casts the spell (or uses the [component]) on the ground [obj], e.g. Telekinetic Grab. */
+    public fun Player.opObjT(obj: Obj, component: ComponentType) {
+        ensureSpellbookOpen(component)
+        val message =
+            OpObjT(
+                id = obj.type,
+                x = obj.coords.x,
+                z = obj.coords.z,
+                controlKey = false,
+                selectedObj = -1,
+                selectedSub = -1,
+                selectedCombinedId = CombinedId(component.interfaceId, component.component),
+            )
+        captureClient.queue(opObjTHandler, message)
+    }
+
+    /**
+     * Casts the spell (or uses the [component]) on [loc], e.g. a charge orb spell on an obelisk.
+     */
+    public fun Player.opLocT(loc: BoundLocInfo, component: ComponentType) {
+        ensureSpellbookOpen(component)
+        val message =
+            OpLocT(
+                id = loc.id,
+                x = loc.coords.x,
+                z = loc.coords.z,
+                controlKey = false,
+                selectedObj = -1,
+                selectedSub = -1,
+                selectedCombinedId = CombinedId(component.interfaceId, component.component),
+            )
+        captureClient.queue(opLocTHandler, message)
+    }
+
+    /** Casts the spell [component] on the inventory obj in [invSlot], e.g. High Level Alchemy. */
+    public fun Player.opHeldT(component: ComponentType, invSlot: Int) {
+        val target = checkNotNull(inv[invSlot]) { "No inv obj in slot `$invSlot`." }
+        ensureSpellbookOpen(component)
+        if (!ui.containsOverlay(interfaces.inventory)) {
+            ifOpenOverlay(interfaces.inventory, components.toplevel_target_side3)
+        }
+        ifSetEvents(components.inv_items, inv.indices, IfEvent.Target)
+        val selected = CombinedId(component.interfaceId, component.component)
+        val targetId = CombinedId(components.inv_items.interfaceId, components.inv_items.component)
+        val message = IfButtonT(selected, -1, -1, targetId, invSlot, target.id)
+        captureClient.queue(ifButtonTHandler, message)
+    }
+
+    private fun Player.ensureSpellbookOpen(component: ComponentType) {
+        if (component.interfaceId != interfaces.magic_spellbook.id) {
+            return
+        }
+        if (!ui.containsOverlay(interfaces.magic_spellbook)) {
+            ifOpenOverlay(interfaces.magic_spellbook, components.toplevel_target_side6)
+        }
+    }
+
     public fun Player.ifOpenMain(interf: InterfaceType) {
         ifOpenMain(interf, eventBus)
     }
@@ -655,6 +751,17 @@ constructor(
         val add = npcRegistry.add(npc)
         check(add.isSuccess()) { "Could not add npc: result=$add, npc=$npc" }
         return npc
+    }
+
+    /** Spawns a ground obj visible to everyone, e.g. for Telekinetic Grab. */
+    public fun spawnObj(
+        coords: CoordGrid,
+        type: ObjType,
+        count: Int = 1,
+        duration: Int = 100,
+    ): Obj {
+        allocZoneCollision(coords)
+        return objRepo.add(type, coords, duration, count = count, reveal = 0)
     }
 
     public fun spawnController(

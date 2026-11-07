@@ -1,9 +1,11 @@
 package org.runerealm.api.spells.runes.subs
 
+import jakarta.inject.Singleton
 import org.runerealm.api.spells.runes.subs.configs.runesub_enums
 import org.runerealm.game.enums.EnumTypeMapResolver
 import org.runerealm.game.type.obj.ObjType
 
+@Singleton
 public class RuneSubstituteRepository {
     private lateinit var subs: Map<Int, List<ObjType>>
 

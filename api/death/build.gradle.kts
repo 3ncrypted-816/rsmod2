@@ -12,6 +12,7 @@ dependencies {
     implementation(projects.api.config)
     implementation(projects.api.dropTable)
     implementation(projects.api.freeze)
+    implementation(projects.api.teleblock)
     implementation(projects.api.hunt)
     implementation(projects.api.market)
     implementation(projects.api.random)

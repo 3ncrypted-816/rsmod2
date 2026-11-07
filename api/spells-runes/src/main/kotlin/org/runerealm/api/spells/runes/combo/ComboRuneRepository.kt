@@ -1,9 +1,11 @@
 package org.runerealm.api.spells.runes.combo
 
+import jakarta.inject.Singleton
 import org.runerealm.api.spells.runes.combo.configs.combo_enums
 import org.runerealm.game.enums.EnumTypeMapResolver
 import org.runerealm.game.type.obj.ObjType
 
+@Singleton
 public class ComboRuneRepository {
     private lateinit var combos: Map<Int, ComboRune>
     public lateinit var comboRunes: List<ComboRune>

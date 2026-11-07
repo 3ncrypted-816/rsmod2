@@ -1,10 +1,12 @@
 package org.runerealm.api.spells.runes.unlimited
 
+import jakarta.inject.Singleton
 import org.runerealm.api.spells.runes.unlimited.configs.unlimited_enums
 import org.runerealm.game.enums.EnumTypeMapResolver
 import org.runerealm.game.inv.InvObj
 import org.runerealm.game.type.obj.ObjType
 
+@Singleton
 public class UnlimitedRuneRepository {
     // Magic rune validation has a subtle distinction involving certain "unlimited source" objs
     // (e.g., elemental staves): some are checked before the `fake_runes_enabled` condition, and

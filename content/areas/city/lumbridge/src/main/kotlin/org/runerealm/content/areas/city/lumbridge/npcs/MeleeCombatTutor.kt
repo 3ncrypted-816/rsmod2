@@ -20,7 +20,7 @@ import org.runerealm.plugin.scripts.ScriptContext
 /**
  * Harlan, the Melee combat tutor.
  *
- * @see <a href="https://oldschool.runescape.wiki/w/Transcript:Melee_combat_tutor">Transcript</a>
+ * Transcript: https://oldschool.runescape.wiki/w/Transcript:Melee_combat_tutor
  */
 class MeleeCombatTutor : PluginScript() {
     override fun ScriptContext.startup() {

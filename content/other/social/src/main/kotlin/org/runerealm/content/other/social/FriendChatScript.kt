@@ -58,7 +58,11 @@ constructor(
     private val mapClock: MapClock,
 ) : PluginScript() {
     private val channels = mutableMapOf<String, Channel>()
+
     private var messageCounter = 0
+
+    private val worldName: String
+        get() = "World ${config.world}"
 
     override fun ScriptContext.startup() {
         onEvent<FriendChatJoinLeave> {
@@ -289,9 +293,6 @@ constructor(
 
     private fun onlinePlayer(name: String): Player? =
         players.firstOrNull { it.displayName.equals(name, ignoreCase = true) }
-
-    private val worldName: String
-        get() = "World ${config.world}"
 
     private inner class Channel(val key: String, var ownerName: String, var owner: Player?) {
         val members = mutableListOf<Player>()

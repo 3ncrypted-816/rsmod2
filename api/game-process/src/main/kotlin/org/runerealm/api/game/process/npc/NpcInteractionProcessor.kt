@@ -29,6 +29,7 @@ import org.runerealm.game.interact.InteractionNpc
 import org.runerealm.game.interact.InteractionNpcOp
 import org.runerealm.game.interact.InteractionNpcT
 import org.runerealm.game.interact.InteractionObj
+import org.runerealm.game.interact.InteractionObjT
 import org.runerealm.game.interact.InteractionPlayer
 import org.runerealm.game.interact.InteractionPlayerOp
 import org.runerealm.game.interact.InteractionPlayerT
@@ -151,6 +152,7 @@ constructor(
             is InteractionLoc -> preMovementStep(interaction)
             is InteractionNpc -> preMovementStep(interaction)
             is InteractionObj -> preMovementStep(interaction)
+            is InteractionObjT -> InteractionStep.Continue
             is InteractionPlayer -> preMovementStep(interaction)
         }
 
@@ -159,6 +161,7 @@ constructor(
             is InteractionLoc -> postMovementStep(interaction)
             is InteractionNpc -> postMovementStep(interaction)
             is InteractionObj -> postMovementStep(interaction)
+            is InteractionObjT -> InteractionStep.Continue
             is InteractionPlayer -> postMovementStep(interaction)
         }
 
@@ -169,6 +172,9 @@ constructor(
             is InteractionNpcOp -> triggerOp(this, interaction)
             is InteractionNpcT -> triggerOp(this, interaction)
             is InteractionObj -> triggerOp(this, interaction)
+            is InteractionObjT -> {
+                /* Npcs never use components on objs. */
+            }
             is InteractionPlayerOp -> triggerOp(this, interaction)
             is InteractionPlayerT -> triggerOp(this, interaction)
         }
@@ -180,6 +186,9 @@ constructor(
             is InteractionNpcOp -> triggerAp(this, interaction)
             is InteractionNpcT -> triggerAp(this, interaction)
             is InteractionObj -> triggerAp(this, interaction)
+            is InteractionObjT -> {
+                /* Npcs never use components on objs. */
+            }
             is InteractionPlayerOp -> triggerAp(this, interaction)
             is InteractionPlayerT -> triggerAp(this, interaction)
         }
@@ -380,6 +389,8 @@ constructor(
             is InteractionLoc -> !interaction.isValid(this)
             is InteractionNpc -> !interaction.isValid(this)
             is InteractionObj -> !interaction.isValid(this)
+            // Npcs never use components on objs.
+            is InteractionObjT -> true
             is InteractionPlayer -> !interaction.isValid(this)
         }
 

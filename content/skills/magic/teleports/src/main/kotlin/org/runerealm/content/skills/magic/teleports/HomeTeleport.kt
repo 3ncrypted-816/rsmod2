@@ -9,6 +9,8 @@ import org.runerealm.api.player.protect.ProtectedAccessLauncher
 import org.runerealm.api.player.vars.intVarp
 import org.runerealm.api.script.onIfOverlayButton
 import org.runerealm.api.script.onPlayerQueueWithArgs
+import org.runerealm.api.teleblock.isTeleblocked
+import org.runerealm.api.teleblock.teleblockedMessage
 import org.runerealm.api.type.refs.comp.ComponentReferences
 import org.runerealm.api.type.refs.queue.QueueReferences
 import org.runerealm.api.type.refs.seq.SeqReferences
@@ -51,6 +53,10 @@ internal data class HomeTeleportCast(val stage: Int, val start: Int)
 internal fun ProtectedAccess.homeTeleport() {
     if (player.inRecentCombat(mapClock)) {
         mes(RECENT_COMBAT_MESSAGE)
+        return
+    }
+    if (player.isTeleblocked()) {
+        mes(player.teleblockedMessage())
         return
     }
     if (WildernessArea.level(player.coords) > HOME_TELEPORT_WILDERNESS_LIMIT) {
