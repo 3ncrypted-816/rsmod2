@@ -37,6 +37,15 @@ internal object ItemTeleports {
         access.resetAnim()
     }
 
+    /** The Ancient Magicks teleport: the Zaros teleport animation, then arrival after 4 ticks. */
+    suspend fun ancientTeleport(access: ProtectedAccess, dest: CoordGrid) {
+        access.anim(teleport_seqs.ancient_cast)
+        access.spotanim(teleport_spots.ancient_casting)
+        access.delay(4)
+        access.telejump(dest)
+        access.resetAnim()
+    }
+
     /** Breaking a tablet: the break animation, then absorbing its magic, then arrival. */
     suspend fun tabletTeleport(access: ProtectedAccess, dest: CoordGrid) {
         access.anim(teleport_seqs.tablet_break)
@@ -55,11 +64,13 @@ internal typealias teleport_spots = ItemTeleportSpots
 
 object ItemTeleportSeqs : SeqReferences() {
     val cast = find("human_castteleport")
+    val ancient_cast = find("zaros_vertical_casting")
     val tablet_break = find("poh_smash_magic_tablet")
     val tablet_absorb = find("poh_absorb_tablet_teleport")
 }
 
 object ItemTeleportSpots : SpotanimReferences() {
     val casting = find("teleport_casting")
+    val ancient_casting = find("zaros_teleport")
     val tablet_absorb = find("poh_absorb_tablet_magic")
 }

@@ -10,4 +10,5 @@ dependencies {
     integrationImplementation(projects.api.invPlugin)
     integrationImplementation(projects.api.player)
     integrationImplementation(projects.api.teleblock)
+    integrationImplementation(projects.api.combat.combatCommons)
 }

@@ -2,10 +2,13 @@ package org.runerealm.content.skills.magic.teleports
 
 import jakarta.inject.Inject
 import org.runerealm.api.area.checker.WildernessArea
+import org.runerealm.api.combat.commons.magic.Spellbook
+import org.runerealm.api.config.refs.varbits
 import org.runerealm.api.config.refs.varps
 import org.runerealm.api.player.output.clearMapFlag
 import org.runerealm.api.player.protect.ProtectedAccess
 import org.runerealm.api.player.protect.ProtectedAccessLauncher
+import org.runerealm.api.player.vars.enumVarBit
 import org.runerealm.api.player.vars.intVarp
 import org.runerealm.api.script.onIfOverlayButton
 import org.runerealm.api.script.onPlayerQueueWithArgs
@@ -33,6 +36,8 @@ import org.runerealm.plugin.scripts.ScriptContext
  * - It "only can be cast 10 seconds or more after combat has ended (similar to logging out)".
  * - Like most teleport spells it cannot be cast beyond level 20 Wilderness.
  *
+ * The Ancient Magicks Edgeville Home Teleport works the same way and lands in Edgeville.
+ *
  * This server intentionally has **no** 30-minute cooldown.
  */
 class HomeTeleport @Inject constructor(private val protectedAccess: ProtectedAccessLauncher) :
@@ -41,6 +46,13 @@ class HomeTeleport @Inject constructor(private val protectedAccess: ProtectedAcc
         onIfOverlayButton(home_teleport_components.standard) {
             protectedAccess.launch(player) { homeTeleport() }
         }
+        onIfOverlayButton(home_teleport_components.ancient) {
+            protectedAccess.launch(player) {
+                if (player.spellbook == Spellbook.Ancients) {
+                    homeTeleport(EDGEVILLE_HOME)
+                }
+            }
+        }
         onPlayerQueueWithArgs<HomeTeleportCast>(home_teleport_queues.cast) {
             homeTeleportStage(it.args)
         }
@@ -48,9 +60,13 @@ class HomeTeleport @Inject constructor(private val protectedAccess: ProtectedAcc
 }
 
 /** State carried between the weak-queued animation stages. */
-internal data class HomeTeleportCast(val stage: Int, val start: Int)
+internal data class HomeTeleportCast(
+    val stage: Int,
+    val start: Int,
+    val dest: CoordGrid = LUMBRIDGE_HOME,
+)
 
-internal fun ProtectedAccess.homeTeleport() {
+internal fun ProtectedAccess.homeTeleport(dest: CoordGrid = LUMBRIDGE_HOME) {
     if (player.inRecentCombat(mapClock)) {
         mes(RECENT_COMBAT_MESSAGE)
         return
@@ -68,7 +84,7 @@ internal fun ProtectedAccess.homeTeleport() {
     player.abortRoute()
     player.clearMapFlag()
     clearWeakQueue(home_teleport_queues.cast)
-    playStage(HomeTeleportCast(stage = 0, start = mapClock))
+    playStage(HomeTeleportCast(stage = 0, start = mapClock, dest = dest))
 }
 
 internal fun ProtectedAccess.homeTeleportStage(cast: HomeTeleportCast) {
@@ -78,7 +94,7 @@ internal fun ProtectedAccess.homeTeleportStage(cast: HomeTeleportCast) {
         return
     }
     if (cast.stage >= HOME_TELEPORT_STAGES.size) {
-        telejump(LUMBRIDGE_HOME)
+        telejump(cast.dest)
         resetAnim()
         return
     }
@@ -113,6 +129,14 @@ const val RECENT_COMBAT_MESSAGE = "You can't use this teleport after recent comb
 /** Destination per the wiki infobox map: 3221, 3218. */
 val LUMBRIDGE_HOME = CoordGrid(3221, 3218, 0)
 
+/**
+ * [Edgeville Home Teleport](https://oldschool.runescape.wiki/w/Edgeville_Home_Teleport), the
+ * Ancient Magicks home teleport: the same 24-tick cast, landing in Edgeville.
+ */
+val EDGEVILLE_HOME = CoordGrid(3087, 3496, 0)
+
+private val Player.spellbook by enumVarBit<Spellbook>(varbits.spellbook)
+
 private class HomeTeleportStage(
     val seq: org.runerealm.game.type.seq.SeqType,
     val spot: org.runerealm.game.type.spot.SpotanimType,
@@ -134,6 +158,7 @@ typealias home_teleport_components = HomeTeleportComponents
 
 object HomeTeleportComponents : ComponentReferences() {
     val standard = find("magic_spellbook:teleport_home_standard")
+    val ancient = find("magic_spellbook:teleport_home_zaros")
 }
 
 internal object home_teleport_queues : QueueReferences() {

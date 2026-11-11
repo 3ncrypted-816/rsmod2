@@ -46,6 +46,8 @@ import org.runerealm.plugin.scripts.ScriptContext
  * - Tele Other spells ([Tele Other](https://oldschool.runescape.wiki/w/Tele_Other)) ask the target
  *   to accept the teleport. The target must have Accept Aid on, must not be Tele Blocked and must
  *   not be above level 20 Wilderness.
+ * - Ancient Magicks teleports (Paddewwa to Ghorrock) use the Zaros teleport animation and land
+ *   after 4 ticks, with the same level 20 Wilderness limit.
  *
  * Quest requirements (e.g. Plague City for Ardougne Teleport) are not checked, since quests are not
  * tracked by this server.
@@ -65,6 +67,14 @@ constructor(
             val dest = destination(spellObj)
             onIfOverlayButton(spell.component) {
                 protectedAccess.launch(player) { cityTeleport(spell, dest) }
+            }
+        }
+
+        for (spellObj in ANCIENT_TELEPORTS) {
+            val spell = spell(spellObj)
+            val dest = destination(spellObj)
+            onIfOverlayButton(spell.component) {
+                protectedAccess.launch(player) { cityTeleport(spell, dest, ancient = true) }
             }
         }
 
@@ -90,7 +100,11 @@ constructor(
     private fun destination(obj: ObjType): CoordGrid =
         DESTINATION_OVERRIDES[obj.id] ?: objTypes[obj].param(params.spell_telecoord)
 
-    private suspend fun ProtectedAccess.cityTeleport(spell: MagicSpell, dest: CoordGrid) {
+    private suspend fun ProtectedAccess.cityTeleport(
+        spell: MagicSpell,
+        dest: CoordGrid,
+        ancient: Boolean = false,
+    ) {
         if (!ItemTeleports.canTeleport(this, SPELL_WILDERNESS_LIMIT)) {
             return
         }
@@ -100,7 +114,11 @@ constructor(
         }
         statAdvance(stats.magic, spell.castXp)
         soundSynth(teleport_synths.teleport)
-        ItemTeleports.jewelleryTeleport(this, dest)
+        if (ancient) {
+            ItemTeleports.ancientTeleport(this, dest)
+        } else {
+            ItemTeleports.jewelleryTeleport(this, dest)
+        }
     }
 
     private fun ProtectedAccess.teleOther(
@@ -190,6 +208,23 @@ internal val CITY_TELEPORTS: List<ObjType> =
         objs.spell_watchtower_teleport,
         objs.spell_trollheim_teleport,
         objs.spell_apeatoll_teleport,
+    )
+
+/**
+ * The Ancient Magicks teleports, per the wiki (e.g.
+ * [Paddewwa Teleport](https://oldschool.runescape.wiki/w/Paddewwa_Teleport)). Destinations come
+ * from the spells' cache coordinates.
+ */
+val ANCIENT_TELEPORTS: List<ObjType> =
+    listOf(
+        objs.spell_paddewwa_teleport,
+        objs.spell_senntisten_teleport,
+        objs.spell_kharyllyl_teleport,
+        objs.spell_lassar_teleport,
+        objs.spell_dareeyak_teleport,
+        objs.spell_carrallagar_teleport,
+        objs.spell_annakarl_teleport,
+        objs.spell_ghorrock_teleport,
     )
 
 internal val TELEOTHER_SPELLS: List<ObjType> =
