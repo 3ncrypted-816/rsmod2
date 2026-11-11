@@ -90,10 +90,22 @@ constructor(
         onPlayerLogin { player.farmingLogin() }
         onPlayerSoftTimer(farming_timers.tick) { player.farmingTick() }
 
+        // Item-on-loc ops on a multiloc are only looked up on the visible variant (they do not
+        // fall back to the base loc like click ops do), so register every variant of every patch
+        // and resolve the patch from the base loc.
+        val useTargets = sortedSetOf<Int>()
         for (patch in FarmingPatch.entries) {
             onOpLoc1(patch.loc) { primaryOp(patch) }
             onOpLoc2(patch.loc) { inspect(patch) }
-            onOpLocU(patch.loc) { useOn(patch, it.objType) }
+            useTargets += patch.loc.id
+            useTargets += locTypes[patch.loc].multiLoc.map { it.toInt() and 0xFFFF }
+        }
+        for (target in useTargets) {
+            val type = locTypes[target] ?: continue
+            onOpLocU(type) { event ->
+                val patch = FarmingPatch.forLoc(event.loc.id) ?: return@onOpLocU
+                useOn(patch, event.objType)
+            }
         }
 
         for (seed in TreeSeeds.all) {

@@ -18,10 +18,10 @@ import org.runerealm.game.entity.Player
 object FarmingClock {
     const val TICK_MILLIS: Long = 5 * 60 * 1000L
 
-    /** Added to the real tick; tests use it to fast-forward time. */
-    @Volatile var offsetTicks: Long = 0
+    /** When set, replaces the real clock; tests use it to pin and fast-forward time. */
+    @Volatile var fixedTick: Long? = null
 
-    fun currentTick(): Long = System.currentTimeMillis() / TICK_MILLIS + offsetTicks
+    fun currentTick(): Long = fixedTick ?: (System.currentTimeMillis() / TICK_MILLIS)
 }
 
 /**
