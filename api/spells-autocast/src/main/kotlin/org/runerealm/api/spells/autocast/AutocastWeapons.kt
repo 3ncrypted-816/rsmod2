@@ -5,6 +5,8 @@ import jakarta.inject.Singleton
 import org.runerealm.api.config.refs.varbits
 import org.runerealm.api.player.output.mes
 import org.runerealm.api.player.vars.VarPlayerIntMapSetter
+import org.runerealm.api.spells.autocast.configs.ANCIENT_AUTOCAST_WEAPON_IDS
+import org.runerealm.api.spells.autocast.configs.ANCIENT_COMBAT_SPELL_IDS
 import org.runerealm.api.spells.autocast.configs.autocast_params
 import org.runerealm.game.entity.Player
 import org.runerealm.game.type.obj.ObjType
@@ -36,6 +38,11 @@ public class AutocastWeapons @Inject constructor(private val spells: AutocastSpe
         // its ability to be autocast). We return false so it can be cleared by the caller.
         if (spell == null) {
             return false
+        }
+
+        // Ancient Magicks combat spells can only be autocast with specific weapons.
+        if (spell.id in ANCIENT_COMBAT_SPELL_IDS) {
+            return weapon.id in ANCIENT_AUTOCAST_WEAPON_IDS
         }
 
         // We return early if the spell is a standard autocast spell. (Can be cast by any staff)

@@ -2278,6 +2278,7 @@
 4846	dom_previous_deepest_level
 4848	collection_count_unsynced
 
+65440	autocast_menu_defensive
 65470	teleblock_end
 65471	charge_spell_end
 65472	spell_delay_end

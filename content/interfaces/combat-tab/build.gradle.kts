@@ -11,4 +11,8 @@ dependencies {
     implementation(projects.api.specials)
     implementation(projects.api.spells)
     implementation(projects.api.spellsAutocast)
+    integrationImplementation(projects.api.combat.combatCommons)
+    integrationImplementation(projects.api.player)
+    integrationImplementation(projects.api.spells)
+    integrationImplementation(projects.api.spellsAutocast)
 }
