@@ -1,5 +1,6 @@
 package org.runerealm.api.combat.formulas
 
+import org.runerealm.api.slayer.isOnSlayerTask
 import org.runerealm.game.entity.Player
 import org.runerealm.game.type.npc.UnpackedNpcType
 
@@ -12,7 +13,8 @@ internal const val HIT_CHANCE_SCALE: Int = 10_000
 
 internal fun scale(base: Int, multiplier: Int, divisor: Int): Int = (base * multiplier) / divisor
 
-internal fun UnpackedNpcType.isSlayerTask(player: Player): Boolean {
-    // TODO(combat): Resolve if type is slayer task.
-    return false
-}
+/**
+ * Whether this npc is on [player]'s Slayer task, which enables the black mask and Slayer helmet
+ * bonuses. Konar's task location is not checked here.
+ */
+internal fun UnpackedNpcType.isSlayerTask(player: Player): Boolean = player.isOnSlayerTask(this)

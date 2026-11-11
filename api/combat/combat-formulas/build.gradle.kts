@@ -17,6 +17,7 @@ dependencies {
     implementation(projects.api.npc)
     implementation(projects.api.player)
     implementation(projects.api.random)
+    implementation(projects.api.slayer)
     implementation(projects.api.type.typeReferences)
     implementation(projects.api.utils.utilsVars)
     implementation(projects.engine.game)

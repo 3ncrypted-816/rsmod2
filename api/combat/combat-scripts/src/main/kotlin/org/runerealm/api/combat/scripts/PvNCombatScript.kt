@@ -16,11 +16,13 @@ import org.runerealm.api.combat.weapon.styles.AttackStyles
 import org.runerealm.api.combat.weapon.types.AttackTypes
 import org.runerealm.api.config.refs.categories
 import org.runerealm.api.config.refs.queues
+import org.runerealm.api.config.refs.stats
 import org.runerealm.api.player.protect.ProtectedAccess
 import org.runerealm.api.player.righthand
 import org.runerealm.api.script.advanced.onDefaultApNpc2
 import org.runerealm.api.script.advanced.onDefaultOpNpc2
 import org.runerealm.api.script.onApNpcT
+import org.runerealm.api.slayer.SlayerTasks
 import org.runerealm.api.spells.MagicSpellRegistry
 import org.runerealm.api.spells.autocast.AutocastWeapons
 import org.runerealm.game.entity.Npc
@@ -38,6 +40,7 @@ constructor(
     private val spells: MagicSpellRegistry,
     private val runes: MagicRuneManager,
     private val autocast: AutocastWeapons,
+    private val slayerTasks: SlayerTasks,
 ) : PluginScript() {
     override fun ScriptContext.startup() {
         onDefaultApNpc2 { attemptCombatAp(it.npc) }
@@ -109,6 +112,15 @@ constructor(
         //  their specific conditions. Some npcs like the mage arena (wilderness) npcs
         //  don't give any sort of message, but simply won't allow players to melee them.
         //  (Will stop at ap range, doesn't drag you into melee range)
+
+        // Slayer monsters can only be damaged with the required Slayer level.
+        // See https://oldschool.runescape.wiki/w/Slayer#Slayer_monsters
+        val slayerLevel = slayerTasks.levelRequirement(npc.visType)
+        if (slayerLevel > 1 && statBase(stats.slayer) < slayerLevel) {
+            mes("You need a higher Slayer level to know how to wound this monster.")
+            clearPendingAction()
+            return false
+        }
 
         // Note: Dinh's bulwark conditions occur _before_ multi-combat area checks and _after_
         // "can attack" hooks.

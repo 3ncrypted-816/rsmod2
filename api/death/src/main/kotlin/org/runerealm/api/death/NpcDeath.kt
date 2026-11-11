@@ -18,6 +18,7 @@ import org.runerealm.api.player.vars.typeNpcUidVarp
 import org.runerealm.api.random.GameRandom
 import org.runerealm.api.repo.npc.NpcRepository
 import org.runerealm.api.repo.obj.ObjRepository
+import org.runerealm.events.EventBus
 import org.runerealm.game.entity.Npc
 import org.runerealm.game.entity.Player
 import org.runerealm.game.entity.PlayerList
@@ -37,8 +38,10 @@ constructor(
     private val objTypes: ObjTypeList,
     private val dropTables: NpcDropTables,
     private val random: GameRandom,
+    private val eventBus: EventBus,
 ) {
     public suspend fun deathNoDrops(access: StandardNpcAccess) {
+        publishKilled(access.npc)
         access.death(npcRepo, seqTypes, players)
     }
 
@@ -46,8 +49,18 @@ constructor(
         access: StandardNpcAccess,
         dropCoords: CoordGrid = access.coords,
     ) {
+        publishKilled(access.npc)
         access.death(npcRepo, seqTypes, players)
         access.npc.spawnDeathDrops(dropCoords)
+    }
+
+    /**
+     * Publishes [NpcKilledEvent] for the player credited with killing [npc] (the one who dealt the
+     * most damage). Content such as Slayer listens to it for kill credit.
+     */
+    private fun publishKilled(npc: Npc) {
+        val hero = npc.findHero(players) ?: return
+        eventBus.publish(NpcKilledEvent(npc, hero))
     }
 
     private fun Npc.spawnDeathDrops(dropCoords: CoordGrid) {

@@ -21,6 +21,7 @@ dependencies {
     implementation(projects.api.random)
     implementation(projects.api.script)
     implementation(projects.api.scriptAdvanced)
+    implementation(projects.api.slayer)
     implementation(projects.api.specials)
     implementation(projects.api.spells)
     implementation(projects.api.spellsAutocast)
