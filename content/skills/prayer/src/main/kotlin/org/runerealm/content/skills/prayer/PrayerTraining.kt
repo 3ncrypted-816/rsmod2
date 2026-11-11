@@ -48,6 +48,11 @@ constructor(private val objTypes: ObjTypeList, private val locTypes: LocTypeList
         }
         for (type in locTypes.values) {
             val op1 = type.op.getOrNull(0) ?: continue
+            // Spellbook altars (e.g. the Ancient Magicks altar) switch books instead; they are
+            // handled by the magic spellbooks module.
+            if (type.internalName in SPELLBOOK_ALTARS) {
+                continue
+            }
             if (op1 == "Pray-at" || op1 == "Pray") {
                 onOpLoc1(type) { prayAtAltar() }
             }
@@ -125,6 +130,7 @@ constructor(private val objTypes: ObjTypeList, private val locTypes: LocTypeList
     private companion object {
         const val BURY_DELAY = 2
         const val CHAOS_ALTAR_MULTIPLIER = 3.5
+        val SPELLBOOK_ALTARS = setOf("dt_zaros_altar")
     }
 }
 
