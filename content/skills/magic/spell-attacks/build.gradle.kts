@@ -17,4 +17,7 @@ dependencies {
     integrationImplementation(projects.api.teleblock)
     integrationImplementation(projects.api.freeze)
     integrationImplementation(projects.api.toxins)
+    integrationImplementation(projects.api.areaChecker)
+    integrationImplementation(projects.api.hunt)
+    integrationImplementation(projects.engine.annotations)
 }
