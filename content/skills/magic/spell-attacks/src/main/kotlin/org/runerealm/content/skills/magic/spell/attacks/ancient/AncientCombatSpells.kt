@@ -166,7 +166,10 @@ constructor(
             }
         }
 
-        private fun ProtectedAccess.hitDelays(target: PathingEntity, travel: SpotanimType?): Delays {
+        private fun ProtectedAccess.hitDelays(
+            target: PathingEntity,
+            travel: SpotanimType?,
+        ): Delays {
             if (travel != null) {
                 val proj = manager.spawnProjectile(this, target, travel, projanims.magic_spell)
                 val (server, client) = proj.durations
@@ -243,7 +246,8 @@ constructor(
             if (!WildernessArea.contains(caster.coords) || !WildernessArea.contains(other.coords)) {
                 return false
             }
-            val levels = min(WildernessArea.level(caster.coords), WildernessArea.level(other.coords))
+            val levels =
+                min(WildernessArea.level(caster.coords), WildernessArea.level(other.coords))
             return abs(caster.combatLevel - other.combatLevel) <= levels
         }
 
@@ -298,11 +302,26 @@ internal class AncientFx(
                 AncientElement.Smoke ->
                     when (tier) {
                         AncientTier.Rush ->
-                            AncientFx(s.smoke_rush_travel, s.smoke_rush_impact, f.smoke_cast, f.smoke_rush_impact)
+                            AncientFx(
+                                s.smoke_rush_travel,
+                                s.smoke_rush_impact,
+                                f.smoke_cast,
+                                f.smoke_rush_impact,
+                            )
                         AncientTier.Burst ->
-                            AncientFx(null, s.smoke_burst_impact, f.smoke_cast, f.smoke_burst_impact)
+                            AncientFx(
+                                null,
+                                s.smoke_burst_impact,
+                                f.smoke_cast,
+                                f.smoke_burst_impact,
+                            )
                         AncientTier.Blitz ->
-                            AncientFx(s.smoke_blitz_travel, s.smoke_blitz_impact, f.smoke_cast, f.smoke_blitz_impact)
+                            AncientFx(
+                                s.smoke_blitz_travel,
+                                s.smoke_blitz_impact,
+                                f.smoke_cast,
+                                f.smoke_blitz_impact,
+                            )
                         AncientTier.Barrage ->
                             AncientFx(
                                 s.smoke_barrage_travel,
@@ -314,9 +333,19 @@ internal class AncientFx(
                 AncientElement.Shadow ->
                     when (tier) {
                         AncientTier.Rush ->
-                            AncientFx(s.shadow_rush_travel, s.shadow_rush_impact, f.shadow_cast, f.shadow_rush_impact)
+                            AncientFx(
+                                s.shadow_rush_travel,
+                                s.shadow_rush_impact,
+                                f.shadow_cast,
+                                f.shadow_rush_impact,
+                            )
                         AncientTier.Burst ->
-                            AncientFx(null, s.shadow_burst_impact, f.shadow_cast, f.shadow_burst_impact)
+                            AncientFx(
+                                null,
+                                s.shadow_burst_impact,
+                                f.shadow_cast,
+                                f.shadow_burst_impact,
+                            )
                         AncientTier.Blitz ->
                             AncientFx(
                                 s.shadow_blitz_travel,
@@ -325,29 +354,64 @@ internal class AncientFx(
                                 f.shadow_blitz_impact,
                             )
                         AncientTier.Barrage ->
-                            AncientFx(null, s.shadow_barrage_impact, f.shadow_cast, f.shadow_barrage_impact)
+                            AncientFx(
+                                null,
+                                s.shadow_barrage_impact,
+                                f.shadow_cast,
+                                f.shadow_barrage_impact,
+                            )
                     }
                 AncientElement.Blood ->
                     when (tier) {
                         AncientTier.Rush ->
-                            AncientFx(s.blood_rush_travel, s.blood_rush_impact, f.blood_cast, f.blood_rush_impact)
+                            AncientFx(
+                                s.blood_rush_travel,
+                                s.blood_rush_impact,
+                                f.blood_cast,
+                                f.blood_rush_impact,
+                            )
                         AncientTier.Burst ->
-                            AncientFx(null, s.blood_burst_impact, f.blood_cast, f.blood_burst_impact)
+                            AncientFx(
+                                null,
+                                s.blood_burst_impact,
+                                f.blood_cast,
+                                f.blood_burst_impact,
+                            )
                         AncientTier.Blitz ->
-                            AncientFx(s.blood_blitz_travel, s.blood_blitz_impact, f.blood_cast, f.blood_blitz_impact)
+                            AncientFx(
+                                s.blood_blitz_travel,
+                                s.blood_blitz_impact,
+                                f.blood_cast,
+                                f.blood_blitz_impact,
+                            )
                         AncientTier.Barrage ->
-                            AncientFx(null, s.blood_barrage_impact, f.blood_cast, f.blood_barrage_impact)
+                            AncientFx(
+                                null,
+                                s.blood_barrage_impact,
+                                f.blood_cast,
+                                f.blood_barrage_impact,
+                            )
                     }
                 AncientElement.Ice ->
                     when (tier) {
                         AncientTier.Rush ->
-                            AncientFx(s.ice_rush_travel, s.ice_rush_impact, f.ice_cast, f.ice_rush_impact)
+                            AncientFx(
+                                s.ice_rush_travel,
+                                s.ice_rush_impact,
+                                f.ice_cast,
+                                f.ice_rush_impact,
+                            )
                         AncientTier.Burst ->
                             AncientFx(null, s.ice_burst_impact, f.ice_cast, f.ice_burst_impact)
                         AncientTier.Blitz ->
                             AncientFx(null, s.ice_blitz_impact, f.ice_cast, f.ice_blitz_impact)
                         AncientTier.Barrage ->
-                            AncientFx(s.ice_barrage_travel, s.ice_barrage_impact, f.ice_cast, f.ice_barrage_impact)
+                            AncientFx(
+                                s.ice_barrage_travel,
+                                s.ice_barrage_impact,
+                                f.ice_cast,
+                                f.ice_barrage_impact,
+                            )
                     }
             }
         }
